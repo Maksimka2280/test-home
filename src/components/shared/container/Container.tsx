@@ -1,7 +1,6 @@
 import { FC, PropsWithChildren } from 'react';
 import clsx from 'clsx';
-
-import s from './container.module.scss';
+import s from './Container.module.scss';
 
 type Props = {
   className?: string;
