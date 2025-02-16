@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import './modules/reset';
+@import './modules/variables';
+
+*::-webkit-scrollbar-track {
+  @apply hidden
+}
+
+::-webkit-scrollbar {
+  @apply w-[3px] h-[3px];
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-[20px] bg-primary
+}
+
+html, body {
+  @apply h-full;
+}
+
+body {
+  @apply box-border;
+}

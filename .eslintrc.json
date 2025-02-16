@@ -1,0 +1,123 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-type-checked",
+    "plugin:@typescript-eslint/strict",
+    "plugin:@typescript-eslint/stylistic",
+    "plugin:@typescript-eslint/stylistic-type-checked",
+    "plugin:import/typescript",
+    "prettier"
+  ],
+  "ignorePatterns": [
+    "dist",
+    ".eslintrc.cjs"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": ["tsconfig.json"],
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "react-refresh",
+    "prettier",
+    "import"
+  ],
+  "rules": {
+    "no-console": "warn",
+    "prefer-const": "warn",
+    "quotes": ["warn", "single"],
+    "jsx-quotes": ["warn", "prefer-double"],
+    "comma-dangle": ["error", "always-multiline"],
+    "prettier/prettier": [
+      "error",
+      {
+        "arrowParens": "avoid",
+        "bracketSpacing": true,
+        "endOfLine": "auto",
+        "printWidth": 100,
+        "proseWrap": "preserve",
+        "quoteProps": "as-needed",
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 2,
+        "trailingComma": "all",
+        "useTabs": false
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "allowSeparatedGroups": true,
+        "ignoreCase": false,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ]
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/prop-types": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/no-extraneous-class": "off",
+    "no-case-declarations": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-require-imports": "off",
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ],
+    "@typescript-eslint/no-empty-interface": [
+      "error",
+      {
+        "allowSingleExtends": true
+      }
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "format": ["UPPER_CASE", "camelCase", "PascalCase"],
+        "modifiers": ["const"],
+        "selector": "variable"
+      },
+      {
+        "format": ["UPPER_CASE", "PascalCase"],
+        "selector": "enum"
+      },
+      {
+        "format": ["UPPER_CASE", "PascalCase"],
+        "selector": "enumMember"
+      },
+      {
+        "format": ["camelCase"],
+        "selector": ["classMethod", "classProperty", "variable"]
+      },
+      {
+        "format": ["camelCase", "PascalCase"],
+        "selector": ["function"]
+      },
+      {
+        "format": ["PascalCase"],
+        "selector": ["class", "interface"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "penguin-frontend-app",
+  "version": "0.1.0",
+  "private": true,
+  "author": "Penguin Home",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@heroui/react": "^2.6.14",
+    "framer-motion": "^12.4.3",
+    "lucide-react": "^0.475.0",
+    "next": "15.1.7",
+    "next-themes": "^0.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@svgr/webpack": "^8.1.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.1.0",
+    "@typescript-eslint/parser": "^8.1.0",
+    "eslint": "^8",
+    "eslint-config-next": "15.1.7",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "husky": "^9.1.7",
+    "postcss": "^8",
+    "prettier": "^3.5.1",
+    "sass": "^1.85.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
