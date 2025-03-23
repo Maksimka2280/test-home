@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export default function PriceModal() {
@@ -23,8 +23,10 @@ export default function PriceModal() {
     const handleClickOutside = (event: MouseEvent) => {
       // Проверка, кликнули ли мы вне модалки и кнопки
       if (
-        modalRef.current && !modalRef.current.contains(event.target as Node) && 
-        buttonRef.current && !buttonRef.current.contains(event.target as Node)
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false); // Закрыть модалку
       }
@@ -92,7 +94,13 @@ export default function PriceModal() {
 
         {visible && (
           <ul className="grid grid-cols-2 gap-x-6 gap-y-3 ml-[30px] mb-6">
-            {[{ id: 1, name: 'Рубль' }, { id: 2, name: 'Доллар' }, { id: 3, name: 'Франк' }, { id: 4, name: 'Гривна' }, { id: 5, name: 'Лира' }].map(currency => (
+            {[
+              { id: 1, name: 'Рубль' },
+              { id: 2, name: 'Доллар' },
+              { id: 3, name: 'Франк' },
+              { id: 4, name: 'Гривна' },
+              { id: 5, name: 'Лира' },
+            ].map(currency => (
               <li key={currency.id} className="flex items-center w-full">
                 <label
                   htmlFor={currency.id.toString()}

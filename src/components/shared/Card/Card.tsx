@@ -20,8 +20,6 @@ export const Card = () => {
       className="relative max-w-[330px] bg-[#ffffff] w-full h-[420px] rounded-[20px] cursor-pointer"
       onClick={markAsViewed}
     >
-
-
       <div className="h-[50%] bg-[#ffffff] rounded-t-[20px] flex justify-center items-center relative">
         <span className="text-lg">Img</span>
         {/* Всплывающий блок "Просмотрено" */}
@@ -31,7 +29,7 @@ export const Card = () => {
           </div>
         )}
         <button
-          onClick={(e) => {
+          onClick={e => {
             e.stopPropagation(); // предотвращает срабатывание клика на карточку
             toggleLike();
           }}
