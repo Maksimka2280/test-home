@@ -37,7 +37,6 @@ export const DefFilters: FC = () => {
 
       <MiniGreyLine />
 
-   
       <div className="w-full sm:w-auto flex justify-center">
         <PriceModal />
       </div>

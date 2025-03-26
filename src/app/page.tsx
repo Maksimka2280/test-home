@@ -6,31 +6,37 @@ import { Input } from '@/components/shared/Filters/Input';
 import { PopularSearches } from '@/components/shared/Filters/Popular-searches';
 import { ChevronRight, MapPin } from 'lucide-react';
 import Link from 'next/link';
-import './style/main.css'
+import './style/main.css';
 
 export default function Home() {
   return (
     <div>
-<div className="flex justify-center mb-[35px]">
-  <div className="flex flex-wrap items-center justify-between w-full max-w-[1360px] px-4">
-    <p className="text-center sm:text-left w-full sm:w-auto">Сервис для поиска недвижимости в Швейцарии</p>
+      <div className="flex justify-center mb-[35px]">
+        <div className="flex flex-wrap items-center justify-between w-full max-w-[1360px] px-4">
+          <p className="text-center sm:text-left w-full sm:w-auto">
+            Сервис для поиска недвижимости в Швейцарии
+          </p>
 
-    <div className="flex gap-2 justify-center items-center w-full sm:w-auto mt-2 sm:mt-0">
-      <p className="text-[#BCBCBC] text-[14px] text-center sm:text-left w-full sm:w-auto">
-        Выбрано городов <span className="text-[#0164EB] font-bold pl-1">5</span>
-      </p>
-     
-      <div className='w-[17px] h-[17px]'>
-         <MapPin color="#0164EB" size={17} /> {/* Размер иконки остается фиксированным */}
+          <div className="flex gap-2 justify-center items-center w-full sm:w-auto mt-2 sm:mt-0">
+            <p className="text-[#BCBCBC] text-[14px] text-center sm:text-left w-full sm:w-auto">
+              Выбрано городов <span className="text-[#0164EB] font-bold pl-1">5</span>
+            </p>
+
+            <div className="w-[17px] h-[17px]">
+              <MapPin color="#0164EB" size={17} /> {/* Размер иконки остается фиксированным */}
+            </div>
+            <p className="font-bold text-center sm:text-left w-full sm:w-auto">
+              Санкт-Галлен / Берн / Цюрих / Женева / Базель{' '}
+            </p>
+          </div>
+        </div>
       </div>
-      <p className="font-bold text-center sm:text-left w-full sm:w-auto">Санкт-Галлен / Берн / Цюрих / Женева / Базель </p>
-    </div>
-  </div>
-</div>
 
       <div className="flex justify-center items-center">
         <div className="max-w-[1385px] w-full  bg-[#FFFFFF] rounded-[40px] h-[auto] py-[50px] px-[30px] ">
-          <h1 className="font-bold text-[37px] md:text-[50px] pb-[30px]">Подходящая недвижимость</h1>
+          <h1 className="font-bold text-[37px] md:text-[50px] pb-[30px]">
+            Подходящая недвижимость
+          </h1>
           <Input
             placeholder="Коммерческая недвижимость в аренду Санкт-Галлен"
             type="search"

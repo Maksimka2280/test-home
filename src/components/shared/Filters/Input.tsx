@@ -25,7 +25,7 @@ export const Input: FC<InputProps> = ({ icon, placeholder, type, maxWidth = 'max
       />
 
       {type === 'search' && (
-        <Button color="blue" width="202px" rounded="10px" height="50px" >
+        <Button color="blue" width="202px" rounded="10px" height="50px">
           Найти
         </Button>
       )}

@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type CategoryItem = {
   id: number;
@@ -51,10 +51,12 @@ export default function App() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        modalRef.current && !modalRef.current.contains(event.target as Node) &&
-        buttonRef.current && !buttonRef.current.contains(event.target as Node)
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);  // Закрываем модалку
+        setIsOpen(false); // Закрываем модалку
       }
     };
 
@@ -69,7 +71,7 @@ export default function App() {
 
   const handleCheckboxChange = (id: number) => {
     setSelectedItems(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id],
     );
   };
 
@@ -79,7 +81,7 @@ export default function App() {
   };
 
   const toggleModal = () => {
-    setIsOpen(prev => !prev);  // Переключаем состояние модалки
+    setIsOpen(prev => !prev); // Переключаем состояние модалки
   };
 
   return (
@@ -110,8 +112,11 @@ export default function App() {
           {Object.keys(categories).map(category => (
             <button
               key={category}
-              className={`w-[120px] h-[40px] border border-[#F3F3F3] rounded-[30px] text-sm transition-all duration-300 ${activeCategory === category ? 'bg-[#0468FF] text-white' : 'bg-[#F3F3F3] text-[#9D9D9D]'
-                }`}
+              className={`w-[120px] h-[40px] border border-[#F3F3F3] rounded-[30px] text-sm transition-all duration-300 ${
+                activeCategory === category
+                  ? 'bg-[#0468FF] text-white'
+                  : 'bg-[#F3F3F3] text-[#9D9D9D]'
+              }`}
               onClick={() => handleCategoryChange(category as keyof Categories)}
             >
               {category}
@@ -122,7 +127,10 @@ export default function App() {
         <ul className="flex flex-col gap-3 ml-[30px] mb-6">
           {categories[activeCategory].map(item => (
             <li key={item.id} className="flex items-center justify-between w-full">
-              <span className="text-[#111] text-sm cursor-pointer" onClick={() => handleCheckboxChange(item.id)}>
+              <span
+                className="text-[#111] text-sm cursor-pointer"
+                onClick={() => handleCheckboxChange(item.id)}
+              >
                 {item.name}
               </span>
               <input
@@ -138,13 +146,14 @@ export default function App() {
                 htmlFor={item.id.toString()}
                 className="w-[17px] h-[17px] flex items-center justify-center rounded-[5px] bg-[#F3F3F3] cursor-pointer transition-all duration-300 mr-[20px]"
               >
-                {selectedItems.includes(item.id) && <div className="w-[8px] h-[8px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>}
+                {selectedItems.includes(item.id) && (
+                  <div className="w-[8px] h-[8px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
+                )}
               </label>
             </li>
           ))}
         </ul>
       </div>
     </div>
-
   );
 }
