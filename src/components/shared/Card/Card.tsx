@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, ArrowRight, Heart, Layers2, Layers3, MapPin, Timer } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Heart, Layers2, MapPin, Timer } from 'lucide-react';
 import { useState } from 'react';
 import ReactPaginate from 'react-paginate';
 
@@ -10,24 +10,28 @@ export const Card = () => {
   const [Layers, setLayers] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const pageCount = 3;
 
-  const images = ['/img/image123.png', '/img/new-build.svg', '/img/another-image.png'];
+
+  const images = ['/img/image123.png', '/img/room-test.png'];
+
+  // Количество картинок
+  const pageCount = Math.ceil(images.length);
+
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
 
   const toggleLike = () => {
     setLiked(!liked);
+    markAsViewed();
   };
   const toggleLayers = () => {
     setLayers(!Layers);
-    markAsViewed(); 
+    markAsViewed();
   };
 
   const markAsViewed = () => {
     setViewed(true);
-    markAsViewed(); 
   };
 
   return (
@@ -42,7 +46,12 @@ export const Card = () => {
       >
         <div className="flex flex-col h-full relative">
           <div className="flex-grow relative">
-            <img src={images[currentPage]} alt="" />
+            <img
+              className="max-w-[330px] w-full h-[240px] rounded-t-[20px]"
+              src={images[currentPage]}
+              alt=""
+            />
+
 
             <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex justify-center">
               <ReactPaginate
@@ -69,9 +78,8 @@ export const Card = () => {
                     className={`transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                   />
                 }
-                // по другому расположить не получится 
                 previousClassName="absolute mr-[270px] mt-[-110px] select-none"
-                nextClassName="absolute ml-[270px] mt-[-110px] select-none" 
+                nextClassName="absolute ml-[270px] mt-[-110px] select-none"
               />
             </div>
           </div>
@@ -79,7 +87,7 @@ export const Card = () => {
 
         {viewed && (
           <div className="absolute top-2 left-2 w-[120px] h-[30px] bg-white rounded-[50px] flex items-center justify-center shadow-md">
-            <p className="text-green-600 font-bold text-sm select-none">Просмотрено</p>
+            <p className="text-green-600 font-semibold text-sm select-none">Просмотрено</p>
           </div>
         )}
         <button
