@@ -7,6 +7,7 @@ interface ButtonProps {
   height?: string;
   width?: string;
   color?: 'blue' | 'red';
+  onClick?: () => void; // Добавляем обработчик клика
 }
 
 export const Button: FC<ButtonProps> = ({
@@ -15,6 +16,7 @@ export const Button: FC<ButtonProps> = ({
   height = '40px',
   width = 'auto',
   color = 'blue',
+  onClick, // Получаем проп onClick
 }) => {
   const backgroundColor = color === 'blue' ? '#0164EB' : '#D11D04';
 
@@ -29,6 +31,7 @@ export const Button: FC<ButtonProps> = ({
         width,
         backgroundColor,
       }}
+      onClick={onClick} // Добавляем обработчик клика
     >
       {children}
     </button>

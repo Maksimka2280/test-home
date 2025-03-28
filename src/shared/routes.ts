@@ -5,4 +5,6 @@ export const enum Routes {
   // Auth routes
   SIGN_IN = '/sign-in',
   SIGN_UP = '/sign-up',
+
+  MAP = '/map',
 }

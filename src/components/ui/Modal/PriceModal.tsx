@@ -48,7 +48,9 @@ export default function PriceModal() {
   const handleButtonClick = () => {
     setIsOpen(!isOpen); // Переключаем состояние модалки
   };
-
+  const handleMouseLeave = () => {
+    setIsOpen(false);
+  };
   return (
     <>
       <button
@@ -63,6 +65,7 @@ export default function PriceModal() {
 
       <div
         ref={modalRef} // Ссылка на модалку
+        onMouseLeave={handleMouseLeave}
         className={`absolute mt-11  max-w-[360px] w-full bg-white rounded-[30px] shadow-lg transition-all duration-300 
                     ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3 pointer-events-none'}`}
       >

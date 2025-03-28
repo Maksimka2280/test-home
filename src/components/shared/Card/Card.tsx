@@ -11,7 +11,6 @@ export const Card = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
-
   const images = ['/img/image123.png', '/img/room-test.png'];
 
   // Количество картинок
@@ -51,7 +50,6 @@ export const Card = () => {
               src={images[currentPage]}
               alt=""
             />
-
 
             <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex justify-center">
               <ReactPaginate

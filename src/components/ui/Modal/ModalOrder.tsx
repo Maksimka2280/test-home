@@ -83,6 +83,9 @@ export default function App() {
   const toggleModal = () => {
     setIsOpen(prev => !prev); // Переключаем состояние модалки
   };
+  const handleMouseLeave = () => {
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative">
@@ -104,7 +107,8 @@ export default function App() {
 
       <div
         ref={modalRef}
-        className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-5 w-max min-w-[305px] sm:ml-[65px]
+        onMouseLeave={handleMouseLeave}
+        className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-5 w-max min-w-[305px] sm:ml-[65px] z-[2]
                   bg-white rounded-[30px] shadow-lg transition-all duration-300 ease-in-out
                   ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}
       >

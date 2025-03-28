@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { fonts } from '@shared/styles/font';
 import { Providers } from '@components';
 import '@shared/styles/globals.scss';
+import Header from '@/components/shared/Header/Header';
 
 export const metadata: Metadata = {
   title: 'Penguin Dev - Home', // TODO: replace with your own title
@@ -18,6 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={fonts}>
         <main className="bg-[#F3F3F3]">
+          <Header />
           <Providers>{children}</Providers>
         </main>
       </body>

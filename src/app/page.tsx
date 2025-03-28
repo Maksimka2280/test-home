@@ -1,4 +1,3 @@
-import { Text } from '@/components';
 import { Button } from '@/components/shared/Button/Button';
 import { Card } from '@/components/shared/Card/Card';
 import { DefFilters } from '@/components/shared/Filters/default-filters';
@@ -13,8 +12,8 @@ export default function Home() {
   return (
     <>
       <div>
-        <div className="flex justify-center mb-[35px] pr-[10px]">
-          <div className="flex flex-wrap items-center justify-between w-full max-w-[1360px] ">
+        <div className="flex justify-center mb-[35px] pr-[10px] mt-[35px]">
+          <div className="flex flex-wrap items-center justify-between w-full max-w-[1360px] 2xl:max-w-[1760px]  ">
             <p className="text-center sm:text-left w-full sm:w-auto">
               Сервис для поиска недвижимости в Швейцарии
             </p>
@@ -35,29 +34,28 @@ export default function Home() {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="max-w-[1385px] w-full  bg-[#FFFFFF] rounded-[40px] h-[auto] py-[50px] px-[30px] ">
+          <div className="max-w-[1385px] 2xl:max-w-[1800px]  w-full  bg-[#FFFFFF] rounded-[40px] h-[auto] py-[50px] px-[30px] ">
             <h1 className="font-bold text-[37px] md:text-[50px] pb-[30px]">
               Подходящая недвижимость
             </h1>
             <Input
               placeholder="Коммерческая недвижимость в аренду Санкт-Галлен"
               type="search"
-              maxWidth="1320px"
+              className="max-w-[1320px] 2xl:max-w-[1740px]"
             />
+
             <Link href={'#'} className="flex items-center font-bold text-[#0468FF] py-[25px]">
               Больше фильтров{' '}
-              <ChevronRight size={12} color="#0468FF" fontWeight="bold" strokeWidth={3} />
+              <ChevronRight size={14} color="#0468FF" fontWeight="bold" strokeWidth={3} />
             </Link>
-            <div className="flex  gap-[20px]  items-center flex-wrap ">
+            <div className="flex  gap-[20px] 2xl:gap-[70px]  items-center flex-wrap ">
               <DefFilters />
               <Link
-                className="max-w-[185px] w-full h-[60px] rounded-[15px] bg-[#f3f3f3] flex justify-center items-center gap-[35px]"
-                href={'#'}
+                className="max-w-[185px] 2xl:max-w-[250px] w-full h-[60px] rounded-[15px] bg-[#f3f3f3] flex justify-center items-center gap-[35px]"
+                href={'/Map'}
               >
-                <Text size="md" weight="normal" color="default">
-                  На карте
-                </Text>
-                <MapPin color="#9D9D9D" size={17} />
+                <p className="text-[16px] xl:text-[18px]">На карте</p>
+                <MapPin color="#9D9D9D" size={19} />
               </Link>
               <Button width="250px" height="60px" rounded="15px" color="blue">
                 Показать 29 вариантов
@@ -77,10 +75,10 @@ export default function Home() {
           </div>
         </div>
         <div className="flex flex-col  items-center mt-[90px]">
-          <h1 className="text-[28px] font-bold text-left max-w-[1380px] w-full mb-[40px]">
+          <h1 className="text-[28px] font-bold  max-w-[1380px] 2xl:max-w-[1800px] w-full mb-[40px] text-center xl:text-left">
             Могут подойти
           </h1>
-          <div className="flex flex-wrap gap-[20px] max-w-[1400px] justify-center">
+          <div className="flex flex-wrap gap-[20px] max-w-[1400px] 2xl:max-w-[1870px] justify-center">
             <Card></Card>
             <Card></Card>
             <Card></Card>
@@ -91,14 +89,10 @@ export default function Home() {
             <Card></Card>
           </div>
         </div>
-
-
-
       </div>
       <div className="fixed bottom-0 right-0 p-4">
         <Layers />
       </div>
-
     </>
   );
 }
