@@ -22,5 +22,9 @@ html, body {
 
 body {
   @apply box-border;
-  background: #F3F3F3;
+  background: #F3F3F3 !important;
+}
+
+.leaflet-control{
+  z-index: auto !important;
 }

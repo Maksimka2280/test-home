@@ -1,34 +1,42 @@
-import { Button } from '@/components/shared/Button/Button';
+'use client';
 import { Card } from '@/components/shared/Card/Card';
 import { DefFilters } from '@/components/shared/Filters/default-filters';
-import { Input } from '@/components/shared/Filters/Input';
+import { Input } from '@/components/shared/Input/Input';
 import { PopularSearches } from '@/components/shared/Filters/Popular-searches';
 import { ChevronRight, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import './style/main.css';
 import { Layers } from '@/components/shared/Layers/Layers';
+import { Button } from '@/components/shared/Button/Button';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import CityList from '@/components/ui/CityRender/CityRender';
+import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 
 export default function Home() {
+  const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
   return (
     <>
       <div>
         <div className="flex justify-center mb-[35px] pr-[10px] mt-[35px]">
-          <div className="flex flex-wrap items-center justify-between w-full max-w-[1360px] 2xl:max-w-[1760px]  ">
+          <div className="flex flex-wrap items-center justify-between w-full max-w-[1360px] 2xl:max-w-[1760px] ">
             <p className="text-center sm:text-left w-full sm:w-auto">
               Сервис для поиска недвижимости в Швейцарии
             </p>
 
-            <div className="flex gap-2 justify-center items-center w-full sm:w-auto mt-2 sm:mt-0">
-              <p className="text-[#BCBCBC] text-[14px] text-center sm:text-left w-full sm:w-auto">
-                Выбрано городов <span className="text-[#0164EB] font-bold pl-1">5</span>
+            <div className="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#F3F3F3] rounded-[15px]  mt-[10px] ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">
+              <p className="text-[#BCBCBC] text-[16px] text-center sm:text-left whitespace-nowrap">
+                Выбрано городов:{' '}
+                <span className="text-[#0468FF] font-semibold text-[16px] pl-[6px]">
+                  {selectedCities.length}
+                </span>
               </p>
 
-              <div className="w-[17px] h-[17px]">
-                <MapPin color="#0164EB" size={17} /> {/* Размер иконки остается фиксированным */}
+              <div className="w-[17px] h-[17px] flex-shrink-0 mx-auto sm:mx-0">
+                <MapPin color="#0164EB" size={17} />
               </div>
-              <p className="font-bold text-center sm:text-left w-full sm:w-auto">
-                Санкт-Галлен / Берн / Цюрих / Женева / Базель{' '}
-              </p>
+
+              <CityList />
             </div>
           </div>
         </div>
@@ -43,12 +51,11 @@ export default function Home() {
               type="search"
               className="max-w-[1320px] 2xl:max-w-[1740px]"
             />
+            <div className='py-[20px] pl-[5px]'>
+              <ModalMoreFilter />
+            </div>
 
-            <Link href={'#'} className="flex items-center font-bold text-[#0468FF] py-[25px]">
-              Больше фильтров{' '}
-              <ChevronRight size={14} color="#0468FF" fontWeight="bold" strokeWidth={3} />
-            </Link>
-            <div className="flex  gap-[20px] 2xl:gap-[70px]  items-center flex-wrap ">
+            <div className="flex justify-center sm:justify-start  gap-[20px] 2xl:gap-[70px]  items-center flex-wrap ">
               <DefFilters />
               <Link
                 className="max-w-[185px] 2xl:max-w-[250px] w-full h-[60px] rounded-[15px] bg-[#f3f3f3] flex justify-center items-center gap-[35px]"

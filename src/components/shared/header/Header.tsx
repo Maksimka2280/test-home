@@ -16,7 +16,9 @@ export default function Header() {
     <>
       <header className="w-full flex justify-center relative">
         <div className="max-w-[1440px] 2xl:max-w-[1810px] w-full flex justify-between items-center px-6 py-4">
-          <div>Логотип</div>
+          <Link href={'/'}>
+            <img src="/img/logo.jpg" alt="" className="w-20 h-20 rounded-[40px]" />
+          </Link>
           <ul className="hidden xl:flex gap-[50px]">
             <li>
               <Link href={'#'} className="text-[14px]">
@@ -68,7 +70,7 @@ export default function Header() {
 
         <div
           onMouseLeave={handleMouseLeave}
-          className={`absolute top-16 right-0 w-full bg-white shadow-md p-4 flex flex-col gap-4 xl:hidden transition-[max-height,opacity] duration-700 ease-in-out ${
+          className={`absolute top-28 right-0 w-full bg-[#F3F3F3] shadow-md p-4 flex flex-col gap-4 xl:hidden transition-[max-height,opacity] duration-700 ease-in-out z-[3] ${
             isOpen2 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
           }`}
         >

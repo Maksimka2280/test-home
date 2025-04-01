@@ -65,7 +65,7 @@ export default function ChoiceLanguage() {
       <div
         ref={modalRef}
         onMouseLeave={handleMouseLeave}
-        className={`absolute z-[3] mt-[145px] max-w-[350px]  w-full bg-white rounded-[30px] shadow-lg transition-all duration-300  right-2 xl:right-40 xl:mt-[150px]
+        className={`absolute z-[4] mt-[145px] max-w-[350px]  w-full bg-white rounded-[30px] shadow-lg transition-all duration-300  right-2 xl:right-40 xl:mt-[150px]
               ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3 pointer-events-none'}`}
       >
         <div className="flex justify-center items-center gap-4 py-5 left-0">
