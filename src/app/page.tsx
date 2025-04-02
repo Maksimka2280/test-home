@@ -3,7 +3,7 @@ import { Card } from '@/components/shared/Card/Card';
 import { DefFilters } from '@/components/shared/Filters/default-filters';
 import { Input } from '@/components/shared/Input/Input';
 import { PopularSearches } from '@/components/shared/Filters/Popular-searches';
-import { ChevronRight, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import Link from 'next/link';
 import './style/main.css';
 import { Layers } from '@/components/shared/Layers/Layers';
@@ -19,12 +19,12 @@ export default function Home() {
     <>
       <div>
         <div className="flex justify-center mb-[35px] pr-[10px] mt-[35px]">
-          <div className="flex flex-wrap items-center justify-between w-full max-w-[1360px] 2xl:max-w-[1760px] ">
+        <div className="flex flex-wrap items-center justify-center lg:justify-between w-full max-w-[1360px] 2xl:max-w-[1760px] ">
             <p className="text-center sm:text-left w-full sm:w-auto">
               Сервис для поиска недвижимости в Швейцарии
             </p>
 
-            <div className="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#F3F3F3] rounded-[15px]  mt-[10px] ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">
+            <div className="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#F3F3F3] rounded-[15px]   ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">
               <p className="text-[#BCBCBC] text-[16px] text-center sm:text-left whitespace-nowrap">
                 Выбрано городов:{' '}
                 <span className="text-[#0468FF] font-semibold text-[16px] pl-[6px]">
@@ -51,7 +51,7 @@ export default function Home() {
               type="search"
               className="max-w-[1320px] 2xl:max-w-[1740px]"
             />
-            <div className='py-[20px] pl-[5px]'>
+            <div className="py-[20px] pl-[5px]">
               <ModalMoreFilter />
             </div>
 

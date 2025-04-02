@@ -7,7 +7,7 @@ import { ChevronRight, X } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilter, removeFilter } from '../../../store/FilterSlice/FilterSlices';
-import { RootState } from '../../../store/store'
+import { RootState } from '../../../store/store';
 type FilterButton = {
   label: string;
   width?: string;
@@ -178,11 +178,6 @@ export default function ModalMoreFilter() {
     }
   };
 
-  const handleSaveFilters = () => {
-
-    dispatch(setFilters(selectedFilters));
-    console.log('Фильтры сохранены:', selectedFilters);
-  }
   const toggleModal = () => setIsOpen(!isOpen);
 
   return (
@@ -203,8 +198,9 @@ export default function ModalMoreFilter() {
       )}
 
       <div
-        className={`fixed top-0 left-0 z-50 bg-white rounded-r-[25px] shadow-lg transition-transform duration-500 ease-in-out over ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          } w-[85%] sm:w-[80%] md:w-[70%] lg:w-[1125px] h-full max-h-screen overflow-y-auto`}
+        className={`fixed top-0 left-0 z-50 bg-white rounded-r-[25px] shadow-lg transition-transform duration-500 ease-in-out over ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } w-[85%] sm:w-[80%] md:w-[70%] lg:w-[1125px] h-full max-h-screen overflow-y-auto`}
       >
         <div className="p-6 relative">
           {/* Кнопка закрытия */}
@@ -328,16 +324,19 @@ export default function ModalMoreFilter() {
 
                         <div className="flex sm:flex-wrap items-center gap-[10px] ml-4">
                           <div className="mr-2 text-sm font-medium">Кухня</div>
-                          {group.buttons.slice(3, 4).map((button, buttonIndex) => (
+                          {group.buttons.slice(3, 4).map((_, index) => (
                             <input
+                              key={`input-${groupIndex}-${index}`} // Add a unique key for each item
                               id={`input-to-${groupIndex}`}
                               type="number"
-                              placeholder="От"
+                              placeholder="До"
                               className="w-[45px] h-[40px] border-none rounded-[15px] flex pl-[10px]  items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           ))}
-                          {group.buttons.slice(3, 4).map((button, buttonIndex) => (
+
+                          {group.buttons.slice(3, 4).map((_, index) => (
                             <input
+                              key={`input-${groupIndex}-${index}`} // Add a unique key for each item
                               id={`input-to-${groupIndex}`}
                               type="number"
                               placeholder="До"
@@ -418,10 +417,8 @@ export default function ModalMoreFilter() {
                     {/* Заменяем кнопки на инпуты только в определенном блоке */}
                     {groupIndex === 3 && (
                       <div className="flex sm:flex-wrap items-center mr-4 gap-[20px]">
-
                         <div className="flex gap-[20px]">
                           <div>
-
                             <input
                               id={`input-to-${groupIndex}`}
                               type="number"
@@ -430,24 +427,20 @@ export default function ModalMoreFilter() {
                             />
                           </div>
                           <div>
-
                             <input
                               id={`input-to-${groupIndex}`}
                               type="number"
                               placeholder="До"
                               className="w-[45px] h-[40px] border-none rounded-[15px] flex pl-[10px]  items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
-
                           </div>
                         </div>
                       </div>
                     )}
                     {groupIndex === 5 && (
                       <div className="flex sm:flex-wrap items-center mr-4 gap-[20px] mb-[20px]">
-
                         <div className="flex gap-[20px]">
                           <div>
-
                             <input
                               id={`input-to-${groupIndex}`}
                               type="number"
@@ -456,45 +449,45 @@ export default function ModalMoreFilter() {
                             />
                           </div>
                           <div>
-
                             <input
                               id={`input-to-${groupIndex}`}
                               type="number"
                               placeholder="До"
                               className="w-[45px] h-[40px] border-none rounded-[15px] flex pl-[10px] items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
-
                           </div>
                         </div>
                       </div>
                     )}
-                    {groupIndex !== 0 && groupIndex !== 1 && groupIndex !== 2 && groupIndex !== 3 && (
-                      <div className="flex lg:flex-wrap items-center gap-[20px]">
-                        {group.buttons.map((button, buttonIndex) => (
-                          <ButtonFilters
-                            key={`${groupIndex}-${buttonIndex}`}
-                            color="blue"
-                            id={`button-${groupIndex}-${buttonIndex}`}
-                            height="40px"
-                            rounded="15px"
-                            width={button.width}
-                          >
-                            {button.label}
-                          </ButtonFilters>
-                        ))}
-                      </div>
-                    )}
+                    {groupIndex !== 0 &&
+                      groupIndex !== 1 &&
+                      groupIndex !== 2 &&
+                      groupIndex !== 3 && (
+                        <div className="flex lg:flex-wrap items-center gap-[20px]">
+                          {group.buttons.map((button, buttonIndex) => (
+                            <ButtonFilters
+                              key={`${groupIndex}-${buttonIndex}`}
+                              color="blue"
+                              id={`button-${groupIndex}-${buttonIndex}`}
+                              height="40px"
+                              rounded="15px"
+                              width={button.width}
+                            >
+                              {button.label}
+                            </ButtonFilters>
+                          ))}
+                        </div>
+                      )}
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          <div className='flex gap-[20px] justify-center items-center mt-[50px] flex-wrap'>
-            <Button width='273px' height='60px' rounded='20px' color='blue' >Искать варианты</Button>
-            <button
-              className='bg-[#fff] border-[3px] border-[#152242] w-[270px] h-[60px] rounded-[20px] font-bold'
-              onClick={handleSaveFilters}
-            >
+          <div className="flex gap-[20px] justify-center items-center mt-[50px] flex-wrap">
+            <Button width="273px" height="60px" rounded="20px" color="blue">
+              Искать варианты
+            </Button>
+            <button className="bg-[#fff] border-[3px] border-[#152242] w-[270px] h-[60px] rounded-[20px] font-bold">
               Сохранить фильтр
             </button>
           </div>

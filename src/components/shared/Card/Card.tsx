@@ -3,14 +3,14 @@
 import { ArrowLeft, ArrowRight, Heart, Layers2, MapPin, Timer } from 'lucide-react';
 import { useState } from 'react';
 import ReactPaginate from 'react-paginate';
-
+import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
 export const Card = () => {
   const [liked, setLiked] = useState(false);
   const [viewed, setViewed] = useState(false);
   const [Layers, setLayers] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const { currencySymbol } = useCurrency();
   const images = ['/img/image123.png', '/img/room-test.png'];
 
   // Количество картинок
@@ -118,7 +118,7 @@ export const Card = () => {
 
       <div className="h-[50%] px-[20px] py-[23px] mt-[20px]">
         <div>
-          <h1 className="text-[22px] font-bold pb-[5px]">999 999 999 ₽</h1>
+          <h1 className="text-[22px] font-bold pb-[5px]">999 999 999 {currencySymbol}</h1>
           <p>1-комн. кв. · 49,60м² · 17/27 этаж</p>
         </div>
 

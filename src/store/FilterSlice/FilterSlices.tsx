@@ -30,7 +30,7 @@ const filtersSlice = createSlice({
       state.selectedFilters = action.payload;
       localStorage.setItem('selectedFilters', JSON.stringify(action.payload));
     },
-    clearFilters: (state) => {
+    clearFilters: state => {
       state.selectedFilters = [];
       localStorage.removeItem('selectedFilters');
     },

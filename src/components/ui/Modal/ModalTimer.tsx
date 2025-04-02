@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Bike, BusFront, CarFront,  Footprints, Timer } from 'lucide-react';
+import { Bike, BusFront, CarFront, Footprints, Timer } from 'lucide-react';
 
 export default function ModalTimer() {
   const [isOpen, setIsOpen] = useState(false);

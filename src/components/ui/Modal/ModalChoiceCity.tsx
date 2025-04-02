@@ -100,7 +100,7 @@ export default function ModalChoiceCity() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
     setCityInput(value);
     setErrorMessage('');
@@ -108,7 +108,12 @@ export default function ModalChoiceCity() {
     if (value === '') {
       setCitiesSuggestions(allSwissCities);
     } else {
-      fetchCities(value);
+      try {
+        await fetchCities(value);
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+        setErrorMessage('There was an error fetching city suggestions.');
+      }
     }
   };
 

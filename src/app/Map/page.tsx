@@ -15,12 +15,13 @@ import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import ModalChoiceCity from '@/components/ui/Modal/ModalChoiceCity';
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
-import '../../shared/styles/globals.scss'
+import '../../shared/styles/globals.scss';
 import CityList from '@/components/ui/CityRender/CityRender';
 
 export default function Map() {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<L.Map | null>(null); // Ссылка на карту
+  const mapInstance = useRef<L.Map | null>(null); // Начальное значение null
+
   const [selectedOrganizations, setSelectedOrganizations] = useState<any[]>([]);
   const handleSearch = async (query: string) => {
     if (!query) return;
@@ -55,11 +56,16 @@ export default function Map() {
       alert('Произошла ошибка при поиске');
     }
   };
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const inputElement = e.target as HTMLInputElement;
       if (inputElement instanceof HTMLInputElement) {
-        handleSearch(inputElement.value);
+        try {
+          // Если handleSearch возвращает промис, используем await
+          await handleSearch(inputElement.value);
+        } catch (error) {
+          console.error('Ошибка при выполнении поиска:', error);
+        }
       }
     }
   };
@@ -76,7 +82,7 @@ export default function Map() {
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(mapInstance.current);
 
-      const customBlockLeft = L.control({ position: 'topright' });
+      const customBlockLeft: L.Control = L.control({ position: 'topright' });
 
       customBlockLeft.onAdd = function () {
         const div = L.DomUtil.create('div', 'custom-map-left');
@@ -120,7 +126,7 @@ export default function Map() {
 
       customBlockLeft.addTo(mapInstance.current);
 
-      const customControlContainer = L.control({ position: 'topright' });
+      const customControlContainer: L.Control = L.control({ position: 'topright' });
 
       customControlContainer.onAdd = function () {
         const div = L.DomUtil.create('div', 'custom-map-container');
@@ -211,7 +217,7 @@ export default function Map() {
 
       customControlContainer.addTo(mapInstance.current);
 
-      const zoomInButton = L.control({ position: 'topright' });
+      const zoomInButton: L.Control = L.control({ position: 'topright' });
       zoomInButton.onAdd = function () {
         const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-zoom-in');
         div.innerHTML = '+';
@@ -230,7 +236,7 @@ export default function Map() {
 
       zoomInButton.addTo(mapInstance.current);
 
-      const zoomOutButton = L.control({ position: 'topright' });
+      const zoomOutButton: L.Control = L.control({ position: 'topright' });
       zoomOutButton.onAdd = function () {
         const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-zoom-out');
         div.innerHTML = '-';
@@ -248,7 +254,7 @@ export default function Map() {
       zoomOutButton.addTo(mapInstance.current);
 
       // Три кнопки в правом нижнем углу
-      const bottomRightButtons = L.control({ position: 'bottomright' });
+      const bottomRightButtons: L.Control = L.control({ position: 'bottomright' });
 
       bottomRightButtons.onAdd = function () {
         const div = L.DomUtil.create('div', 'custom-map-buttons');

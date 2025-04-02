@@ -24,9 +24,7 @@ export const Layers = () => {
       </div>
 
       {/* Выпадающий контент */}
-      {isOpen && (
-           <ModalLayers/>
-      )}
+      {isOpen && <ModalLayers />}
     </div>
   );
 };
