@@ -1,14 +1,11 @@
 'use client';
 
-import { Button } from '@/components/shared/Button/Button';
 import MiniCard from '@/components/shared/Card/MiniCard';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 export default function ModalLayers() {
   const [isOpen, setIsOpen] = useState(true); // Открываем модалку сразу
-  const [selectedCount, setSelectedCount] = useState(0); // Количество выбранных карточек
-  const [showError, setShowError] = useState(false); // Показывать сообщение об ошибке
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -29,22 +26,9 @@ export default function ModalLayers() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  // Обработчик изменения количества выбранных карточек
-  const handleCardSelection = (isSelected: boolean) => {
-    setSelectedCount((prev) => (isSelected ? prev + 1 : prev - 1));
-  };
-
-  // Проверка на превышение 3-х выбранных карточек
-  useEffect(() => {
-    if (selectedCount > 3) {
-      setIsOpen(false);
-      setShowError(true);
-    }
-  }, [selectedCount]);
-
   return (
     <>
-      {isOpen && !showError && (
+      {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div
             ref={modalRef}
@@ -64,26 +48,8 @@ export default function ModalLayers() {
             </div>
 
             <div className="mt-[15px]">
-              <button className='max-w-[480px] w-full rounded-[15px] bg-[#0164EB] h-[50px] text-white'>
-                <Link href={'/PageLayers'}>
-                  Перейти к сравнению
-                </Link>
-              
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showError && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="w-[530px] bg-white rounded-[20px] shadow-lg p-5">
-            <h1 className="font-bold text-[20px] text-center text-red-500">
-              Вам нужно оформить подписку для сравнения более 3 вариантов.
-            </h1>
-            <div className="mt-[35px] text-center">
-              <button className='max-w-[480px] w-full rounded-[15px]  text-white'>
-                Перейти к оформлению подписки
+              <button className="max-w-[480px] w-full rounded-[15px] bg-[#0164EB] h-[50px] text-white">
+                <Link href={'/PageLayers'}>Перейти к сравнению</Link>
               </button>
             </div>
           </div>

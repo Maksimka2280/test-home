@@ -7,12 +7,11 @@ export default function MiniCard() {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCheckboxChange = () => {
-    setIsChecked((prev) => !prev);
+    setIsChecked(prev => !prev);
   };
 
   return (
     <div className="flex flex-wrap sm:flex-nowrap mt-[30px] justify-center sm:justify-start">
- 
       <div className="flex justify-center items-center mb-[15px] sm:mb-0 relative">
         <img
           src="/img/mini-room-img.png"
@@ -21,7 +20,6 @@ export default function MiniCard() {
         />
       </div>
 
-    
       <div className="px-[15px] w-full sm:w-auto">
         <div className="flex justify-between items-center">
           <h1 className="text-[18px] sm:text-[22px] font-bold text-center sm:text-left w-full sm:w-auto">
@@ -34,7 +32,7 @@ export default function MiniCard() {
               id="price-checkbox"
               className="hidden"
               checked={isChecked}
-              onChange={handleCheckboxChange} 
+              onChange={handleCheckboxChange}
             />
             <label
               htmlFor="price-checkbox"
@@ -62,9 +60,7 @@ export default function MiniCard() {
               <span className="font-bold">14</span> минут
             </p>
           </div>
-          <p className="text-[#BCBCBC] text-[14px] sm:text-[16px]">
-            2-й Амбулаторный проезд, 18
-          </p>
+          <p className="text-[#BCBCBC] text-[14px] sm:text-[16px]">2-й Амбулаторный проезд, 18</p>
         </div>
       </div>
     </div>

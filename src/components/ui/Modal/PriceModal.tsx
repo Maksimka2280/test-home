@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency'; 
+import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
 
 export default function PriceModal() {
   const { selectedCurrency, setSelectedCurrency } = useCurrency();
@@ -100,7 +100,10 @@ export default function PriceModal() {
           </div>
 
           {/* Кнопка выбора валюты */}
-          <button className="flex justify-center items-center gap-2 ml-[30px] pb-[20px]" onClick={handleToggle}>
+          <button
+            className="flex justify-center items-center gap-2 ml-[30px] pb-[20px]"
+            onClick={handleToggle}
+          >
             <span className="text-[#0468FF] font-medium">Выбрать другую валюту</span>
             <ChevronDown
               size={17}
@@ -113,9 +116,18 @@ export default function PriceModal() {
           {/* Список валют */}
           {visible && (
             <ul className="grid grid-cols-2 gap-x-6 gap-y-3 ml-[30px] mb-6">
-              {[{ id: 1, name: 'Рубль' }, { id: 2, name: 'Доллар' }, { id: 3, name: 'Франк' }, { id: 4, name: 'Гривна' }, { id: 5, name: 'Лира' }].map(currency => (
+              {[
+                { id: 1, name: 'Рубль' },
+                { id: 2, name: 'Доллар' },
+                { id: 3, name: 'Франк' },
+                { id: 4, name: 'Гривна' },
+                { id: 5, name: 'Лира' },
+              ].map(currency => (
                 <li key={currency.id} className="flex items-center w-full">
-                  <label htmlFor={currency.id.toString()} className="flex items-center cursor-pointer">
+                  <label
+                    htmlFor={currency.id.toString()}
+                    className="flex items-center cursor-pointer"
+                  >
                     <input
                       type="checkbox"
                       name="currencyItem"

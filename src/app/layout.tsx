@@ -22,9 +22,8 @@ export default function RootLayout({
         <main className="bg-[#F3F3F3] h-auto">
           <Header />
           <CurrencyProvider>
-                 <Providers>{children}</Providers>
+            <Providers>{children}</Providers>
           </CurrencyProvider>
-     
         </main>
       </body>
     </html>

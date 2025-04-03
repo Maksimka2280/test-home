@@ -82,10 +82,9 @@ export default function Map() {
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(mapInstance.current);
 
-      const customBlockLeft: L.Control = L.control({ position: 'topright' });
-
+      const customBlockLeft = new L.Control({ position: 'topright' });
       customBlockLeft.onAdd = function () {
-        const div = L.DomUtil.create('div', 'custom-map-left');
+      const div = L.DomUtil.create('div', 'custom-map-left');
 
         div.innerHTML = `
           <div class="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#fff] rounded-[15px] border border-[#E0E0E0] mt-[10px] ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">
@@ -126,8 +125,7 @@ export default function Map() {
 
       customBlockLeft.addTo(mapInstance.current);
 
-      const customControlContainer: L.Control = L.control({ position: 'topright' });
-
+      const customControlContainer = new L.Control({ position: 'topright' });
       customControlContainer.onAdd = function () {
         const div = L.DomUtil.create('div', 'custom-map-container');
 
@@ -217,7 +215,8 @@ export default function Map() {
 
       customControlContainer.addTo(mapInstance.current);
 
-      const zoomInButton: L.Control = L.control({ position: 'topright' });
+      const zoomInButton = new L.Control({ position: 'topright' });
+
       zoomInButton.onAdd = function () {
         const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-zoom-in');
         div.innerHTML = '+';
@@ -236,7 +235,8 @@ export default function Map() {
 
       zoomInButton.addTo(mapInstance.current);
 
-      const zoomOutButton: L.Control = L.control({ position: 'topright' });
+      const zoomOutButton = new L.Control({ position: 'topright' });
+
       zoomOutButton.onAdd = function () {
         const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-zoom-out');
         div.innerHTML = '-';
@@ -254,8 +254,7 @@ export default function Map() {
       zoomOutButton.addTo(mapInstance.current);
 
       // Три кнопки в правом нижнем углу
-      const bottomRightButtons: L.Control = L.control({ position: 'bottomright' });
-
+      const bottomRightButtons = new L.Control({ position: 'bottomright' });
       bottomRightButtons.onAdd = function () {
         const div = L.DomUtil.create('div', 'custom-map-buttons');
         div.innerHTML = `

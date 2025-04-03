@@ -19,7 +19,7 @@ export default function Home() {
     <>
       <div>
         <div className="flex justify-center mb-[35px] pr-[10px] mt-[35px]">
-        <div className="flex flex-wrap items-center justify-center lg:justify-between w-full max-w-[1360px] 2xl:max-w-[1760px] ">
+          <div className="flex flex-wrap items-center justify-center lg:justify-between w-full max-w-[1360px] 2xl:max-w-[1760px] ">
             <p className="text-center sm:text-left w-full sm:w-auto">
               Сервис для поиска недвижимости в Швейцарии
             </p>
