@@ -4,7 +4,8 @@ import ChoiceLanguage from '@/components/ui/Modal/ModalChoiceLanguage';
 import Link from 'next/link';
 import { MiniGreyLine } from '../Filters/mini-grey-line';
 import { Bell, Heart, Menu, X } from 'lucide-react';
-import { Button } from '../Button/Button';
+
+import LoginModal from '@/components/ui/Modal/LoginandReg/Login';
 
 export default function Header() {
   const [isOpen2, setIsOpen2] = useState(false);
@@ -44,13 +45,15 @@ export default function Header() {
           <div className="flex items-center gap-6">
             <ChoiceLanguage />
             <MiniGreyLine height="30px" />
-            <Heart size={20} color={'#dbdbdb'} />
+            <Link href={'/favorites'}>
+              {' '}
+              <Heart size={20} color={'#dbdbdb'} />
+            </Link>
+
             <Bell size={20} color={'#dbdbdb'} />
 
             <div className="hidden xl:block">
-              <Button color="blue" height="37px" rounded="10px" width="100px">
-                Войти
-              </Button>
+              <LoginModal />
             </div>
 
             <button
@@ -75,9 +78,7 @@ export default function Header() {
           }`}
         >
           <div className="absolute top-4 right-4">
-            <Button color="blue" height="37px" rounded="10px" width="100px">
-              Войти
-            </Button>
+            <LoginModal />
           </div>
 
           <Link href={'#'} className="text-[14px]">

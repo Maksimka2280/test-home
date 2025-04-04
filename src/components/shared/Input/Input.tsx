@@ -2,6 +2,7 @@
 
 import { FC, ReactNode, useState } from 'react';
 import clsx from 'clsx';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface InputProps {
   icon?: ReactNode;
@@ -13,7 +14,8 @@ interface InputProps {
   showSearchButton?: boolean;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void; // Добавляем onKeyDown
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  name?: string; // Делать name необязательным
 }
 
 export const Input: FC<InputProps> = ({
@@ -26,9 +28,11 @@ export const Input: FC<InputProps> = ({
   showSearchButton = true,
   value = '',
   onChange,
-  onKeyDown, // Принимаем onKeyDown
+  onKeyDown,
+  name, // name пропс
 }) => {
   const [searchQuery, setSearchQuery] = useState(value);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSearchClick = () => {
     if (onSearch) {
@@ -39,8 +43,12 @@ export const Input: FC<InputProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     if (onChange) {
-      onChange(e); // Передаем событие
+      onChange(e);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -54,13 +62,24 @@ export const Input: FC<InputProps> = ({
       {icon && <span className="mr-4">{icon}</span>}
 
       <input
-        type={type}
+        name={name}
+        type={showPassword && type === 'password' ? 'text' : type}
         placeholder={placeholder}
         value={searchQuery}
         onChange={handleChange}
-        onKeyDown={onKeyDown} // Передаем onKeyDown
+        onKeyDown={onKeyDown}
         className="outline-none flex-1 bg-transparent text-[#9D9D9D] text-[20px] overflow-hidden min-w-20"
       />
+
+      {type === 'password' && (
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="ml-4 text-[#9D9D9D] hover:text-black"
+        >
+          {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+        </button>
+      )}
 
       {type === 'search' && showSearchButton && (
         <button
