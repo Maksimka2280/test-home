@@ -6,33 +6,30 @@ interface ButtonProps {
   rounded?: string;
   height?: string;
   width?: string;
-  color?: 'blue' | 'red';
-
+  onClick?: () => void;
+  className?: string;
 }
 
-export const Button: FC<ButtonProps> = ({
+export const ButtonBlackWhite: FC<ButtonProps> = ({
   children,
   rounded = '8px',
   height = '40px',
   width = 'auto',
-  color = 'blue',
-
+  onClick,
+  className,
 }) => {
-  const backgroundColor = color === 'blue' ? '#0164EB' : '#D11D04';
-
   return (
     <button
       className={clsx(
-        'text-white font-semibold flex items-center justify-center focus:outline-none',
-
+        'text-black font-semibold flex items-center justify-center focus:outline-none border-2 border-black ',
+        className,
       )}
       style={{
         borderRadius: rounded,
         height,
         width,
-        backgroundColor,
       }}
-
+      onClick={onClick}
     >
       {children}
     </button>

@@ -84,6 +84,12 @@ export default function App() {
     setIsOpen(prev => !prev); // Переключаем состояние модалки
   };
 
+
+  const handleMouseLeave = () => {
+    setIsOpen(false);
+  };
+
+
   return (
     <div className="relative">
       <button
@@ -102,59 +108,60 @@ export default function App() {
         />
       </button>
 
-      {isOpen && (
-        <div
-          ref={modalRef}
-          className={`absolute left-[-40px] mt-5 w-[305px] bg-white rounded-[30px] shadow-lg transition-all duration-300 
-                      ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3 pointer-events-none'}`}
-        >
-          <div className="flex justify-center gap-4 mb-5 mt-[20px]">
-            {Object.keys(categories).map(category => (
-              <button
-                key={category}
-                className={`w-[120px] h-[40px] border border-[#F3F3F3] rounded-[30px] text-sm transition-all duration-300 ${
-                  activeCategory === category
-                    ? 'bg-[#0468FF] text-white'
-                    : 'bg-[#F3F3F3] text-[#9D9D9D]'
-                }`}
-                onClick={() => handleCategoryChange(category as keyof Categories)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          <ul className="flex flex-col gap-3 ml-[30px] mb-6">
-            {categories[activeCategory].map(item => (
-              <li key={item.id} className="flex items-center justify-between w-full">
-                <span
-                  className="text-[#111] text-sm cursor-pointer"
-                  onClick={() => handleCheckboxChange(item.id)}
-                >
-                  {item.name}
-                </span>
-                <input
-                  type="checkbox"
-                  name="categoryItem"
-                  value={item.id.toString()}
-                  checked={selectedItems.includes(item.id)}
-                  onChange={() => handleCheckboxChange(item.id)}
-                  className="hidden"
-                  id={item.id.toString()}
-                />
-                <label
-                  htmlFor={item.id.toString()}
-                  className="w-[17px] h-[17px] flex items-center justify-center rounded-[5px] bg-[#F3F3F3] cursor-pointer transition-all duration-300 mr-[20px]"
-                >
-                  {selectedItems.includes(item.id) && (
-                    <div className="w-[8px] h-[8px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
-                  )}
-                </label>
-              </li>
-            ))}
-          </ul>
+      <div
+        ref={modalRef}
+        onMouseLeave={handleMouseLeave}
+        className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-5 w-max min-w-[305px] sm:ml-[65px] z-[2]
+                  bg-white rounded-[30px] shadow-lg transition-all duration-300 ease-in-out
+                  ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}
+      >
+        <div className="flex justify-center gap-4 mb-5 mt-[20px]">
+          {Object.keys(categories).map(category => (
+            <button
+              key={category}
+              className={`w-[120px] h-[40px] border border-[#F3F3F3] rounded-[30px] text-sm transition-all duration-300 ${
+                activeCategory === category
+                  ? 'bg-[#0468FF] text-white'
+                  : 'bg-[#F3F3F3] text-[#9D9D9D]'
+              }`}
+              onClick={() => handleCategoryChange(category as keyof Categories)}
+            >
+              {category}
+            </button>
+          ))}
         </div>
-      )}
+
+        <ul className="flex flex-col gap-3 ml-[30px] mb-6">
+          {categories[activeCategory].map(item => (
+            <li key={item.id} className="flex items-center justify-between w-full">
+              <span
+                className="text-[#111] text-sm cursor-pointer"
+                onClick={() => handleCheckboxChange(item.id)}
+              >
+                {item.name}
+              </span>
+              <input
+                type="checkbox"
+                name="categoryItem"
+                value={item.id.toString()}
+                checked={selectedItems.includes(item.id)}
+                onChange={() => handleCheckboxChange(item.id)}
+                className="hidden"
+                id={item.id.toString()}
+              />
+              <label
+                htmlFor={item.id.toString()}
+                className="w-[17px] h-[17px] flex items-center justify-center rounded-[5px] bg-[#F3F3F3] cursor-pointer transition-all duration-300 mr-[20px]"
+              >
+                {selectedItems.includes(item.id) && (
+                  <div className="w-[8px] h-[8px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
+                )}
+              </label>
+            </li>
+          ))}
+        </ul>
+      </div>
+
     </div>
   );
 }
