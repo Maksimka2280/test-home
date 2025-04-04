@@ -1,6 +1,5 @@
 'use client';
 
-
 import { ArrowLeft, ArrowRight, Heart, Layers2, MapPin, Timer } from 'lucide-react';
 import { useState } from 'react';
 import ReactPaginate from 'react-paginate';
@@ -28,7 +27,6 @@ export const Card = () => {
   const toggleLayers = () => {
     setLayers(!Layers);
     markAsViewed();
-
   };
 
   const markAsViewed = () => {
@@ -40,7 +38,6 @@ export const Card = () => {
       className="relative max-w-[330px] bg-[#ffffff] w-full h-[420px] rounded-[20px] cursor-pointer"
       onClick={markAsViewed}
     >
-
       <div
         className="h-[50%] bg-[#ffffff] rounded-t-[20px] flex justify-center items-center relative group"
         onMouseEnter={() => setIsHovered(true)}
@@ -89,12 +86,10 @@ export const Card = () => {
         {viewed && (
           <div className="absolute top-2 left-2 w-[120px] h-[30px] bg-white rounded-[50px] flex items-center justify-center shadow-md">
             <p className="text-green-600 font-semibold text-sm select-none">Просмотрено</p>
-
           </div>
         )}
         <button
           onClick={e => {
-
             e.stopPropagation();
             toggleLayers();
           }}
@@ -117,13 +112,10 @@ export const Card = () => {
           <Heart
             size={20}
             className={`transition-all ${liked ? 'fill-[#0468FF]' : 'fill-[#dbdbdb]'}`}
-
             color={'#fff'}
-
           />
         </button>
       </div>
-
 
       <div className="h-[50%] px-[20px] py-[23px] mt-[20px]">
         <div>

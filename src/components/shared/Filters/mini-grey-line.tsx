@@ -1,4 +1,3 @@
-
 export const MiniGreyLine = ({
   height = '35px',
   className = '',
@@ -7,5 +6,4 @@ export const MiniGreyLine = ({
   className?: string;
 }) => {
   return <div className={`w-[1px] bg-[#DDDDDD] ${className}`} style={{ height }}></div>;
-
 };

@@ -6,7 +6,6 @@ import PriceModal from '@/components/ui/Modal/PriceModal';
 
 export const DefFilters: FC = () => {
   return (
-
     <div className="max-w-[700px] h-[60px] bg-[#f3f3f3] rounded-[15px] flex flex-wrap items-center px-4 flex-grow">
       <div className="px-[20px]">
         <App />
@@ -19,7 +18,6 @@ export const DefFilters: FC = () => {
           Студия
         </Text>
         <div className="flex gap-4">
-
           <button className="text-sm font-semibold text-gray-800 hover:text-blue-600 focus:outline-none">
             1
           </button>
@@ -35,12 +33,10 @@ export const DefFilters: FC = () => {
         </div>
       </div>
 
-
       <MiniGreyLine className="hidden sm:block h-[40px] mt-[15px]  sm:mt-0" />
 
       {/* Модальное окно цен */}
       <div className="w-full sm:w-auto flex justify-center mt-[15px]  sm:mt-0">
-
         <PriceModal />
       </div>
     </div>

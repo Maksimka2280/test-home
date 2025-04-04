@@ -84,11 +84,9 @@ export default function App() {
     setIsOpen(prev => !prev); // Переключаем состояние модалки
   };
 
-
   const handleMouseLeave = () => {
     setIsOpen(false);
   };
-
 
   return (
     <div className="relative">
@@ -161,7 +159,6 @@ export default function App() {
           ))}
         </ul>
       </div>
-
     </div>
   );
 }

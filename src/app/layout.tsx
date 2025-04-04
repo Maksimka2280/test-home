@@ -19,13 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={fonts}>
-
         <main className="bg-[#F3F3F3] h-auto">
           <Header />
           <CurrencyProvider>
             <Providers>{children}</Providers>
           </CurrencyProvider>
-
         </main>
       </body>
     </html>
