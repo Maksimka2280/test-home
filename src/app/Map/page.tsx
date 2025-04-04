@@ -84,7 +84,7 @@ export default function Map() {
 
       const customBlockLeft = new L.Control({ position: 'topright' });
       customBlockLeft.onAdd = function () {
-      const div = L.DomUtil.create('div', 'custom-map-left');
+        const div = L.DomUtil.create('div', 'custom-map-left');
 
         div.innerHTML = `
           <div class="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#fff] rounded-[15px] border border-[#E0E0E0] mt-[10px] ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">

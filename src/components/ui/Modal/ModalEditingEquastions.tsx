@@ -66,10 +66,10 @@ export default function ModalEditingEquastions({ isOpen, onClose }: ModalEditing
     setCurrentPage(selected);
   };
 
-// Удаление элемента
-const removeItem = (index: number) => {
-  setItems(prevItems => prevItems.filter((_, i) => i !== index));
-};
+  // Удаление элемента
+  const removeItem = (index: number) => {
+    setItems(prevItems => prevItems.filter((_, i) => i !== index));
+  };
 
   // Сброс к изначальному состоянию
   const resetItems = () => {

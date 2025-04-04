@@ -104,6 +104,9 @@ export const Card = () => {
         <button
           onClick={e => {
             e.stopPropagation();
+
+            e.stopPropagation(); // предотвращает срабатывание клика на карточку
+
             toggleLike();
           }}
           className="absolute top-2 right-2 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-[#ffffff] transition-all"
@@ -111,14 +114,15 @@ export const Card = () => {
           <Heart
             size={20}
             className={`transition-all ${liked ? 'fill-[#0468FF]' : 'fill-[#dbdbdb]'}`}
-            color={'#fff'}
+            color={liked ? '#0468FF' : '#fff'}
           />
         </button>
       </div>
 
-      <div className="h-[50%] px-[20px] py-[23px] mt-[20px]">
+      <div className="h-[50%] px-[20px] py-[25px]">
         <div>
-          <h1 className="text-[22px] font-bold pb-[5px]">999 999 999 {currencySymbol}</h1>
+          <h1 className="text-[22px] font-bold pb-[15px]">999 999 999 ₽</h1>
+
           <p>1-комн. кв. · 49,60м² · 17/27 этаж</p>
         </div>
 

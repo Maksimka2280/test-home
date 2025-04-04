@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 # .husky/pre-commit
 
-pnpm run lint:fix
+npm run lint:fix

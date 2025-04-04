@@ -7,6 +7,7 @@ interface ButtonProps {
   height?: string;
   width?: string;
   color?: 'blue' | 'red';
+
   onClick?: () => void;
   className?: string;
 }
@@ -17,6 +18,7 @@ export const Button: FC<ButtonProps> = ({
   height = '40px',
   width = 'auto',
   color = 'blue',
+
   onClick,
   className,
 }) => {
@@ -26,6 +28,7 @@ export const Button: FC<ButtonProps> = ({
     <button
       className={clsx(
         'text-white font-semibold flex items-center justify-center focus:outline-none',
+
         className, // Добавляем переданный className
       )}
       style={{

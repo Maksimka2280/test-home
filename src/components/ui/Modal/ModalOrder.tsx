@@ -83,6 +83,7 @@ export default function App() {
   const toggleModal = () => {
     setIsOpen(prev => !prev); // Переключаем состояние модалки
   };
+
   const handleMouseLeave = () => {
     setIsOpen(false);
   };
