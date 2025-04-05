@@ -6,9 +6,13 @@ interface FiltersState {
   selectedFilters: string[];
 }
 const loadFilters = (): string[] => {
-  const savedFilters = localStorage.getItem('selectedFilters');
-  return savedFilters ? JSON.parse(savedFilters) : [];
+  if (typeof window !== 'undefined') {
+    const savedFilters = localStorage.getItem('selectedFilters');
+    return savedFilters ? JSON.parse(savedFilters) : [];
+  }
+  return []; // если сервер — вернуть пустой массив
 };
+
 
 const initialState: FiltersState = {
   selectedFilters: loadFilters(),
