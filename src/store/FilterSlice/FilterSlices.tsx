@@ -13,7 +13,6 @@ const loadFilters = (): string[] => {
   return []; // если сервер — вернуть пустой массив
 };
 
-
 const initialState: FiltersState = {
   selectedFilters: loadFilters(),
 };
