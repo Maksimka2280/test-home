@@ -36,7 +36,7 @@ export const DefFilters: FC = () => {
       <MiniGreyLine className="hidden sm:block h-[40px] mt-[15px]  sm:mt-0" />
 
       {/* Модальное окно цен */}
-      <div className="w-full sm:w-auto flex justify-center mt-[15px]  sm:mt-0">
+      <div className="w-full sm:w-auto flex justify-center mt-[15px] ml-[20px]  sm:mt-0">
         <PriceModal />
       </div>
     </div>

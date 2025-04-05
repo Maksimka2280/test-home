@@ -6,16 +6,26 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
   className?: string;
   ref?: Ref<HTMLButtonElement>;
+  width?: string;
+  height?: string;
 }
 
-export const MiniGreyButton: FC<ButtonProps> = ({ children, onClick, className, ref }) => {
+export const MiniGreyButton: FC<ButtonProps> = ({
+  children,
+  onClick,
+  className,
+  ref,
+  width = '40px',
+  height = '30px',
+}) => {
   return (
     <button
       ref={ref}
       className={clsx(
-        'w-[40px] h-[30px] bg-white flex items-center justify-center rounded-[8px] focus:outline-none',
+        'bg-white flex items-center justify-center rounded-[8px] focus:outline-none',
         className,
       )}
+      style={{ width, height }}
       onClick={onClick}
     >
       {children}

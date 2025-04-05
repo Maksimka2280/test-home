@@ -9,13 +9,14 @@ interface InputProps {
   placeholder: string;
   type: string;
   maxWidth?: string;
+  height?: string; // новый необязательный параметр
   className?: string;
   onSearch?: (query: string) => void;
   showSearchButton?: boolean;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  name?: string; // Делать name необязательным
+  name?: string;
 }
 
 export const Input: FC<InputProps> = ({
@@ -23,13 +24,14 @@ export const Input: FC<InputProps> = ({
   placeholder,
   type,
   maxWidth = 'max-w-lg',
+  height = '70px',
   className = '',
   onSearch,
   showSearchButton = true,
   value = '',
   onChange,
   onKeyDown,
-  name, // name пропс
+  name,
 }) => {
   const [searchQuery, setSearchQuery] = useState(value);
   const [showPassword, setShowPassword] = useState(false);
@@ -54,10 +56,10 @@ export const Input: FC<InputProps> = ({
   return (
     <div
       className={clsx(
-        'flex items-center justify-center bg-[#f3f3f3] h-[70px] rounded-[15px] px-3 py-2 w-full',
+        'flex items-center justify-center bg-[#f3f3f3] rounded-[15px] px-3 py-2 w-full',
         className,
       )}
-      style={{ maxWidth }}
+      style={{ maxWidth, height }}
     >
       {icon && <span className="mr-4">{icon}</span>}
 
