@@ -44,7 +44,7 @@ export default function Home() {
 
         <div className="flex justify-center items-center">
           <div className="max-w-[1385px] 2xl:max-w-[1800px]  w-full  bg-[#FFFFFF] rounded-[40px] h-[auto] py-[50px] px-[30px] ">
-            <h1 className="font-bold text-[37px] md:text-[50px] pb-[30px]">
+            <h1 className="font-bold text-[30px] md:text-[50px] pb-[30px] text-center sm:text-left">
               Подходящая недвижимость
             </h1>
             <Input

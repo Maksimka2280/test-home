@@ -85,7 +85,7 @@ export const Input: FC<InputProps> = ({
 
       {type === 'search' && showSearchButton && (
         <button
-          className="bg-[#0164EB] w-[202px] h-[50px] rounded-[10px] text-[#fff]"
+          className="bg-[#0164EB] w-[80px] md:w-[200px] h-[50px] rounded-[10px] text-[#fff]"
           onClick={handleSearchClick}
         >
           Найти

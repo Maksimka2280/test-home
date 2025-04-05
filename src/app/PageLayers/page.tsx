@@ -22,7 +22,7 @@ export default function PageLayers() {
               <p className="text-center sm:text-left w-full sm:w-auto">
                 Сервис для поиска недвижимости в Швейцарии
               </p>
-              <p className="flex items-center text-[#A0A6B2] mt-[12px] text-[14px] ">
+              <p className="flex ml-[30px] items-center lg:ml-0 text-[#A0A6B2] mt-[12px] text-[14px] ">
                 Недвижимость в Санкт-Галлен
                 <ChevronRight size={16} className="mx-[6px] sm:mx-[10px]" />
                 <span className="text-[14px] font-medium">Сравнение</span>

@@ -52,20 +52,21 @@ export default function BigCard({ onEditComparison }: BigCardProps) {
                   <ArrowLeft
                     size={24}
                     color="#FFFFFF"
-                    className={`transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                    className={`hidden sm:block transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                   />
                 }
                 nextLabel={
                   <ArrowRight
                     size={24}
                     color="#FFFFFF"
-                    className={`transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                    className={`hidden sm:block transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                   />
                 }
-                previousClassName="absolute mr-[270px] mt-[-110px] select-none"
-                nextClassName="absolute ml-[270px] mt-[-110px] select-none"
+                previousClassName="hidden sm:block absolute mr-[270px] mt-[-110px] select-none"
+                nextClassName="hidden sm:block absolute ml-[270px] mt-[-110px] select-none"
               />
             </div>
+
           </div>
         </div>
       </div>

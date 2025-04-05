@@ -80,11 +80,11 @@ export default function ModalChoiceCity() {
 
         setCitiesSuggestions(uniqueCities);
       } else {
-        setErrorMessage('Город не найден');
+        console.log('Город не найден');
       }
     } catch (error) {
       console.error('Error fetching cities:', error);
-      setErrorMessage('Не удалось получить города');
+      
     }
   };
 
@@ -95,7 +95,7 @@ export default function ModalChoiceCity() {
         setCityInput('');
         setCitiesSuggestions([]);
       } else {
-        setErrorMessage('Город не найден. Пожалуйста, выберите из предложенных.');
+        console.log('Город не найден');
       }
     }
   };

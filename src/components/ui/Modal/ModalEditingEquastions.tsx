@@ -127,15 +127,15 @@ export default function ModalEditingEquastions({ isOpen, onClose }: ModalEditing
                     className={`transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                   />
                 }
-                previousClassName="absolute mr-[270px] mt-[-110px] select-none"
-                nextClassName="absolute ml-[270px] mt-[-110px] select-none"
+                previousClassName="absolute mr-[170px] mt-[-80px] sm:mr-[240px] sm:mt-[-110px] select-none"
+                nextClassName="absolute ml-[170px] mt-[-80px] sm:ml-[240px] sm:mt-[-110px] select-none"
               />
             </div>
           </div>
         </div>
 
         {/* Список параметров */}
-        <div className="text-left flex flex-col gap-[10px] px-[10px] text-[12px] mt-5">
+        <div className="text-left flex flex-col gap-[3px] px-[10px] text-[12px] mt-5">
           {items.map((item, index) => (
             <div key={index} className="flex justify-between items-center py-1">
               <span>{item}</span>
