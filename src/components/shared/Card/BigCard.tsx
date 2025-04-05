@@ -66,7 +66,6 @@ export default function BigCard({ onEditComparison }: BigCardProps) {
                 nextClassName="hidden sm:block absolute ml-[270px] mt-[-110px] select-none"
               />
             </div>
-
           </div>
         </div>
       </div>

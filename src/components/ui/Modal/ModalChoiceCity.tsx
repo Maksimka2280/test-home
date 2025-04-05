@@ -84,7 +84,6 @@ export default function ModalChoiceCity() {
       }
     } catch (error) {
       console.error('Error fetching cities:', error);
-      
     }
   };
 
