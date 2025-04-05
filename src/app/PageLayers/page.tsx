@@ -10,7 +10,6 @@ import ModalEditingEquastions from '@/components/ui/Modal/ModalEditingEquastions
 export default function PageLayers() {
   const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 

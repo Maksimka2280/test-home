@@ -1,10 +1,10 @@
+'use client';
+
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 interface FiltersState {
   selectedFilters: string[];
 }
-
-// Функция для загрузки фильтров из localStorage
 const loadFilters = (): string[] => {
   const savedFilters = localStorage.getItem('selectedFilters');
   return savedFilters ? JSON.parse(savedFilters) : [];

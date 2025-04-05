@@ -3,11 +3,7 @@ import FavoritesCard from '@/components/shared/Card/FavoritesCard';
 import CustomOrder from '@/components/ui/Modal/ModalCustomOrder';
 import NewGroup from '@/components/ui/Modal/ModalNewGroup';
 
-import {
-  List,
-  Plus,
-
-} from 'lucide-react';
+import { List, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Favorites() {
