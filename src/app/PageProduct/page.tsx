@@ -55,8 +55,8 @@ export default function PageProduct() {
     <div className="px-[15px]">
       {/* Верхняя панель */}
       <div className="flex justify-center mb-[35px] mt-[50px]">
-        <div className="flex flex-wrap items-center justify-center lg:justify-between w-full max-w-[1360px] 2xl:max-w-[1760px]">
-          <div>
+        <div className="flex flex-wrap items-center justify-center lg:justify-between w-full max-w-[1360px] 2xl:max-w-[1760px] ">
+          <div className="pb-[35px] md:pb-0">
             <p className="text-center sm:text-left">Сервис для поиска недвижимости в Швейцарии</p>
             <p className="flex items-center text-[#A0A6B2] mt-3 text-[14px]">
               Недвижимость в Санкт-Галлен

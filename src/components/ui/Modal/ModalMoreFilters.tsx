@@ -4,7 +4,7 @@ import { Button } from '@/components/shared/Button/Button';
 import { ButtonFilters } from '@/components/shared/Button/ButtonFilters.tsx/ButtonFilters';
 import { MiniGreyLine } from '@/components/shared/Filters/mini-grey-line';
 import { ChevronRight, X } from 'lucide-react';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilter, removeFilter } from '../../../store/FilterSlice/FilterSlices';
 import { RootState } from '../../../store/store';
@@ -164,12 +164,15 @@ const filterGroups: FilterGroup[] = [
     buttons: [{ label: 'Введите слова', width: '150px' }],
   },
 ];
-
-export default function ModalMoreFilter() {
+type ModalMoreFilterProps = {
+  trigger?: ReactNode;
+};
+export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
   const dispatch = useDispatch();
+
   const handleCheckboxChange = (id: string) => {
     if (selectedFilters.includes(id)) {
       dispatch(removeFilter(id));
@@ -182,13 +185,19 @@ export default function ModalMoreFilter() {
 
   return (
     <>
-      <button
-        className="flex justify-center items-center font-medium text-[#0468FF] py-2 sm:py-4 lg:text-lg transition-all duration-300 ease-in-out transform"
-        onClick={toggleModal}
-      >
-        Больше фильтров
-        <ChevronRight size={14} color="#0468FF" fontWeight="bold" strokeWidth={3} />
-      </button>
+      {trigger ? (
+        <div onClick={toggleModal} className="cursor-pointer">
+          {trigger}
+        </div>
+      ) : (
+        <button
+          className="flex justify-center items-center font-medium text-[#0468FF] py-2 sm:py-4 lg:text-lg transition-all duration-300 ease-in-out transform"
+          onClick={toggleModal}
+        >
+          Больше фильтров
+          <ChevronRight size={14} color="#0468FF" fontWeight="bold" strokeWidth={3} />
+        </button>
+      )}
 
       {isOpen && (
         <div

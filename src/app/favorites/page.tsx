@@ -1,6 +1,7 @@
 'use client';
 import FavoritesCard from '@/components/shared/Card/FavoritesCard';
 import CustomOrder from '@/components/ui/Modal/ModalCustomOrder';
+import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import NewGroup from '@/components/ui/Modal/ModalNewGroup';
 
 import { List, Plus } from 'lucide-react';
@@ -49,7 +50,8 @@ export default function Favorites() {
               </h1>
               <div className="flex flex-wrap gap-4 md:gap-6 lg:gap-[40px] justify-center lg:justify-start">
                 <p>По дате добавления</p>
-                <p>Фильтры</p>
+                <ModalMoreFilter trigger={<button>Фильтры</button>} />
+
                 <button onClick={() => setIsCustomOrderOpen(true)}>
                   Кастомизировать объявление
                 </button>

@@ -1,13 +1,25 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Heart, Layers2, MapPin, Timer } from 'lucide-react';
-import { useState } from 'react';
+import {  useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
-export const Card = () => {
-  const [liked, setLiked] = useState(false);
-  const [viewed, setViewed] = useState(false);
-  const [Layers, setLayers] = useState(false);
+
+interface CardProps {
+  cardId: string; // Идентификатор карточки
+}
+
+export const Card: React.FC<CardProps> = ({ cardId }) => {
+  // Функция для получения состояния из localStorage
+  const getStoredState = (key: string) => {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : false;
+  };
+
+  // Инициализируем состояние из localStorage
+  const [liked, setLiked] = useState(getStoredState(`${cardId}-liked`));
+  const [viewed, setViewed] = useState(getStoredState(`${cardId}-viewed`));
+  const [Layers, setLayers] = useState(getStoredState(`${cardId}-layers`));
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const { currencySymbol } = useCurrency();
@@ -20,17 +32,26 @@ export const Card = () => {
     setCurrentPage(selected);
   };
 
+  // Сохраняем лайк в localStorage
   const toggleLike = () => {
-    setLiked(!liked);
-    markAsViewed();
-  };
-  const toggleLayers = () => {
-    setLayers(!Layers);
-    markAsViewed();
+    const newLiked = !liked;
+    setLiked(newLiked);
+    localStorage.setItem(`${cardId}-liked`, JSON.stringify(newLiked)); // Сохраняем состояние лайка
+    markAsViewed(); // Помечаем как просмотренное при лайке
   };
 
+  // Сохраняем состояние слоев в localStorage
+  const toggleLayers = () => {
+    const newLayers = !Layers;
+    setLayers(newLayers);
+    localStorage.setItem(`${cardId}-layers`, JSON.stringify(newLayers)); // Сохраняем состояние слоев
+    markAsViewed(); // Помечаем как просмотренное при изменении слоев
+  };
+
+  // Помечаем карточку как просмотренную и сохраняем это состояние в localStorage
   const markAsViewed = () => {
     setViewed(true);
+    localStorage.setItem(`${cardId}-viewed`, JSON.stringify(true)); // Сохраняем состояние просмотра
   };
 
   return (
@@ -104,7 +125,6 @@ export const Card = () => {
         <button
           onClick={e => {
             e.stopPropagation();
-
             toggleLike();
           }}
           className="absolute top-2 right-2 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-[#ffffff] transition-all"
