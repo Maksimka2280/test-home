@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { fonts } from '@shared/styles/font';
 import { Providers } from '@components';
 import '@shared/styles/globals.scss';
-import Header from '../components/shared/Header/Header';
+import MainHeader from '../components/shared/Header/MainHeader';
 import { CurrencyProvider } from '../components/Context/Contextcurrency/Contextcurrency';
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={fonts}>
         <main className="bg-[#F3F3F3] h-auto">
-          <Header />
+          <MainHeader />
           <CurrencyProvider>
             <Providers>{children}</Providers>
           </CurrencyProvider>

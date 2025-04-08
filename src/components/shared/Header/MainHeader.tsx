@@ -7,7 +7,7 @@ import { Bell, Heart, Menu, X } from 'lucide-react';
 
 import LoginModal from '@/components/ui/Modal/LoginandReg/Login';
 
-export default function Header() {
+export default function MainHeader() {
   const [isOpen2, setIsOpen2] = useState(false);
   const handleMouseLeave = () => {
     setIsOpen2(false);
