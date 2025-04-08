@@ -19,9 +19,9 @@ export default function ChangeNumber() {
 
   return (
     <>
-      <Button color="blue" height="37px" rounded="10px" width="100px" onClick={toggleModal}>
-        Войти
-      </Button>
+      <button className="text-[#0077FF] text-[14px] mt-[4px] hover:underline" onClick={toggleModal}>
+        Сменить номер телефона
+      </button>
 
       {isOpen && (
         <>

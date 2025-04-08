@@ -6,7 +6,6 @@ import { PopularSearches } from '@/components/shared/Filters/Popular-searches';
 import { MapPin } from 'lucide-react';
 import Link from 'next/link';
 import './style/main.css';
-
 import { Button } from '@/components/shared/Button/Button';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -14,14 +13,14 @@ import CityList from '@/components/ui/CityRender/CityRender';
 import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import { Layers } from '@/components/shared/Layers/Layers';
 const cardsData = [
-  { id: 'card1', price: '999 999 999', address: '2-й Амбулаторный проезд, 18' },
-  { id: 'card2', price: '1 200 000 000', address: 'Островская, 18' },
-  { id: 'card3', price: '850 000 000', address: 'ул. Ленина, 45' },
-  { id: 'card4', price: '1 500 000 000', address: 'Пушкина, 3' },
-  { id: 'card5', price: '950 000 000', address: 'Пролетарская, 12' },
-  { id: 'card6', price: '1 100 000 000', address: 'Московская, 9' },
-  { id: 'card7', price: '1 350 000 000', address: 'Гагарина, 5' },
-  { id: 'card8', price: '1 200 000 000', address: 'Лесная, 16' },
+  { id: '1', price: '999 999 999', address: '2-й Амбулаторный проезд, 18' },
+  { id: '2', price: '1 200 000 000', address: 'Островская, 18' },
+  { id: '3', price: '850 000 000', address: 'ул. Ленина, 45' },
+  { id: '4', price: '1 500 000 000', address: 'Пушкина, 3' },
+  { id: '5', price: '950 000 000', address: 'Пролетарская, 12' },
+  { id: '6', price: '1 100 000 000', address: 'Московская, 9' },
+  { id: '7', price: '1 350 000 000', address: 'Гагарина, 5' },
+  { id: '8', price: '1 200 000 000', address: 'Лесная, 16' },
 ];
 export default function Home() {
   const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);

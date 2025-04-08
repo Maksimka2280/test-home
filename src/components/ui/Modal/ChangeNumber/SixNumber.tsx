@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/shared/Button/Button';
+import Link from 'next/link';
 
 export default function SixNumber({ onClose }: { onClose: () => void }) {
   return (
@@ -43,6 +44,9 @@ export default function SixNumber({ onClose }: { onClose: () => void }) {
             </Button>
           </div>
         </div>
+        <Link href={'#'}>
+          <p className="text-[#0468FF] text-center mt-[20px]">Нужна помощь</p>
+        </Link>
       </div>
     </>
   );

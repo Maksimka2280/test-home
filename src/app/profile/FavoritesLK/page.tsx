@@ -1,5 +1,5 @@
 'use client';
-import FavoritesCard from '@/components/shared/Card/FavoritesCard';
+import FavoritesLKCard from '@/components/shared/Card/FavoritesLKCard';
 import CustomOrder from '@/components/ui/Modal/ModalCustomOrder';
 import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import NewGroup from '@/components/ui/Modal/ModalNewGroup';
@@ -7,7 +7,7 @@ import NewGroup from '@/components/ui/Modal/ModalNewGroup';
 import { List, Plus } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Favorites() {
+export default function FavoritesLK() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -19,7 +19,7 @@ export default function Favorites() {
   };
 
   return (
-    <div className="mt-[50px]">
+    <div className="">
       <div className="max-w-[1440px] 2xl:max-w-[1750px] w-full mx-auto">
         <div className="flex justify-center xl:justify-start gap-12">
           {['Объявления', 'Жилые комплексы', 'Агентства'].map((btn, index) => (
@@ -32,19 +32,9 @@ export default function Favorites() {
             </button>
           ))}
         </div>
-        <div className="flex flex-wrap items-center justify-center xl:justify-between mt-[35px]  ">
+        <div className="flex flex-wrap items-center justify-center xl:justify-between mt-[35px] xl:mt-[15px] gap-[50px]  ">
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 md:gap-10 lg:gap-[50px]">
-            <div className="w-[225px] sm:w-[245px] h-[80px] rounded-[10px] bg-[#fff] flex gap-4 md:gap-[20px] justify-center items-center shadow-md">
-              <div className="w-[45px] md:w-[55px] h-[45px] md:h-[55px] bg-[#F3F3F3] rounded-[10px] flex justify-center items-center">
-                <List size={20} />
-              </div>
-              <div>
-                <p className="font-bold text-[14px] md:text-[16px]">Все объявления</p>
-                <p className="text-[12px] md:text-[14px]">20 объявлений</p>
-              </div>
-            </div>
-
-            <div className="text-center sm:text-left">
+            <div className="text-center lg:text-left">
               <h1 className="text-[24px] md:text-[30px] lg:text-[33px] font-bold mb-[10px]">
                 Все объявления
               </h1>
@@ -86,8 +76,17 @@ export default function Favorites() {
           </div>
         </div>
 
-        <div className="flex justify-center xl:justify-start flex-wrap gap-[45px]">
+        <div className="flex justify-center xl:justify-start flex-wrap gap-[45px] mt-[20px]">
           <div>
+            <div className="w-[225px] sm:w-[245px] h-[80px] rounded-[10px] bg-[#fff] flex gap-4 md:gap-[20px] justify-center items-center shadow-md mt-[50px]">
+              <div className="w-[45px] md:w-[55px] h-[45px] md:h-[55px] bg-[#F3F3F3] rounded-[10px] flex justify-center items-center">
+                <List size={20} />
+              </div>
+              <div>
+                <p className="font-bold text-[14px] md:text-[16px]">Все объявления</p>
+                <p className="text-[12px] md:text-[14px]">20 объявлений</p>
+              </div>
+            </div>
             <p className="py-[15px] pt-[40px] xl:pt-[15px] text-center xl:text-left">Мои группы</p>
             <ul>
               <li>
@@ -107,12 +106,12 @@ export default function Favorites() {
               <NewGroup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </ul>
           </div>
-          <div className="flex flex-col gap-[50px]">
-            <FavoritesCard />
-            <FavoritesCard />
-            <FavoritesCard />
-            <FavoritesCard />
-            <FavoritesCard />
+          <div className="flex flex-col gap-[10px]">
+            <FavoritesLKCard />
+            <FavoritesLKCard />
+            <FavoritesLKCard />
+            <FavoritesLKCard />
+            <FavoritesLKCard />
           </div>
         </div>
       </div>

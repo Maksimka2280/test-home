@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowLeft, ArrowRight, Heart, Layers2, MapPin, Timer } from 'lucide-react';
-import {  useState } from 'react';
+import { useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
 
