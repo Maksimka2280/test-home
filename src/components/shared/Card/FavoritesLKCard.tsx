@@ -37,7 +37,7 @@ export default function FavoritesLKCard() {
         <div>
           {/* Блок изображения с пагинацией */}
           <div
-            className=" w-[330px] h-[230px] rounded-[20px] overflow-hidden"
+            className=" w-[250px] h-[230px] sm:w-[330px] rounded-[20px] overflow-hidden"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -75,7 +75,7 @@ export default function FavoritesLKCard() {
           </div>
 
           {/* Кнопки */}
-          <div className="flex flex-wrap justify-center xl:justify-start gap-[8.5px] mt-[25px]">
+          <div className="flex flex-wrap justify-center xl:justify-start gap-[8.5px] sm:mt-[25px]">
             <MiniGreyButton>
               <CornerUpRight size={17} />
             </MiniGreyButton>

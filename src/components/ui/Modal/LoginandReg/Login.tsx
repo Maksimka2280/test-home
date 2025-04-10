@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/shared/Button/Button';
 import { Input } from '@/components/shared/Input/Input';
-import { Lock, Phone } from 'lucide-react';
+import { Lock, Phone, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import RegModal from '../LoginandReg/Reg';
@@ -10,6 +10,8 @@ import RegModal from '../LoginandReg/Reg';
 export default function LoginModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [loginData, setLoginData] = useState({ phone: '', password: '' });
+  const [loginErrors, setLoginErrors] = useState<{ phone?: string; password?: string }>({});
 
   const toggleModal = () => setIsOpen(prev => !prev);
 
@@ -20,6 +22,46 @@ export default function LoginModal() {
 
   const closeRegisterModal = () => {
     setIsRegisterOpen(false);
+  };
+
+  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+
+    // Убираем ошибку при вводе
+    if (loginErrors[e.target.name as keyof typeof loginErrors]) {
+      setLoginErrors(prev => ({ ...prev, [e.target.name]: undefined }));
+    }
+  };
+
+  const validateLogin = () => {
+    const errors: { phone?: string; password?: string } = {};
+    let isValid = true;
+
+    if (!loginData.phone) {
+      errors.phone = 'Телефон обязателен';
+      isValid = false;
+    } else if (!/^\+?\d{10,15}$/.test(loginData.phone)) {
+      errors.phone = 'Неверный формат телефона';
+      isValid = false;
+    }
+
+    if (!loginData.password) {
+      errors.password = 'Пароль обязателен';
+      isValid = false;
+    }
+
+    setLoginErrors(errors);
+    return isValid;
+  };
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (validateLogin()) {
+      console.log('Авторизация с данными:', loginData);
+      // TODO: Авторизация
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -49,24 +91,50 @@ export default function LoginModal() {
                 <h1 className="font-bold text-[23px] md:text-[30px] text-center mt-4">
                   Войти в личный кабинет
                 </h1>
-                <form className="mt-10">
+
+                <form className="mt-10" onSubmit={handleLoginSubmit}>
                   <div className="flex flex-col gap-[20px]">
                     <div className="relative w-full">
                       <Phone
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        className="absolute left-3 top-[35px]  transform -translate-y-1/2 text-gray-500"
                         size={16}
                         color="#9D9D9D"
                       />
-                      <Input placeholder="Телефон" type="number" className="pl-10 w-full" />
+                      <Input
+                        name="phone"
+                        placeholder="Телефон"
+                        type="number"
+                        value={loginData.phone}
+                        onChange={handleLoginChange}
+                        className={`pl-10 w-full ${loginErrors.phone ? 'border border-red-500' : ''}`}
+                      />
+                      {loginErrors.phone && (
+                        <div className="absolute right-3 top-[35px]  transform -translate-y-1/2">
+                          <X size={18} color="red" />
+                        </div>
+                      )}
+                      {loginErrors.phone && (
+                        <p className="text-red-500 text-sm mt-1">{loginErrors.phone}</p>
+                      )}
                     </div>
 
                     <div className="relative w-full">
                       <Lock
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        className="absolute left-3 top-[35px] transform -translate-y-1/2 text-gray-500"
                         size={16}
                         color="#9D9D9D"
                       />
-                      <Input placeholder="Пароль" type="password" className="pl-10 w-full" />
+                      <Input
+                        name="password"
+                        placeholder="Пароль"
+                        type="password"
+                        value={loginData.password}
+                        onChange={handleLoginChange}
+                        className={`pl-10 w-full ${loginErrors.password ? 'border border-red-500' : ''}`}
+                      />
+                      {loginErrors.password && (
+                        <p className="text-red-500 text-sm mt-1">{loginErrors.password}</p>
+                      )}
                     </div>
                   </div>
 
@@ -75,22 +143,22 @@ export default function LoginModal() {
                       Забыл пароль или телефон
                     </p>
                   </Link>
-                </form>
 
-                <div className="flex flex-col gap-[15px] mt-[25px]">
-                  <Button width="100%" height="60px" rounded="15px" color="blue">
-                    Войти
-                  </Button>
-                  <Button
-                    width="100%"
-                    height="60px"
-                    rounded="15px"
-                    color="blue"
-                    onClick={toggleRegisterModal}
-                  >
-                    Зарегистрироваться
-                  </Button>
-                </div>
+                  <div className="flex flex-col gap-[15px] mt-[25px]">
+                    <Button width="100%" height="60px" rounded="15px" color="blue" type="submit">
+                      Войти
+                    </Button>
+                    <Button
+                      width="100%"
+                      height="60px"
+                      rounded="15px"
+                      color="blue"
+                      onClick={toggleRegisterModal}
+                    >
+                      Зарегистрироваться
+                    </Button>
+                  </div>
+                </form>
 
                 <Link href="#">
                   <p className="text-[#0468FF] text-center mt-[20px] text-sm">Нужна помощь</p>

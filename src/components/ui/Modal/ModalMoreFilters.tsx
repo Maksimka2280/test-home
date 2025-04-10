@@ -75,6 +75,7 @@ const filterGroups: FilterGroup[] = [
       { label: 'Кирпично-монолитный', width: '215px' },
     ],
   },
+
   {
     buttons: [
       { label: 'Неважно', width: '115px' },
@@ -168,6 +169,28 @@ type ModalMoreFilterProps = {
   trigger?: ReactNode;
 };
 export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
+  const filterSections = [
+    { title: 'До метро', group: filterGroups[0] },
+    { title: 'Площадь, м2', group: filterGroups[1] },
+    { title: 'Этаж', group: filterGroups[2] },
+    { title: 'Этажей в доме', group: filterGroups[3] },
+    { title: 'Ремонт', group: filterGroups[4] },
+    { title: 'Год постройки', group: filterGroups[5] },
+    { title: 'Тип дома', group: filterGroups[5] },
+    { title: 'Балкон/Лоджия', group: filterGroups[6] },
+    { title: 'Лифт', group: filterGroups[7] },
+    { title: 'Кухонная плита', group: filterGroups[8] },
+    { title: 'Планировка', group: filterGroups[9] },
+    { title: 'Высота потолков', group: filterGroups[10] },
+    { title: 'Санузел', group: filterGroups[11] },
+    { title: 'Вид из окна', group: filterGroups[12] },
+    { title: 'Апартаменты', group: filterGroups[13] },
+    { title: 'Парковка', group: filterGroups[14] },
+    { title: 'Продавец', group: filterGroups[15] },
+    { title: 'Условия продажи', group: filterGroups[16] },
+    { title: 'Дата публикации', group: filterGroups[17] },
+    { title: 'Содержит слова в объявлении', group: filterGroups[18] },
+  ].filter(section => section.group);
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
@@ -207,9 +230,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
       )}
 
       <div
-        className={`fixed top-0 left-0 z-50 bg-white rounded-r-[25px] shadow-lg transition-transform duration-500 ease-in-out over ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } w-[85%] sm:w-[80%] md:w-[70%] lg:w-[1125px] h-full max-h-screen overflow-y-auto`}
+        className={`fixed top-0 left-0 z-50 bg-white rounded-r-[25px] shadow-lg transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} w-full sm:w-[80%] md:w-[70%] lg:w-[1125px] h-full max-h-screen overflow-y-auto`}
       >
         <div className="p-6 relative">
           {/* Кнопка закрытия */}
@@ -221,7 +242,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
           </button>
           <h1 className="text-[28px] font-bold">Ещё фильтры</h1>
 
-          <div className="flex items-start">
+          <div className="flex items-start hidden lg:flex">
             <div className="text-left">
               <ul className="mt-[40px] text-[20px] flex flex-col gap-[40px]">
                 <li>
@@ -291,7 +312,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
             </div>
 
             <MiniGreyLine height="1520px" className="ml-7 mt-7" />
-            <div className="ml-10 flex flex-col mt-[35px] gap-[30px]">
+            <div className="ml-10 flex flex-col mt-[35px] gap-[30px] hidden lg:flex">
               {filterGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="flex items-center gap-[20px]">
                   <div className="flex sm:flex-wrap items-center gap-[10px]">
@@ -492,6 +513,85 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
               ))}
             </div>
           </div>
+          <div className="flex flex-col gap-[30px] mt-[35px] w-full lg:hidden">
+            {filterSections.map((section, sectionIndex) => {
+              return (
+                <div
+                  key={sectionIndex}
+                  className={
+                    'flex flex-col sm:items-start gap-6 bg-white p-6 rounded-xl shadow-lg transition-all hover:shadow-xl '
+                  }
+                >
+                  <p className="min-w-[200px] text-[18px] text-left font-semibold text-gray-800">
+                    {section.title}
+                  </p>
+
+                  <div className="flex flex-wrap sm:flex-row sm:items-center gap-4">
+                    {sectionIndex === 3 || sectionIndex === 5 ? (
+                      <div className="flex gap-[20px]">
+                        <input
+                          id={`input-from-${sectionIndex}`}
+                          type="number"
+                          placeholder="От"
+                          className="w-[45px] h-[40px] border-none rounded-[15px] flex pl-[10px] items-center bg-[#F3F3F3] text-[#152242] text-left placeholder:text-[#152242] focus:outline-none"
+                        />
+                        <input
+                          id={`input-to-${sectionIndex}`}
+                          type="number"
+                          placeholder="До"
+                          className="w-[45px] h-[40px] border-none rounded-[15px] flex pl-[10px] items-center bg-[#F3F3F3] text-[#152242] text-left placeholder:text-[#152242] focus:outline-none"
+                        />
+                      </div>
+                    ) : section.group.buttons.some(btn => btn.type === 'checkbox') ? (
+                      section.group.buttons.map((button, buttonIndex) => {
+                        const buttonId = button.id;
+                        return (
+                          <div
+                            key={`${sectionIndex}-${buttonIndex}`}
+                            className="flex items-center gap-[10px] justify-end"
+                          >
+                            <label htmlFor={buttonId} className="text-sm ml-4">
+                              {button.label}
+                            </label>
+                            <input
+                              type="checkbox"
+                              id={buttonId}
+                              className="hidden"
+                              checked={buttonId ? selectedFilters.includes(buttonId) : false}
+                              onChange={() => buttonId && handleCheckboxChange(buttonId)}
+                            />
+                            <label
+                              htmlFor={buttonId}
+                              className="w-[17px] h-[17px] flex items-center justify-center rounded-[5px] bg-[#F3F3F3] cursor-pointer transition-all duration-300"
+                            >
+                              {buttonId && selectedFilters.includes(buttonId) && (
+                                <div className="w-[10px] h-[10px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
+                              )}
+                            </label>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      section.group.buttons.map((button, buttonIndex) => (
+                        <ButtonFilters
+                          key={`${sectionIndex}-${buttonIndex}`}
+                          color="blue"
+                          id={`button-${sectionIndex}-${buttonIndex}`}
+                          height="40px"
+                          rounded="15px"
+                          width={button.width}
+                          className="transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white"
+                        >
+                          {button.label}
+                        </ButtonFilters>
+                      ))
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
           <div className="flex gap-[20px] justify-center items-center mt-[50px] flex-wrap">
             <Button width="273px" height="60px" rounded="20px" color="blue">
               Искать варианты
@@ -505,3 +605,275 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
     </>
   );
 }
+
+// 'use client';
+
+// import { Button } from '@/components/shared/Button/Button';
+// import { ButtonFilters } from '@/components/shared/Button/ButtonFilters.tsx/ButtonFilters';
+// import { MiniGreyLine } from '@/components/shared/Filters/mini-grey-line';
+// import { ChevronRight, X } from 'lucide-react';
+// import { ReactNode, useState } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { addFilter, removeFilter } from '../../../store/FilterSlice/FilterSlices';
+// import { RootState } from '../../../store/store';
+// type FilterButton = {
+//   label: string;
+//   width?: string;
+//   type?: string; // Тип необязателен
+//   id?: string; // id тоже необязателен
+// };
+
+// type FilterGroup = {
+//   buttons: FilterButton[];
+// };
+// const filterGroups: FilterGroup[] = [
+//   {
+//     buttons: [
+//       { label: '10 минут', width: '115px' },
+//       { label: 'Пешком', width: '115px' },
+//       { label: 'Транспортом', width: '150px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       //общая
+//       { label: '17', width: '44px' },
+//       { label: '28', width: '44px' },
+//       //кухня
+//       { label: 'от', width: '44px' },
+//       { label: 'до', width: '44px' },
+
+//       { label: '30', width: '44px' },
+//       { label: '78', width: '44px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: '30', width: '44px', type: 'button' },
+//       { label: '50', width: '44px', type: 'button' },
+//       { label: 'Не первый', type: 'checkbox', id: 'checkbox-1' },
+//       { label: 'Не последний', type: 'checkbox', id: 'checkbox-2' },
+//       { label: 'Только последний', type: 'checkbox', id: 'checkbox-3' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'от', width: '44px' },
+//       { label: 'до', width: '44px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Без ремонта', width: '140px' },
+//       { label: 'Косметический', width: '160px' },
+//       { label: 'Евроремонт', width: '140px' },
+//       { label: 'Дизайн', width: '105px' },
+//     ],
+//   },
+
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Кирпич', width: '105px' },
+//       { label: 'Панельный', width: '130px' },
+//       { label: 'Деревянный', width: '140px' },
+//       { label: 'Монолитный', width: '140px' },
+//       { label: 'Блочный', width: '115px' },
+//       { label: 'Кирпично-монолитный', width: '215px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Балкон', width: '115px' },
+//       { label: 'Лоджия', width: '115px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Есть любой', width: '135px' },
+//       { label: 'Есть грузовой', width: '150px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Газовая', width: '105px' },
+//       { label: 'Электрическая', width: '160px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Смежная', width: '115px' },
+//       { label: 'Изолированная', width: '160px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'от 2 м', width: '100px' },
+//       { label: 'от 2,5 м', width: '100px' },
+//       { label: 'от 2,7 м', width: '100px' },
+//       { label: 'от 3 м', width: '100px' },
+//       { label: 'от 3,5 м', width: '100px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Совмещенный', width: '155px' },
+//       { label: 'Раздельный', width: '140px' },
+//       { label: '2 и более', width: '120px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Во двор', width: '110px' },
+//       { label: 'На улицу', width: '120px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Без апартаментов', width: '180px' },
+//       { label: 'Только апартаменты', width: '200px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Наземная', width: '120px' },
+//       { label: 'Многоуровневая', width: '170px' },
+//       { label: 'Подземная', width: '130px' },
+//     ],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Собственник', width: '145px' },
+//       { label: 'Агент', width: '90px' },
+//       { label: 'Застройщик', width: '140px' },
+//     ],
+//   },
+//   {
+//     buttons: [{ label: 'Возможна ипотека', width: '190px' }],
+//   },
+//   {
+//     buttons: [
+//       { label: 'Неважно', width: '115px' },
+//       { label: 'Введите дату', width: '150px' },
+//     ],
+//   },
+//   {
+//     buttons: [{ label: 'Введите слова', width: '150px' }],
+//   },
+// ];
+// type ModalMoreFilterProps = {
+//   trigger?: ReactNode;
+// };
+// export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
+//   const filterSections = [
+//     { title: 'До метро', group: filterGroups[0] },
+//     { title: 'Площадь, м2', group: filterGroups[1] },
+//     { title: 'Этаж', group: filterGroups[2] },
+//     { title: 'Этажей в доме', group: filterGroups[3] },
+//     { title: 'Ремонт', group: filterGroups[4] },
+//     { title: 'Год постройки', group: filterGroups[5] },
+//     { title: 'Тип дома', group: filterGroups[6] },
+//     { title: 'Балкон/Лоджия', group: filterGroups[7] },
+//     { title: 'Лифт', group: filterGroups[8] },
+//     { title: 'Кухонная плита', group: filterGroups[9] },
+//     { title: 'Планировка', group: filterGroups[10] },
+//     { title: 'Высота потолков', group: filterGroups[11] },
+//     { title: 'Санузел', group: filterGroups[12] },
+//     { title: 'Вид из окна', group: filterGroups[13] },
+//     { title: 'Апартаменты', group: filterGroups[14] },
+//     { title: 'Парковка', group: filterGroups[15] },
+//     { title: 'Продавец', group: filterGroups[16] },
+//     { title: 'Условия продажи', group: filterGroups[17] },
+//     { title: 'Дата публикации', group: filterGroups[18] },
+//     { title: 'Содержит слова в объявлении', group: filterGroups[19] },
+//   ].filter(section => section.group); // <-- фильтруем только те, у кого есть group
+
+//   const [isOpen, setIsOpen] = useState(false);
+
+//   const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
+//   const dispatch = useDispatch();
+
+//   const handleCheckboxChange = (id: string) => {
+//     if (selectedFilters.includes(id)) {
+//       dispatch(removeFilter(id));
+//     } else {
+//       dispatch(addFilter(id));
+//     }
+//   };
+
+//   const toggleModal = () => setIsOpen(!isOpen);
+
+//   return (
+//     <>
+//       {trigger ? (
+//         <div onClick={toggleModal} className="cursor-pointer">
+//           {trigger}
+//         </div>
+//       ) : (
+//         <button
+//           className="flex justify-center items-center font-medium text-[#0468FF] py-2 sm:py-4 lg:text-lg transition-all duration-300 ease-in-out transform"
+//           onClick={toggleModal}
+//         >
+//           Больше фильтров
+//           <ChevronRight size={14} color="#0468FF" fontWeight="bold" strokeWidth={3} />
+//         </button>
+//       )}
+
+//       {isOpen && (
+//         <div
+//           className="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-40 transition-opacity duration-300"
+//           onClick={toggleModal}
+//         ></div>
+//       )}
+
+//       <div
+//         className={`fixed top-0 left-0 z-50 bg-white rounded-r-[25px] shadow-lg transition-transform duration-500 ease-in-out over ${isOpen ? 'translate-x-0' : '-translate-x-full'
+//           } w-[85%] sm:w-[80%] md:w-[70%] lg:w-[1125px] h-full max-h-screen overflow-y-auto`}
+//       >
+//         <div className="p-6 relative">
+//           {/* Кнопка закрытия */}
+//           <button
+//             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition duration-300"
+//             onClick={toggleModal}
+//           >
+//             <X size={24} />
+//           </button>
+//           <h1 className="text-[28px] font-bold">Ещё фильтры</h1>
+
+//           <div className="flex flex-col gap-[30px] mt-[35px] w-full">
+//             {filterSections.map((section, index) => (
+//               <div key={index} className="flex flex-col  sm:items-center gap-4">
+//                 <p className="min-w-[200px] text-[18px] font-medium">{section.title}</p>
+//                 <div className="flex flex-col justify-center items-center gap-[10px]">
+//                   {section.group.buttons.map((button, buttonIndex) => (
+//                     <ButtonFilters
+//                       key={`${index}-${buttonIndex}`}
+//                       color="blue"
+//                       id={`button-${index}-${buttonIndex}`}
+//                       height="40px"
+//                       rounded="15px"
+//                       width={button.width}
+//                     >
+//                       {button.label}
+//                     </ButtonFilters>
+//                   ))}
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+//     </>
+//   );
+// }

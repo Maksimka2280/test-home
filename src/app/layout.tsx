@@ -5,6 +5,7 @@ import { Providers } from '@components';
 import '@shared/styles/globals.scss';
 import MainHeader from '../components/shared/Header/MainHeader';
 import { CurrencyProvider } from '../components/Context/Contextcurrency/Contextcurrency';
+import MainFooter from '@/components/shared/Footer/MainFooter';
 
 export const metadata: Metadata = {
   title: 'Penguin Dev - Home', // TODO: replace with your own title
@@ -24,6 +25,7 @@ export default function RootLayout({
           <CurrencyProvider>
             <Providers>{children}</Providers>
           </CurrencyProvider>
+          <MainFooter />
         </main>
       </body>
     </html>

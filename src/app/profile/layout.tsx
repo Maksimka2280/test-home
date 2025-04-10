@@ -6,7 +6,7 @@ import Highlight from './Highlight/page';
 import SettingsProfile from './settingsProfile/page';
 import SubscribePage from './SubscribePage/page';
 import FavoritesLK from './FavoritesLK/page';
-import Notifications from './Notifications/pgae';
+import Notifications from './Notifications/page';
 import SaveSearch from './SaveSearch/page';
 import Comments from './Comments/page';
 export default function ProfilePage() {

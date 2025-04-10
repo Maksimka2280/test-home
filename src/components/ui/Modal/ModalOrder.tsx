@@ -110,8 +110,8 @@ export default function App() {
         ref={modalRef}
         onMouseLeave={handleMouseLeave}
         className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-5 w-max min-w-[305px] sm:ml-[65px] z-[2]
-                  bg-white rounded-[30px] shadow-lg transition-all duration-300 ease-in-out
-                  ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}
+          bg-white rounded-[30px] shadow-lg transition-all duration-300 ease-in-out
+          ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-5 pointer-events-none'}`}
       >
         <div className="flex justify-center gap-4 mb-5 mt-[20px]">
           {Object.keys(categories).map(category => (

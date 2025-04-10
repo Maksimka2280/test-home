@@ -121,7 +121,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
                 onChange={handleChange}
                 placeholder="Телефон"
                 type="text"
-                className="pl-10 w-full"
+                className={`pl-10 w-full ${errors.phone ? 'border border-red-500' : ''}`}
               />
               {errors.phone && (
                 <div className="absolute right-3 top-[35px] transform -translate-y-1/2">
@@ -143,7 +143,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
                 onChange={handleChange}
                 placeholder="Почта"
                 type="email"
-                className="pl-10 w-full"
+                className={`pl-10 w-full ${errors.email ? 'border border-red-500' : ''}`}
               />
               {errors.email && (
                 <div className="absolute right-3 top-[35px] transform -translate-y-1/2">
@@ -165,7 +165,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
                 onChange={handleChange}
                 placeholder="Пароль"
                 type="password"
-                className="pl-10 w-full"
+                className={`pl-10 w-full ${errors.password ? 'border border-red-500' : ''}`}
               />
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
             </div>
@@ -182,7 +182,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
                 onChange={handleChange}
                 placeholder="Повторите пароль"
                 type="password"
-                className="pl-10 w-full"
+                className={`pl-10 w-full ${errors.confirmPassword ? 'border border-red-500' : ''}`}
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
