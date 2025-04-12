@@ -13,6 +13,7 @@ interface ButtonProps {
   onClick?: () => void;
   className?: string;
   id: string; // ID обязателен
+  disabled?: boolean;
 }
 
 export const ButtonFilters: FC<ButtonProps> = ({

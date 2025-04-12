@@ -6,17 +6,17 @@ import ReactPaginate from 'react-paginate';
 import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
 
 interface CardProps {
-  cardId: string; // Идентификатор карточки
+  cardId: string;
 }
 
 export const Card: React.FC<CardProps> = ({ cardId }) => {
-  // Функция для получения состояния из localStorage
+
   const getStoredState = (key: string) => {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : false;
   };
 
-  // Инициализируем состояние из localStorage
+
   const [liked, setLiked] = useState(getStoredState(`${cardId}-liked`));
   const [viewed, setViewed] = useState(getStoredState(`${cardId}-viewed`));
   const [Layers, setLayers] = useState(getStoredState(`${cardId}-layers`));
@@ -25,40 +25,41 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
   const { currencySymbol } = useCurrency();
   const images = ['/img/image123.png', '/img/room-test.png'];
 
-  // Количество картинок
+
   const pageCount = Math.ceil(images.length);
 
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
 
-  // Сохраняем лайк в localStorage
+
   const toggleLike = () => {
     const newLiked = !liked;
     setLiked(newLiked);
-    localStorage.setItem(`${cardId}-liked`, JSON.stringify(newLiked)); // Сохраняем состояние лайка
-    markAsViewed(); // Помечаем как просмотренное при лайке
+    localStorage.setItem(`${cardId}-liked`, JSON.stringify(newLiked));
+    markAsViewed();
   };
 
-  // Сохраняем состояние слоев в localStorage
+
   const toggleLayers = () => {
     const newLayers = !Layers;
     setLayers(newLayers);
-    localStorage.setItem(`${cardId}-layers`, JSON.stringify(newLayers)); // Сохраняем состояние слоев
-    markAsViewed(); // Помечаем как просмотренное при изменении слоев
-  };
+    localStorage.setItem(`${cardId}-layers`, JSON.stringify(newLayers));
+    markAsViewed();
+  }
 
-  // Помечаем карточку как просмотренную и сохраняем это состояние в localStorage
+
   const markAsViewed = () => {
     setViewed(true);
-    localStorage.setItem(`${cardId}-viewed`, JSON.stringify(true)); // Сохраняем состояние просмотра
+    localStorage.setItem(`${cardId}-viewed`, JSON.stringify(true));
   };
 
   return (
     <div
-      className="relative max-w-[330px] bg-[#ffffff] w-full h-[420px] rounded-[20px] cursor-pointer"
+      className={`relative max-w-[330px] bg-[#ffffff] w-full h-[420px] rounded-[20px] cursor-pointer ${viewed ? 'filter brightness-90' : ''} transition-all duration-300`}
       onClick={markAsViewed}
     >
+
       <div
         className="h-[50%] bg-[#ffffff] rounded-t-[20px] flex justify-center items-center relative group"
         onMouseEnter={() => setIsHovered(true)}
