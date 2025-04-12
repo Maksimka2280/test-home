@@ -518,11 +518,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                                 height="40px"
                                 rounded="15px"
                                 width={button.width}
-                                className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${
-                                  activeButtons.includes(buttonIndex)
-                                    ? 'bg-blue-700 text-white'
-                                    : ''
-                                }`}
+                                className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${activeButtons.includes(buttonIndex) ? 'bg-blue-700 text-white' : ''}`}
                                 onClick={() => {
                                   console.log(
                                     `Clicked button ID: button-${groupIndex}-${buttonIndex}`,
