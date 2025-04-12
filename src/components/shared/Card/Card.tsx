@@ -10,12 +10,10 @@ interface CardProps {
 }
 
 export const Card: React.FC<CardProps> = ({ cardId }) => {
-
   const getStoredState = (key: string) => {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : false;
   };
-
 
   const [liked, setLiked] = useState(getStoredState(`${cardId}-liked`));
   const [viewed, setViewed] = useState(getStoredState(`${cardId}-viewed`));
@@ -25,13 +23,11 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
   const { currencySymbol } = useCurrency();
   const images = ['/img/image123.png', '/img/room-test.png'];
 
-
   const pageCount = Math.ceil(images.length);
 
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
-
 
   const toggleLike = () => {
     const newLiked = !liked;
@@ -40,14 +36,12 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
     markAsViewed();
   };
 
-
   const toggleLayers = () => {
     const newLayers = !Layers;
     setLayers(newLayers);
     localStorage.setItem(`${cardId}-layers`, JSON.stringify(newLayers));
     markAsViewed();
-  }
-
+  };
 
   const markAsViewed = () => {
     setViewed(true);
@@ -59,7 +53,6 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
       className={`relative max-w-[330px] bg-[#ffffff] w-full h-[420px] rounded-[20px] cursor-pointer ${viewed ? 'filter brightness-90' : ''} transition-all duration-300`}
       onClick={markAsViewed}
     >
-
       <div
         className="h-[50%] bg-[#ffffff] rounded-t-[20px] flex justify-center items-center relative group"
         onMouseEnter={() => setIsHovered(true)}

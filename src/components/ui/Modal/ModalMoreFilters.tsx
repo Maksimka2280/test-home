@@ -179,7 +179,6 @@ const filterGroups: FilterGroup[] = [
   },
 ];
 
-
 type ModalMoreFilterProps = {
   trigger?: ReactNode;
 };
@@ -218,7 +217,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
     localStorage.setItem('activeButtonsByGroup', JSON.stringify(activeButtonsByGroup));
   }, [activeButtonsByGroup]);
 
-
   const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
   const dispatch = useDispatch();
 
@@ -235,9 +233,9 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
     groupId: number,
     buttonIndex: number,
     label: string,
-    buttons: { label: string }[]
+    buttons: { label: string }[],
   ) => {
-    setActiveButtonsByGroup((prev) => {
+    setActiveButtonsByGroup(prev => {
       const current = prev[groupId] || [];
 
       // Если нажали "Неважно"
@@ -264,7 +262,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
       return newState;
     });
   };
-
 
   return (
     <>
@@ -376,10 +373,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
               {filterGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="flex items-center gap-[20px]">
                   <div className="flex sm:flex-wrap items-center gap-[10px]">
-
-
-
-
                     {groupIndex === 2 && (
                       <div className="flex sm:flex-wrap items-center gap-[10px]">
                         {group.buttons.map((button, buttonIndex) => {
@@ -431,7 +424,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       </div>
                     )}
 
-
                     {groupIndex === 3 && (
                       <div className="flex sm:flex-wrap items-center mr-4 gap-[20px]">
                         <div className="flex gap-[20px]">
@@ -478,7 +470,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                     )}
                     {groupIndex === 1 && (
                       <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
-                        <p>Кухня  </p>
+                        <p>Кухня </p>
                         <div className="flex gap-[20px]">
                           <div>
                             <input
@@ -500,64 +492,58 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       </div>
                     )}
 
-                    {
+                    {groupIndex !== 2 && groupIndex !== 3 && (
+                      <div className="flex lg:flex-wrap items-center gap-[20px]">
+                        {group.buttons.map((button, buttonIndex) => {
+                          const groupId = group.id || groupIndex;
+                          const activeButtons = activeButtonsByGroup[groupId] || [];
+                          const isNotImportant = button.label === 'Неважно';
 
-                      groupIndex !== 2 &&
-                      groupIndex !== 3 && (
+                          if (
+                            isNotImportant &&
+                            activeButtons.length > 0 &&
+                            !activeButtons.includes(buttonIndex)
+                          ) {
+                            return null;
+                          }
 
-                        <div className="flex lg:flex-wrap items-center gap-[20px]">
+                          return (
+                            <>
+                              {buttonIndex === 0 && groupIndex === 1 && <p>Общая </p>}
+                              {buttonIndex === 0 && groupIndex === 0 && <p>Не более </p>}
+                              <ButtonFilters
+                                key={`${groupIndex}-${buttonIndex}`}
+                                color="blue"
+                                id={`button-${groupIndex}-${buttonIndex}`}
+                                height="40px"
+                                rounded="15px"
+                                width={button.width}
+                                className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${
+                                  activeButtons.includes(buttonIndex)
+                                    ? 'bg-blue-700 text-white'
+                                    : ''
+                                }`}
+                                onClick={() => {
+                                  console.log(
+                                    `Clicked button ID: button-${groupIndex}-${buttonIndex}`,
+                                  );
+                                  handleButtonClick(
+                                    groupId,
+                                    buttonIndex,
+                                    button.label,
+                                    group.buttons,
+                                  );
+                                }}
+                              >
+                                {button.label}
+                              </ButtonFilters>
 
-
-                          {group.buttons.map((button, buttonIndex) => {
-                            const groupId = group.id || groupIndex;
-                            const activeButtons = activeButtonsByGroup[groupId] || [];
-                            const isNotImportant = button.label === 'Неважно';
-
-                            if (
-                              isNotImportant &&
-                              activeButtons.length > 0 &&
-                              !activeButtons.includes(buttonIndex)
-                            ) {
-                              return null;
-                            }
-
-                            return (
-                              <>
-                                {buttonIndex === 0 && groupIndex === 1 && (
-                                  <p>Общая  </p>
-                                )}
-                                {buttonIndex === 0 && groupIndex === 0 && (
-                                  <p>Не более  </p>
-                                )}
-                                <ButtonFilters
-                                  key={`${groupIndex}-${buttonIndex}`}
-                                  color="blue"
-                                  id={`button-${groupIndex}-${buttonIndex}`}
-                                  height="40px"
-                                  rounded="15px"
-                                  width={button.width}
-                                  className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${activeButtons.includes(buttonIndex) ? 'bg-blue-700 text-white' : ''
-                                    }`}
-                                  onClick={() => {
-                                    console.log(`Clicked button ID: button-${groupIndex}-${buttonIndex}`);
-                                    handleButtonClick(groupId, buttonIndex, button.label, group.buttons);
-                                  }}
-
-                                >
-                                  {button.label}
-                                </ButtonFilters>
-
-                                {buttonIndex === 1 && groupIndex === 1 && (
-                                  <p>Жилая </p>
-                                )}
-                              </>
-                            );
-
-                          })}
-                        </div>
-
-                      )}
-
+                              {buttonIndex === 1 && groupIndex === 1 && <p>Жилая </p>}
+                            </>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -565,7 +551,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
           </div>
           <div className="flex flex-col gap-[30px] mt-[35px] w-full lg:hidden">
             {filterSections.map((section, sectionIndex) => (
-
               <div
                 key={sectionIndex}
                 className="flex flex-col sm:items-start gap-6 bg-white p-6 mr-[30px] rounded-xl shadow-lg transition-all hover:shadow-xl"
@@ -575,10 +560,9 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                 </p>
 
                 <div className="flex flex-wrap sm:flex-row sm:items-center gap-4">
-
                   {sectionIndex === 1 && (
                     <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
-                      <p>Кухня  </p>
+                      <p>Кухня </p>
                       <div className="flex gap-[20px]">
                         <div>
                           <input
@@ -618,7 +602,10 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                     section.group.buttons.map((button, buttonIndex) => {
                       const buttonId = button.id;
                       return (
-                        <div key={`${sectionIndex}-${buttonIndex}`} className="flex items-center gap-[10px] justify-end">
+                        <div
+                          key={`${sectionIndex}-${buttonIndex}`}
+                          className="flex items-center gap-[10px] justify-end"
+                        >
                           <label htmlFor={buttonId} className="text-sm ml-4">
                             {button.label}
                           </label>
@@ -641,7 +628,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       );
                     })
                   ) : (
-
                     section.group.buttons.map((button, buttonIndex) => {
                       const groupId = section.group.id || 0;
                       const activeButtons = activeButtonsByGroup[groupId] || [];
@@ -678,12 +664,8 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
 
                       return (
                         <>
-                          {buttonIndex === 0 && sectionIndex === 1 && (
-                            <p>Общая  </p>
-                          )}
-                          {buttonIndex === 0 && sectionIndex === 0 && (
-                            <p>Не более  </p>
-                          )}
+                          {buttonIndex === 0 && sectionIndex === 1 && <p>Общая </p>}
+                          {buttonIndex === 0 && sectionIndex === 0 && <p>Не более </p>}
                           <ButtonFilters
                             key={`${sectionIndex}-${buttonIndex}`}
                             color="blue"
@@ -693,26 +675,29 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                             width={button.width}
                             className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${activeButtons.includes(buttonIndex) ? 'bg-blue-700 text-white' : ''}`}
                             onClick={() => {
-                              console.log(`Clicked button ID: button-${sectionIndex}-${buttonIndex}`);
-                              handleButtonClick(groupId, buttonIndex, button.label, section.group.buttons);
+                              console.log(
+                                `Clicked button ID: button-${sectionIndex}-${buttonIndex}`,
+                              );
+                              handleButtonClick(
+                                groupId,
+                                buttonIndex,
+                                button.label,
+                                section.group.buttons,
+                              );
                             }}
                           >
                             {button.label}
                           </ButtonFilters>
 
-                          {buttonIndex === 1 && sectionIndex === 1 && (
-                            <p>Жилая </p>
-                          )}
+                          {buttonIndex === 1 && sectionIndex === 1 && <p>Жилая </p>}
                         </>
                       );
                     })
                   )}
-
                 </div>
               </div>
             ))}
           </div>
-
 
           <div className="flex gap-[20px] justify-center items-center mt-[50px] flex-wrap">
             <Button width="273px" height="60px" rounded="20px" color="blue">
@@ -727,4 +712,3 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
     </>
   );
 }
-

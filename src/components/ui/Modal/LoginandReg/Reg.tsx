@@ -15,8 +15,7 @@ type FormData = {
   email: string;
   password: string;
   confirmPassword: string;
-  username: string 
-
+  username: string;
 };
 
 type FormErrors = {
@@ -24,11 +23,10 @@ type FormErrors = {
   email?: string;
   password?: string;
   confirmPassword?: string;
-  username?:string;
+  username?: string;
 };
 
 export default function RegModal({ closeModal }: RegModalProps) {
-
   const regApi = async function (params: {
     email: string;
     username: string;
@@ -40,7 +38,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
         email: params.email,
         username: params.username,
         password: params.password,
-        confirm_password: params.confirm_password
+        confirm_password: params.confirm_password,
       });
 
       console.log('Успешная регистрация:', response.data);
@@ -55,7 +53,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
     email: '',
     password: '',
     confirmPassword: '',
-    username: ''
+    username: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -115,7 +113,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
           email: formData.email,
           username: formData.username,
           password: formData.password,
-          confirm_password: formData.confirmPassword
+          confirm_password: formData.confirmPassword,
         });
 
         console.log('Форма успешно отправлена', data);
@@ -263,7 +261,6 @@ export default function RegModal({ closeModal }: RegModalProps) {
               <p className="text-[#0468FF] text-center mt-2">Нужна помощь</p>
             </Link>
           </form>
-
         </div>
       </div>
     </>
