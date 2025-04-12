@@ -25,24 +25,24 @@ export default function Map() {
   const [selectedOrganizations, setSelectedOrganizations] = useState<any[]>([]);
   const handleSearch = async (query: string) => {
     if (!query) return;
-
+  
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=CH`
       );
-
+  
       if (!response.ok) {
         throw new Error('Не удалось выполнить запрос');
       }
-
+  
       const results = await response.json();
-
+  
       if (Array.isArray(results) && results.length > 0) {
         const { lat, lon } = results[0];
-
+  
         const latitude = parseFloat(String(lat));
         const longitude = parseFloat(String(lon));
-
+  
         if (!isNaN(latitude) && !isNaN(longitude)) {
           mapInstance.current?.setView([latitude, longitude], 13);
         } else {
@@ -56,6 +56,7 @@ export default function Map() {
       alert('Произошла ошибка при поиске');
     }
   };
+  
   const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const inputElement = e.target as HTMLInputElement;
