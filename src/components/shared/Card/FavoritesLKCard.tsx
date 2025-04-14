@@ -28,9 +28,15 @@ export default function FavoritesLKCard() {
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
+  const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
+  const priceInRubles = 999999999;
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
 
-  const { currencySymbol } = useCurrency();
-
+  if (error) {
+    return <div>{error}</div>;
+  }
   return (
     <>
       <div className="flex flex-wrap justify-center xl:justify-start mt-[30px] gap-[30px]">
@@ -100,9 +106,10 @@ export default function FavoritesLKCard() {
         {/* Текстовая информация */}
         <div>
           <div className="px-[20px] text-center xl:text-left">
-            <h1 className="text-[22px] font-bold pb-[5px]">999 999 999 {currencySymbol}</h1>
+            <h1 className="text-[22px] font-bold pb-[5px]">
+              {convertPrice(priceInRubles).toFixed(2)} {currencySymbol}
+            </h1>
             <p>1-комн. кв. · 49,60м² · 17/27 этаж</p>
-
             <div className="flex flex-wrap justify-center xl:justify-start gap-[10px] items-center pt-[15px] pb-[15px]">
               <div className="flex gap-[6px] items-center justify-center">
                 <MapPin color="#9D9D9D" size={17} />

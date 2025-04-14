@@ -1,11 +1,12 @@
 import { Button } from '@/components/shared/Button/Button';
 import { Input } from '@/components/shared/Input/Input';
-import { Lock, Mail, Phone, User } from 'lucide-react';
+import { Lock, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
+
 interface RegModalProps {
   closeModal: () => void;
 }
@@ -15,7 +16,6 @@ type FormData = {
   email: string;
   password: string;
   confirmPassword: string;
-  username: string;
 };
 
 type FormErrors = {
@@ -23,20 +23,19 @@ type FormErrors = {
   email?: string;
   password?: string;
   confirmPassword?: string;
-  username?: string;
 };
 
 export default function RegModal({ closeModal }: RegModalProps) {
   const regApi = async function (params: {
     email: string;
-    username: string;
+    phone_number: string;
     password: string;
     confirm_password: string;
   }) {
     try {
       const response = await axios.post(`${API_BASE_URL}/register/`, {
         email: params.email,
-        username: params.username,
+        phone_number: params.phone_number,
         password: params.password,
         confirm_password: params.confirm_password,
       });
@@ -53,7 +52,6 @@ export default function RegModal({ closeModal }: RegModalProps) {
     email: '',
     password: '',
     confirmPassword: '',
-    username: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -104,6 +102,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
     setErrors(newErrors);
     return isValid;
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -111,13 +110,13 @@ export default function RegModal({ closeModal }: RegModalProps) {
       try {
         const data = await regApi({
           email: formData.email,
-          username: formData.username,
+          phone_number: formData.phone,
           password: formData.password,
           confirm_password: formData.confirmPassword,
         });
 
         console.log('Форма успешно отправлена', data);
-        closeModal(); // Закрыть модалку после успешной отправки
+        closeModal();
       } catch (err) {
         console.error('Ошибка при отправке данных на API:', err);
       }
@@ -186,28 +185,6 @@ export default function RegModal({ closeModal }: RegModalProps) {
                 </div>
               )}
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-            </div>
-
-            {/* Имя пользователя */}
-            <div className="relative w-full">
-              <User
-                className="absolute left-3 top-[35px] transform -translate-y-1/2 text-gray-500"
-                size={14}
-              />
-              <Input
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Имя пользователя"
-                type="text"
-                className={`pl-10 w-full ${errors.username ? 'border border-red-500' : ''}`}
-              />
-              {errors.username && (
-                <div className="absolute right-3 top-[35px] transform -translate-y-1/2">
-                  <X size={18} color="red" />
-                </div>
-              )}
-              {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
             </div>
 
             {/* Пароль */}

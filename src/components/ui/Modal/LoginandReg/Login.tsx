@@ -2,19 +2,24 @@
 
 import { Button } from '@/components/shared/Button/Button';
 import { Input } from '@/components/shared/Input/Input';
-import { Lock, Phone, X } from 'lucide-react';
+import { Lock, Mail, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import RegModal from '../LoginandReg/Reg';
+import { API_BASE_URL } from '@/config';
+import axios from 'axios';
+
+interface LoginResponse {
+  access_token: string;
+}
 
 export default function LoginModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [loginData, setLoginData] = useState({ phone: '', password: '' });
-  const [loginErrors, setLoginErrors] = useState<{ phone?: string; password?: string }>({});
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [loginErrors, setLoginErrors] = useState<{ email?: string; password?: string }>({});
 
   const toggleModal = () => setIsOpen(prev => !prev);
-
   const toggleRegisterModal = () => {
     setIsOpen(false);
     setIsRegisterOpen(true);
@@ -27,21 +32,20 @@ export default function LoginModal() {
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
 
-    // Убираем ошибку при вводе
     if (loginErrors[e.target.name as keyof typeof loginErrors]) {
       setLoginErrors(prev => ({ ...prev, [e.target.name]: undefined }));
     }
   };
 
   const validateLogin = () => {
-    const errors: { phone?: string; password?: string } = {};
+    const errors: { email?: string; password?: string } = {};
     let isValid = true;
 
-    if (!loginData.phone) {
-      errors.phone = 'Телефон обязателен';
+    if (!loginData.email) {
+      errors.email = 'Email обязателен';
       isValid = false;
-    } else if (!/^\+?\d{10,15}$/.test(loginData.phone)) {
-      errors.phone = 'Неверный формат телефона';
+    } else if (!/^\S+@\S+\.\S+$/.test(loginData.email)) {
+      errors.email = 'Неверный формат email';
       isValid = false;
     }
 
@@ -54,13 +58,36 @@ export default function LoginModal() {
     return isValid;
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const LoginApi = async (params: { email: string; password: string }): Promise<LoginResponse> => {
+    try {
+      const response = await axios.post<LoginResponse>(`${API_BASE_URL}/login/`, {
+        email: params.email,
+        password: params.password,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Ошибка при входе в аккаунт:', error);
+      throw error;
+    }
+  };
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateLogin()) {
-      console.log('Авторизация с данными:', loginData);
-      // TODO: Авторизация
-      setIsOpen(false);
+      try {
+        const response = await LoginApi({
+          email: loginData.email,
+          password: loginData.password,
+        });
+
+        console.log('Авторизация успешна:', response.access_token);
+        setIsOpen(false);
+        localStorage.setItem('access_token', response.access_token);
+      } catch (error) {
+        console.error('Ошибка авторизации:', error);
+      }
     }
   };
 
@@ -94,30 +121,32 @@ export default function LoginModal() {
 
                 <form className="mt-10" onSubmit={handleLoginSubmit}>
                   <div className="flex flex-col gap-[20px]">
+                    {/* Email */}
                     <div className="relative w-full">
-                      <Phone
-                        className="absolute left-3 top-[35px]  transform -translate-y-1/2 text-gray-500"
+                      <Mail
+                        className="absolute left-3 top-[35px] transform -translate-y-1/2 text-gray-500"
                         size={16}
                         color="#9D9D9D"
                       />
                       <Input
-                        name="phone"
-                        placeholder="Телефон"
-                        type="number"
-                        value={loginData.phone}
+                        name="email"
+                        placeholder="Email"
+                        type="email"
+                        value={loginData.email}
                         onChange={handleLoginChange}
-                        className={`pl-10 w-full ${loginErrors.phone ? 'border border-red-500' : ''}`}
+                        className={`pl-10 w-full ${loginErrors.email ? 'border border-red-500' : ''}`}
                       />
-                      {loginErrors.phone && (
-                        <div className="absolute right-3 top-[35px]  transform -translate-y-1/2">
+                      {loginErrors.email && (
+                        <div className="absolute right-3 top-[35px] transform -translate-y-1/2">
                           <X size={18} color="red" />
                         </div>
                       )}
-                      {loginErrors.phone && (
-                        <p className="text-red-500 text-sm mt-1">{loginErrors.phone}</p>
+                      {loginErrors.email && (
+                        <p className="text-red-500 text-sm mt-1">{loginErrors.email}</p>
                       )}
                     </div>
 
+                    {/* Пароль */}
                     <div className="relative w-full">
                       <Lock
                         className="absolute left-3 top-[35px] transform -translate-y-1/2 text-gray-500"
@@ -140,7 +169,7 @@ export default function LoginModal() {
 
                   <Link href="#">
                     <p className="text-[#0468FF] text-center mt-[20px] text-sm">
-                      Забыл пароль или телефон
+                      Забыл пароль или email
                     </p>
                   </Link>
 

@@ -13,14 +13,21 @@ interface BigCardProps {
 export default function BigCard({ onEditComparison }: BigCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const { currencySymbol } = useCurrency();
   const images = ['/img/image123.png', '/img/room-test.png'];
 
   const pageCount = Math.ceil(images.length);
-
+  const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
+  const priceInRubles = 999999999;
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="relative max-w-[330px] w-full min-h-[1040px] rounded-[20px] cursor-pointer">
@@ -82,7 +89,11 @@ export default function BigCard({ onEditComparison }: BigCardProps) {
 
         <div className="space-y-[25px] py-[35px]">
           <p className="text-[#BCBCBC] text-[14px] sm:text-[16px]">2-й Амбулаторный проезд, 18</p>
-          <h1 className="text-[18px] sm:text-[22px] font-bold">999 999 999 {currencySymbol}</h1>
+          <h1 className="text-[18px] sm:text-[22px] font-bold">
+            {convertPrice(priceInRubles).toFixed(2)}
+            {currencySymbol}
+          </h1>
+
           <p>1-комн</p>
           <p>Общая площадь: 49,60 м²</p>
           <p>Этаж: 17/27</p>

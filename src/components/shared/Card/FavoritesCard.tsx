@@ -19,7 +19,16 @@ export default function FavoritesCard() {
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
-  const { currencySymbol } = useCurrency();
+  const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
+  const priceInRubles = 999999999;
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <>
       <div className="flex flex-wrap justify-center xl:justify-start  mt-[30px] gap-[30px]">
@@ -66,7 +75,9 @@ export default function FavoritesCard() {
         <div>
           <div className=" px-[20px]  text-center xl:text-left">
             <div>
-              <h1 className="text-[22px] font-bold pb-[5px]">999 999 999 {currencySymbol}</h1>
+              <h1 className="text-[22px] font-bold pb-[5px]">
+                {convertPrice(priceInRubles).toFixed(2)} {currencySymbol}
+              </h1>
               <p>1-комн. кв. · 49,60м² · 17/27 этаж</p>
             </div>
 

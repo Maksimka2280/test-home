@@ -3,13 +3,19 @@ import { MapPin, Timer } from 'lucide-react';
 import { useState } from 'react';
 import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
 export default function MiniCard() {
-  const { currencySymbol } = useCurrency();
   const [isChecked, setIsChecked] = useState(false);
+  const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
+  const priceInRubles = 999999999;
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
 
+  if (error) {
+    return <div>{error}</div>;
+  }
   const handleCheckboxChange = () => {
     setIsChecked(prev => !prev);
   };
-
   return (
     <div className="flex flex-wrap sm:flex-nowrap mt-[30px] justify-center sm:justify-start">
       <div className="flex justify-center items-center mb-[15px] sm:mb-0 relative">
@@ -23,9 +29,9 @@ export default function MiniCard() {
       <div className="px-[15px] w-full sm:w-auto">
         <div className="flex justify-between items-center">
           <h1 className="text-[18px] sm:text-[22px] font-bold text-center sm:text-left w-full sm:w-auto">
-            999 999 999 {currencySymbol}
+            {convertPrice(priceInRubles).toFixed(2)}
+            {currencySymbol}
           </h1>
-
           <div className="flex items-center gap-[10px] sm:static sm:right-auto sm:ml-[10px] sm:w-auto">
             <input
               type="checkbox"

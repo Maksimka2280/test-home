@@ -1,5 +1,4 @@
 'use client';
-
 import { ArrowLeft, ArrowRight, Heart, Layers2, MapPin, Timer } from 'lucide-react';
 import { useState } from 'react';
 import ReactPaginate from 'react-paginate';
@@ -20,7 +19,9 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
   const [Layers, setLayers] = useState(getStoredState(`${cardId}-layers`));
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const { currencySymbol } = useCurrency();
+
+  const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
+
   const images = ['/img/image123.png', '/img/room-test.png'];
 
   const pageCount = Math.ceil(images.length);
@@ -47,6 +48,14 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
     setViewed(true);
     localStorage.setItem(`${cardId}-viewed`, JSON.stringify(true));
   };
+  const priceInRubles = 108000;
+  if (isLoading) {
+    return <div>Загрузка...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div
@@ -133,7 +142,9 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
 
       <div className="h-[50%] px-[20px] py-[23px] mt-[20px]">
         <div>
-          <h1 className="text-[22px] font-bold pb-[5px]">999 999 999 {currencySymbol}</h1>
+          <h1 className="text-[22px] font-bold pb-[5px]">
+            {convertPrice(priceInRubles).toFixed(2)} {currencySymbol}
+          </h1>
 
           <p>1-комн. кв. · 49,60м² · 17/27 этаж</p>
         </div>
