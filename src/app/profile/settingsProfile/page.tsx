@@ -1,8 +1,35 @@
+'use client';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/shared/Button/Button';
 import { Input } from '@/components/shared/Input/Input';
 import ChangeNumber from '@/components/ui/Modal/ChangeNumber/ChangeNumber';
+import { API_BASE_URL } from '@/config';
+import axios from 'axios';
+interface UserAccount {
+  user_id: number;
+  phone_number: string;
+  email: string;
+}
+export default function SettingsProfile() {
+  const [infoAcc, setIngoAcc] = useState<UserAccount | null>(null);
+  useEffect(() => {
+    const fetchCurrentUser = async (): Promise<void> => {
+      console.log('Запрашиваем /me/ с withCredentials...');
 
-export default function settingsProfile() {
+      try {
+        const response = await axios.get<UserAccount>(`${API_BASE_URL}/get_profile/`, {
+          withCredentials: true,
+        });
+
+        setIngoAcc(response.data);
+        console.log('Ответ /me/:', response.data);
+      } catch (error) {
+        console.error('Ошибка запроса /me/:', error);
+      }
+    };
+
+    void fetchCurrentUser();
+  }, []);
   return (
     <div className="flex flex-col lg:flex-row gap-[20px] w-full">
       <div className="w-full lg:max-w-[510px] rounded-[20px] bg-white px-[20px] py-[23px]">
@@ -10,7 +37,7 @@ export default function settingsProfile() {
           <div className="w-[63px] h-[63px] rounded-full bg-orange-400"></div>
           <div className="font-bold">
             <p>Фамилия Имя</p>
-            <p>ID: 99999999</p>
+            <p>ID: {infoAcc?.user_id}</p>
           </div>
         </div>
 
@@ -36,7 +63,7 @@ export default function settingsProfile() {
           <p className="text-[14px] font-medium text-black flex items-center gap-[6px]">
             Номер телефона <span className="text-green-600 text-[18px]">✔</span>
           </p>
-          <p className="text-[16px] font-bold mt-[4px]">+7 (996) 999 99 99</p>
+          <p className="text-[16px] font-bold mt-[4px]">{infoAcc?.phone_number}</p>
           <ChangeNumber />
         </div>
 
@@ -50,7 +77,7 @@ export default function settingsProfile() {
               Не подтверждено
             </span>
           </p>
-          <p className="text-[16px] font-bold break-words">den.shestakov2020den@gmail.com</p>
+          <p className="text-[16px] font-bold break-words">{infoAcc?.email}</p>
 
           <button className="text-[#0077FF] text-[14px] mt-[4px] hover:underline text-left">
             Отправить ссылку для подтверждения

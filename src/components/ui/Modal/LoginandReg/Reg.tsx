@@ -33,12 +33,18 @@ export default function RegModal({ closeModal }: RegModalProps) {
     confirm_password: string;
   }) {
     try {
-      const response = await axios.post(`${API_BASE_URL}/register/`, {
-        email: params.email,
-        phone_number: params.phone_number,
-        password: params.password,
-        confirm_password: params.confirm_password,
-      });
+      const response = await axios.post(
+        `${API_BASE_URL}/register/`,
+        {
+          email: params.email,
+          phone_number: params.phone_number,
+          password: params.password,
+          confirm_password: params.confirm_password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
       console.log('Успешная регистрация:', response.data);
       return response.data;
@@ -47,6 +53,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
       throw error;
     }
   };
+
   const [formData, setFormData] = useState<FormData>({
     phone: '',
     email: '',
@@ -132,7 +139,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
 
       <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white z-50 w-[95%] max-w-[580px] max-h-[90vh] rounded-[30px] overflow-y-auto p-4 md:p-6 shadow-lg">
         <button
-          className="absolute top-4 right-4 text-3xl text-[#BCBCBC] hover:text-black"
+          className="absolute top-4 right-4 text-5xl text-[#BCBCBC] hover:text-black"
           onClick={closeModal}
         >
           ×

@@ -38,16 +38,13 @@ export default function ModalOrganizations({ onSelect }: ModalOrganizationsProps
     setSelectedItems(prev => {
       const newSelection = prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id];
 
-      // Получаем выбранную категорию по ID
       const selectedCategory = categories[activeCategory].find(item => item.id === id);
 
-      // Проверяем, найден ли элемент
       if (selectedCategory) {
-        // Передаем выбранные элементы (id и name) в родительский компонент
         onSelect(
           newSelection.map(id => {
             const category = categories[activeCategory].find(item => item.id === id);
-            return category ? { id: category.id, name: category.name } : { id: 0, name: '' }; // Добавляем name
+            return category ? { id: category.id, name: category.name } : { id: 0, name: '' };
           }),
         );
       }

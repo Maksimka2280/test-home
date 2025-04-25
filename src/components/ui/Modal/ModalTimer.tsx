@@ -3,9 +3,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bike, BusFront, CarFront, Footprints, Timer } from 'lucide-react';
 
-export default function ModalTimer() {
-  const [isOpen, setIsOpen] = useState(false);
+interface ModalTimerProps {
+  data: {
+    time_transport?: number;
+    time_foot?: number;
+    time_bus?: number;
+    time_bike?: number;
+  };
+}
 
+export default function ModalTimer({ data }: ModalTimerProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -40,6 +48,9 @@ export default function ModalTimer() {
     setIsOpen(false);
   };
 
+  const isDataEmpty =
+    !data?.time_transport && !data?.time_foot && !data?.time_bus && !data?.time_bike;
+
   return (
     <>
       <button
@@ -55,27 +66,31 @@ export default function ModalTimer() {
         ref={modalRef}
         onMouseLeave={handleMouseLeave}
         className={`absolute w-[295px] sm:w-[330px] h-[48px] bg-white rounded-[40px] shadow-lg transition-all duration-[600ms] right-2 xl:right-4
-    ${isOpen ? 'opacity-100 visibility-visible' : 'opacity-0 visibility-hidden pointer-events-none'}`}
+        ${isOpen ? 'opacity-100 visibility-visible' : 'opacity-0 visibility-hidden pointer-events-none'}`}
       >
         <div className="flex justify-center items-center gap-2 mr-[40px] mt-[3px]">
-          <ul className="flex flex-wrap gap-2 sm:gap-5 items-center">
-            <li className="flex items-center gap-3 h-10">
-              <CarFront size={22} color="#BCBCBC" />
-              <p className="text-[16px]">10</p>
-            </li>
-            <li className="flex items-center gap-3 h-10">
-              <BusFront size={22} color="#BCBCBC" />
-              <p className="text-[16px]">10</p>
-            </li>
-            <li className="flex items-center gap-3 h-10">
-              <Bike size={22} color="#BCBCBC" />
-              <p className="text-[16px]">10</p>
-            </li>
-            <li className="flex items-center gap-3 h-10">
-              <Footprints size={22} color="#BCBCBC" />
-              <p className="text-[16px]">10</p>
-            </li>
-          </ul>
+          {isDataEmpty ? (
+            <div className="text-center font-bold mt-[12px]">Пожалуйста выберите точку</div>
+          ) : (
+            <ul className="flex flex-wrap gap-2 sm:gap-5 items-center">
+              <li className="flex items-center gap-3 h-10">
+                <CarFront size={22} color="#BCBCBC" />
+                <p className="text-[16px]">{data?.time_transport ?? 0} </p>
+              </li>
+              <li className="flex items-center gap-3 h-10">
+                <BusFront size={22} color="#BCBCBC" />
+                <p className="text-[16px]">{data?.time_bus ?? 0} </p>
+              </li>
+              <li className="flex items-center gap-3 h-10">
+                <Bike size={22} color="#BCBCBC" />
+                <p className="text-[16px]">{data?.time_bike ?? 0} </p>
+              </li>
+              <li className="flex items-center gap-3 h-10">
+                <Footprints size={22} color="#BCBCBC" />
+                <p className="text-[16px]">{data?.time_foot ?? 0} </p>
+              </li>
+            </ul>
+          )}
         </div>
       </div>
     </>

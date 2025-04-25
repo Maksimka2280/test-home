@@ -4,14 +4,9 @@ import CityList from '@/components/ui/CityRender/CityRender';
 import { RootState } from '@/store/store';
 import { ChevronRight, MapPin } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
-import ModalEditingEquastions from '@/components/ui/Modal/ModalEditingEquastions';
 
 export default function PageLayers() {
   const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   return (
     <>
@@ -48,31 +43,12 @@ export default function PageLayers() {
       </div>
 
       <div className="flex justify-center items-center w-full overflow-hidden mt-[80px]">
-        <div
-          className="flex justify-center items-center gap-[30px] max-w-[1770px] w-full overflow-x-auto custom-scrollbar p-10"
-          style={{ transform: 'rotate(180deg)' }}
-        >
+        <div>
           <div style={{ transform: 'rotate(-180deg)', display: 'flex', gap: '30px' }}>
-            <BigCard onEditComparison={openModal} />
-            <BigCard onEditComparison={openModal} />
-            <BigCard onEditComparison={openModal} />
-            <BigCard onEditComparison={openModal} />
-            <BigCard onEditComparison={openModal} />
-            <BigCard onEditComparison={openModal} />
-            <BigCard onEditComparison={openModal} />
-            <BigCard onEditComparison={openModal} />
-
-            <BigCard onEditComparison={openModal} />
+            <BigCard />
           </div>
         </div>
       </div>
-
-      {/* Модальное окно, которое появляется поверх всего */}
-      {isModalOpen && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-          <ModalEditingEquastions isOpen={isModalOpen} onClose={closeModal} />
-        </div>
-      )}
     </>
   );
 }

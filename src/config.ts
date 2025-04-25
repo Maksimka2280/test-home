@@ -1,1 +1,1 @@
-export const API_BASE_URL = 'http://82.97.250.175';
+export const API_BASE_URL = 'https://api.atom-technology.ru';

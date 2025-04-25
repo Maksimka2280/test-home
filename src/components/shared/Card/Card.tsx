@@ -1,14 +1,33 @@
 'use client';
 import { ArrowLeft, ArrowRight, Heart, Layers2, MapPin, Timer } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config';
 
 interface CardProps {
   cardId: string;
+  total_area: number;
+  price: number;
+  floor: number;
+  city: string;
+  street: string;
+  address: string;
+  time_on_foot_to_subway: number;
+  description: string;
 }
 
-export const Card: React.FC<CardProps> = ({ cardId }) => {
+export const Card: React.FC<CardProps> = ({
+  cardId,
+  total_area,
+  price,
+  floor,
+  city,
+  address,
+  time_on_foot_to_subway,
+}) => {
   const getStoredState = (key: string) => {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : false;
@@ -19,25 +38,46 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
   const [Layers, setLayers] = useState(getStoredState(`${cardId}-layers`));
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
   const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
 
   const images = ['/img/image123.png', '/img/room-test.png'];
-
   const pageCount = Math.ceil(images.length);
 
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
 
-  const toggleLike = () => {
+  const toggleLike = async () => {
+    if (!isAuthenticated) return;
+
     const newLiked = !liked;
     setLiked(newLiked);
-    localStorage.setItem(`${cardId}-liked`, JSON.stringify(newLiked));
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/favorite_groups/add_favorite_group`,
+        {
+          card_id: cardId,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (response.status === 200) {
+        console.log('Добавлено в избранное');
+      }
+    } catch (err) {
+      console.error('Ошибка при добавлении в избранное:', err);
+    }
+
     markAsViewed();
   };
 
   const toggleLayers = () => {
+    if (!isAuthenticated) return;
     const newLayers = !Layers;
     setLayers(newLayers);
     localStorage.setItem(`${cardId}-layers`, JSON.stringify(newLayers));
@@ -48,19 +88,42 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
     setViewed(true);
     localStorage.setItem(`${cardId}-viewed`, JSON.stringify(true));
   };
-  const priceInRubles = 108000;
-  if (isLoading) {
-    return <div>Загрузка...</div>;
-  }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/me/`, { withCredentials: true });
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+        console.log(error);
+      }
+    };
+
+    void checkAuth();
+
+    setLiked(getStoredState(`${cardId}-liked`));
+    setViewed(getStoredState(`${cardId}-viewed`));
+    setLayers(getStoredState(`${cardId}-layers`));
+  }, [cardId]);
+
+  useEffect(() => {
+    localStorage.setItem(`${cardId}-liked`, JSON.stringify(liked));
+    localStorage.setItem(`${cardId}-layers`, JSON.stringify(Layers));
+  }, [liked, Layers, cardId]);
+
+  if (isLoading) return <div>Загрузка...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div
       className={`relative max-w-[330px] bg-[#ffffff] w-full h-[420px] rounded-[20px] cursor-pointer ${viewed ? 'filter brightness-90' : ''} transition-all duration-300`}
-      onClick={markAsViewed}
+      onClick={() => {
+        markAsViewed();
+        router.push(`/adverts/${cardId}`);
+      }}
     >
       <div
         className="h-[50%] bg-[#ffffff] rounded-t-[20px] flex justify-center items-center relative group"
@@ -74,7 +137,6 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
               src={images[currentPage]}
               alt=""
             />
-
             <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex justify-center">
               <ReactPaginate
                 pageCount={pageCount}
@@ -128,7 +190,7 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
         <button
           onClick={e => {
             e.stopPropagation();
-            toggleLike();
+            void toggleLike();
           }}
           className="absolute top-2 right-2 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-[#ffffff] transition-all"
         >
@@ -143,26 +205,29 @@ export const Card: React.FC<CardProps> = ({ cardId }) => {
       <div className="h-[50%] px-[20px] py-[23px] mt-[20px]">
         <div>
           <h1 className="text-[22px] font-bold pb-[5px]">
-            {convertPrice(priceInRubles).toFixed(2)} {currencySymbol}
+            {convertPrice(price).toFixed(2)}
+            {currencySymbol}
           </h1>
 
-          <p>1-комн. кв. · 49,60м² · 17/27 этаж</p>
+          <p>
+            {total_area}м² · {floor} этаж
+          </p>
         </div>
 
         <div className="flex flex-wrap gap-[10px] items-center pt-[15px] pb-[15px]">
           <div className="flex gap-[6px] items-center justify-center">
             <MapPin color="#9D9D9D" size={17} />
-            <p className="text-[16px]">Островская</p>
+            <p className="text-[16px]">{city}</p>
           </div>
           <div className="flex gap-[6px] items-center justify-center">
             <Timer color="#9D9D9D" size={17} />
             <p className="text-[16px]">
-              <span className="text-[16px] font-bold">14</span> минут
+              <span className="text-[16px] font-bold">{time_on_foot_to_subway}</span> минут
             </p>
           </div>
         </div>
 
-        <p className="text-[#BCBCBC]">2-й Амбулаторный проезд, 18</p>
+        <p className="text-[#BCBCBC]">{address}</p>
       </div>
     </div>
   );

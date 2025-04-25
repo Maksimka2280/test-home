@@ -94,33 +94,6 @@
         "allowSingleExtends": true
       }
     ],
-    "@typescript-eslint/naming-convention": [
-      "error",
-      {
-        "format": ["UPPER_CASE", "camelCase", "PascalCase"],
-        "modifiers": ["const"],
-        "selector": "variable"
-      },
-      {
-        "format": ["UPPER_CASE", "PascalCase"],
-        "selector": "enum"
-      },
-      {
-        "format": ["UPPER_CASE", "PascalCase"],
-        "selector": "enumMember"
-      },
-      {
-        "format": ["camelCase"],
-        "selector": ["classMethod", "classProperty", "variable"]
-      },
-      {
-        "format": ["camelCase", "PascalCase"],
-        "selector": ["function"]
-      },
-      {
-        "format": ["PascalCase"],
-        "selector": ["class", "interface"]
-      }
-    ]
+    "@typescript-eslint/naming-convention": "off"
   }
 }

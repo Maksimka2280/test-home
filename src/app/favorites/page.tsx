@@ -1,22 +1,100 @@
 'use client';
-import FavoritesCard from '@/components/shared/Card/FavoritesCard';
+
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import CustomOrder from '@/components/ui/Modal/ModalCustomOrder';
 import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import NewGroup from '@/components/ui/Modal/ModalNewGroup';
-
+import { API_BASE_URL } from '@/config';
+import { FilteredFavCards } from '@/components/shared/Filters/FilterFavoritesConditions';
 import { List, Plus } from 'lucide-react';
-import { useState } from 'react';
 
 export default function Favorites() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [isChecked, setIsChecked] = useState<boolean>(false);
-
   const [isCustomOrderOpen, setIsCustomOrderOpen] = useState(false);
+  const [advertData, setAdvertData] = useState<any[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Состояние для проверки авторизации
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const checkAuth = async (): Promise<void> => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/me/`, { withCredentials: true });
+        console.log(response.data);
+
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+        console.log(error);
+      }
+    };
+
+    void checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      window.location.replace('/');
+    } else if (isAuthenticated === true) {
+      const likedIds = Object.keys(localStorage)
+        .filter(key => key.includes('-liked') && localStorage.getItem(key) === 'true')
+        .map(key => parseInt(key.split('-')[0]));
+
+      if (likedIds.length > 0) {
+        const fetchAdvertData = async (): Promise<void> => {
+          try {
+            const responses = await Promise.all(
+              likedIds.map(id => axios.get(`${API_BASE_URL}/adverts/advert/${id}`)),
+            );
+            const data = responses.map(response => response.data);
+            if (Array.isArray(data)) {
+              setAdvertData(data);
+              console.log(data);
+            } else {
+              console.error('Ошибка: данные не в формате массива');
+            }
+          } catch (error) {
+            console.error('Ошибка загрузки данных:', error);
+          }
+        };
+
+        void fetchAdvertData();
+      }
+    }
+  }, [isAuthenticated]);
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
+
+  const clearAllLikedCards = () => {
+    const keysToRemove: string[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.endsWith('-liked')) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    console.log('Удалено:', keysToRemove);
+  };
+  useEffect(() => {
+    if (isAuthenticated === null) return;
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, [isAuthenticated]);
+
+  if (isLoading) {
+    return <div></div>;
+  }
 
   return (
     <div className="mt-[50px]">
@@ -32,7 +110,7 @@ export default function Favorites() {
             </button>
           ))}
         </div>
-        <div className="flex flex-wrap items-center justify-center xl:justify-between mt-[35px]  ">
+        <div className="flex flex-wrap items-center justify-center xl:justify-between mt-[35px]">
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 md:gap-10 lg:gap-[50px]">
             <div className="w-[225px] sm:w-[245px] h-[80px] rounded-[10px] bg-[#fff] flex gap-4 md:gap-[20px] justify-center items-center shadow-md">
               <div className="w-[45px] md:w-[55px] h-[45px] md:h-[55px] bg-[#F3F3F3] rounded-[10px] flex justify-center items-center">
@@ -40,7 +118,7 @@ export default function Favorites() {
               </div>
               <div>
                 <p className="font-bold text-[14px] md:text-[16px]">Все объявления</p>
-                <p className="text-[12px] md:text-[14px]">20 объявлений</p>
+                <p className="text-[12px] md:text-[14px]">{advertData.length} объявлений</p>
               </div>
             </div>
 
@@ -62,7 +140,6 @@ export default function Favorites() {
               </div>
             </div>
           </div>
-
           <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4 md:gap-6 lg:gap-[25px] mt-[20px] xl:mt-[0]">
             <input
               type="checkbox"
@@ -79,8 +156,11 @@ export default function Favorites() {
                 <div className="w-[8px] md:w-[10px] h-[8px] md:h-[10px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
               )}
             </label>
-            <p className="text-[14px] md:text-[16px]">20 объявлений</p>
-            <button className="border-none text-[#0468FF] lg:ml-[20px] md:ml-[40px] text-[14px] md:text-[16px]">
+            <p className="text-[14px] md:text-[16px]">{advertData.length} объявлений</p>
+            <button
+              className="border-none text-[#0468FF] lg:ml-[20px] md:ml-[40px] text-[14px] md:text-[16px]"
+              onClick={clearAllLikedCards}
+            >
               Удалить все
             </button>
           </div>
@@ -108,11 +188,7 @@ export default function Favorites() {
             </ul>
           </div>
           <div className="flex flex-col gap-[50px]">
-            <FavoritesCard />
-            <FavoritesCard />
-            <FavoritesCard />
-            <FavoritesCard />
-            <FavoritesCard />
+            <FilteredFavCards cards={advertData} />
           </div>
         </div>
       </div>

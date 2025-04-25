@@ -1,5 +1,4 @@
 'use client';
-import { Card } from '@/components/shared/Card/Card';
 import { DefFilters } from '@/components/shared/Filters/default-filters';
 import { Input } from '@/components/shared/Input/Input';
 import { PopularSearches } from '@/components/shared/Filters/Popular-searches';
@@ -12,18 +11,78 @@ import { RootState } from '@/store/store';
 import CityList from '@/components/ui/CityRender/CityRender';
 import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import { Layers } from '@/components/shared/Layers/Layers';
-const cardsData = [
-  { id: '1', price: '999 999 999', address: '2-й Амбулаторный проезд, 18' },
-  { id: '2', price: '1 200 000 000', address: 'Островская, 18' },
-  { id: '3', price: '850 000 000', address: 'ул. Ленина, 45' },
-  { id: '4', price: '1 500 000 000', address: 'Пушкина, 3' },
-  { id: '5', price: '950 000 000', address: 'Пролетарская, 12' },
-  { id: '6', price: '1 100 000 000', address: 'Московская, 9' },
-  { id: '7', price: '1 350 000 000', address: 'Гагарина, 5' },
-  { id: '8', price: '1 200 000 000', address: 'Лесная, 16' },
-];
+import { API_BASE_URL } from '@/config';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import ReactPaginate from 'react-paginate';
+import { usePriceFilter } from '@/components/Context/ContextPrice/ContextPrice';
+import { useCurrency } from '@/components/Context/Contextcurrency/Contextcurrency';
+import { FilteredCards } from '@/components/shared/Filters/filterConditions';
+import { CardType } from '@/types/Card';
+
 export default function Home() {
+  const { convertPrice } = useCurrency();
   const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
+  const { minPrice, maxPrice } = usePriceFilter();
+  const [cards, setCards] = useState<CardType[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [sortOption] = useState<string>('asc');
+
+  const fetchData = async (page: number): Promise<void> => {
+    try {
+      const response = await axios.get<{ items: CardType[]; total_pages: number }>(
+        `${API_BASE_URL}/adverts/adverts_list/`,
+        {
+          params: {
+            page: page,
+            page_size: 30,
+          },
+        },
+      );
+      console.log(response);
+
+      setCards(response.data.items);
+      setTotalPages(response.data.total_pages);
+    } catch (error) {
+      console.error('Ошибка при получении данных:', error);
+    }
+  };
+
+  useEffect(() => {
+    void fetchData(page);
+  }, [page]);
+
+  const sortedCards = [...cards].sort((a, b) => {
+    if (sortOption === 'asc') {
+      return a.price - b.price;
+    } else {
+      return b.price - a.price;
+    }
+  });
+
+  const filteredCards = sortedCards.filter(card => {
+    const cardPrice = convertPrice(card.price);
+
+    const min = minPrice ? Number(minPrice) : null;
+    const max = maxPrice ? Number(maxPrice) : null;
+
+    const hasMin = min !== null && !isNaN(min);
+    const hasMax = max !== null && !isNaN(max);
+
+    if (hasMin && hasMax) {
+      return cardPrice >= min && cardPrice <= max;
+    }
+    if (hasMin) return cardPrice >= min;
+    if (hasMax) return cardPrice <= max;
+
+    return true;
+  });
+
+  const handlePageChange = (selectedPage: { selected: number }) => {
+    setPage(selectedPage.selected + 1);
+  };
+
   return (
     <>
       <div>
@@ -33,7 +92,7 @@ export default function Home() {
               Сервис для поиска недвижимости в Швейцарии
             </p>
 
-            <div className="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#F3F3F3] rounded-[15px]   ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">
+            <div className="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#F3F3F3] rounded-[15px] ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">
               <p className="text-[#BCBCBC] text-[16px] text-center sm:text-left whitespace-nowrap">
                 Выбрано городов:{' '}
                 <span className="text-[#0468FF] font-semibold text-[16px] pl-[6px]">
@@ -64,7 +123,7 @@ export default function Home() {
               <ModalMoreFilter />
             </div>
 
-            <div className="flex justify-center sm:justify-start  gap-[20px] 2xl:gap-[70px]  items-center flex-wrap ">
+            <div className="flex justify-center sm:justify-start gap-[20px] 2xl:gap-[70px] items-center flex-wrap ">
               <DefFilters />
               <Link
                 className="max-w-[185px] 2xl:max-w-[250px] w-full h-[60px] rounded-[15px] bg-[#f3f3f3] flex justify-center items-center gap-[35px]"
@@ -80,6 +139,7 @@ export default function Home() {
                 Сбросить
               </Button>
             </div>
+
             <h2 className="text-[#BCBCBC] py-[25px]">Часто ищут</h2>
             <div className="flex gap-[20px] justify-center items-center flex-wrap">
               <PopularSearches img="/img/new-build.svg" title="Новостройки" number={23} />
@@ -90,14 +150,32 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col  items-center mt-[90px]">
-          <h1 className="text-[28px] font-bold  max-w-[1380px] 2xl:max-w-[1800px] w-full mb-[40px] text-center xl:text-left">
+
+        <div className="flex flex-col items-center mt-[90px]">
+          <h1 className="text-[28px] font-bold max-w-[1380px] 2xl:max-w-[1800px] w-full mb-[40px] text-center xl:text-left">
             Могут подойти
           </h1>
+
           <div className="flex flex-wrap gap-[20px] max-w-[1400px] 2xl:max-w-[1870px] justify-center">
-            {cardsData.map(card => (
-              <Card key={card.id} cardId={card.id} />
-            ))}
+            <FilteredCards cards={filteredCards} />
+          </div>
+          <div className="mt-6 flex justify-center">
+            <ReactPaginate
+              pageCount={totalPages}
+              pageRangeDisplayed={2}
+              marginPagesDisplayed={1}
+              onPageChange={handlePageChange}
+              containerClassName="flex gap-2 items-center"
+              pageClassName="w-[36px] h-[36px] flex items-center justify-center rounded-full bg-white text-gray-700 cursor-pointer hover:bg-blue-500 hover:text-white transition duration-300 select-none"
+              activeClassName=" font-semibold border-2 border-blue-700"
+              pageLinkClassName="w-full h-full flex items-center justify-center text-center text-sm font-semibold"
+              previousLabel="‹"
+              nextLabel="›"
+              previousClassName="w-[36px] h-[36px] flex items-center justify-center rounded-full bg-white text-gray-700 cursor-pointer hover:bg-blue-500 hover:text-white transition duration-300 select-none"
+              nextClassName="w-[36px] h-[36px] flex items-center justify-center rounded-full bg-white text-gray-700 cursor-pointer hover:bg-blue-500 hover:text-white transition duration-300 select-none"
+              previousLinkClassName="w-full h-full flex items-center justify-center"
+              nextLinkClassName="w-full h-full flex items-center justify-center"
+            />
           </div>
         </div>
       </div>

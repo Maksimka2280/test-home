@@ -6,6 +6,10 @@ import '@shared/styles/globals.scss';
 import MainHeader from '../components/shared/Header/MainHeader';
 import { CurrencyProvider } from '../components/Context/Contextcurrency/Contextcurrency';
 import MainFooter from '@/components/shared/Footer/MainFooter';
+import { PriceFilterProvider } from '@/components/Context/ContextPrice/ContextPrice';
+import { FilterProvider } from '@/components/Context/FromandToYersContext/FromandToYersContext';
+import { PublicationDateProvider } from '@/components/Context/PublicationDateContext/PublicationDateContext';
+import { FloorsProvider } from '@/components/Context/FloorsContext/FloorsContext';
 
 export const metadata: Metadata = {
   title: 'Penguin Dev - Home', // TODO: replace with your own title
@@ -19,14 +23,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={fonts}>
-        <main className="bg-[#F3F3F3] h-auto">
+      <body className={`${fonts} flex flex-col min-h-screen`}>
+        <main className="bg-[#F3F3F3] flex-grow">
           <MainHeader />
-          <CurrencyProvider>
-            <Providers>{children}</Providers>
-          </CurrencyProvider>
-          <MainFooter />
+          <FloorsProvider>
+            <PublicationDateProvider>
+              <FilterProvider>
+                <PriceFilterProvider>
+                  <CurrencyProvider>
+                    <Providers>{children}</Providers>
+                  </CurrencyProvider>
+                </PriceFilterProvider>
+              </FilterProvider>
+            </PublicationDateProvider>
+          </FloorsProvider>
         </main>
+        <MainFooter />
       </body>
     </html>
   );

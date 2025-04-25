@@ -1,31 +1,96 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/shared/Button/Button';
 
 import { createRoot } from 'react-dom/client';
-import L, { LatLngTuple } from 'leaflet';
+import L, { DivIconOptions, Icon, IconOptions, LatLngTuple } from 'leaflet';
 
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.markercluster';
 
 import ModalOrganizations from '@/components/ui/Modal/ModalOrganisation';
 
 import ModalTimer from '@/components/ui/Modal/ModalTimer';
 import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import ModalChoiceCity from '@/components/ui/Modal/ModalChoiceCity';
-import { Provider } from 'react-redux';
-import { store } from '@/store/store';
+import { Provider, useSelector } from 'react-redux';
+import { RootState, store } from '@/store/store';
 import '../../shared/styles/globals.scss';
 import CityList from '@/components/ui/CityRender/CityRender';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config';
+import { fetchHospitalsInSwitzerland } from '@/api/hospital';
+import { fetchParkingsInSwitzerland } from '@/api/parking';
+import { fetchSchoolsInSwitzerland } from '@/api/school';
+import { fetchShopsInSwitzerland } from '@/api/shop';
+import { fetchKindergartensInSwitzerland } from '@/api/kindergartens';
 
+interface Poin2t {
+  type: number;
+  lat: number;
+  lon: number;
+  city?: string;
+  time_on_foot_to_subway?: number;
+  time_on_transport_to_subway?: number;
+}
+interface agashka {
+  lat: number;
+  lon: number;
+  city?: string;
+  time_on_foot_to_subway?: number;
+  time_on_transport_to_subway?: number;
+}
+interface CustomDivIconOptions extends DivIconOptions {
+  type?: number;
+}
+interface Typetimer {
+  time_transport?: number;
+  time_foot?: number;
+  time_bus?: number;
+  time_bike?: number;
+  lat?: number;
+  lon?: number;
+  city?: string;
+  time_on_foot_to_subway?: number;
+  time_on_transport_to_subway?: number;
+}
 export default function Map() {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<L.Map | null>(null); // Начальное значение null
+  const mapInstance = useRef<L.Map | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<Typetimer | null>(null);
+  const textRef = useRef<HTMLElement | null>(null);
+  const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
+  const [points, setPoints] = useState<agashka[]>([]);
+  const [markers, setMarkers] = useState<L.Marker[]>([]);
+  const [isMarkerModeActive, setIsMarkerModeActive] = useState(false);
+  const [line, setLine] = useState<L.Polyline | null>(null);
+  const [distanceLabel, setDistanceLabel] = useState<L.Marker | null>(null);
+  const [selectedOrganizations, setSelectedOrganizations] = useState<
+    { name: string; id: number }[]
+  >([]);
+  const idToFetcherMap: Record<number, () => Promise<any>> = {
+    1: fetchShopsInSwitzerland,
+    2: fetchSchoolsInSwitzerland,
+    3: fetchKindergartensInSwitzerland,
+    4: fetchHospitalsInSwitzerland,
+    5: fetchParkingsInSwitzerland,
+  };
+  const [shopPoints, setShopPoints] = useState<any[]>([]);
+  const [schoolPoints, setSchoolPoints] = useState<any[]>([]);
+  const [kindergartenPoints, setKindergartenPoints] = useState<any[]>([]);
+  const [hospitalPoints, setHospitalPoints] = useState<any[]>([]);
+  const [parkingPoints, setParkingPoints] = useState<any[]>([]);
+  const filteredPoints = useMemo(() => {
+    return points.filter((item: agashka) => item.city && selectedCities.includes(item.city));
+  }, [points, selectedCities]);
 
-  const [selectedOrganizations, setSelectedOrganizations] = useState<any[]>([]);
+  const bottomRightButtonsRef = useRef<L.Control | null>(null);
+
   const handleSearch = async (query: string) => {
     if (!query) return;
-
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=CH`,
@@ -62,7 +127,6 @@ export default function Map() {
       const inputElement = e.target as HTMLInputElement;
       if (inputElement instanceof HTMLInputElement) {
         try {
-          // Если handleSearch возвращает промис, используем await
           await handleSearch(inputElement.value);
         } catch (error) {
           console.error('Ошибка при выполнении поиска:', error);
@@ -72,6 +136,489 @@ export default function Map() {
   };
 
   useEffect(() => {
+    const loadData = async (): Promise<void> => {
+      for (const item of selectedOrganizations) {
+        const fetcher = idToFetcherMap[item.id];
+        if (fetcher) {
+          try {
+            const coords = await fetcher();
+
+            if (!Array.isArray(coords)) {
+              console.error(`Неверный формат данных для ${item.name}`);
+              return;
+            }
+
+            console.log(`Координаты для ${item.name}:`, coords);
+
+            const formattedCoords = coords.map(coord => ({
+              ...coord,
+              type: item.id,
+            }));
+
+            if (item.id === 1) {
+              setShopPoints(formattedCoords);
+            } else if (item.id === 2) {
+              setSchoolPoints(formattedCoords);
+            } else if (item.id === 3) {
+              setKindergartenPoints(formattedCoords);
+            } else if (item.id === 4) {
+              setHospitalPoints(formattedCoords);
+            } else if (item.id === 5) {
+              setParkingPoints(formattedCoords);
+            }
+          } catch (err) {
+            console.error(`Ошибка при загрузке ${item.name}:`, err);
+          }
+        }
+      }
+    };
+
+    const selectedIds = selectedOrganizations.map(item => item.id);
+
+    if (!selectedIds.includes(1)) setShopPoints([]);
+    if (!selectedIds.includes(2)) setSchoolPoints([]);
+    if (!selectedIds.includes(3)) setKindergartenPoints([]);
+    if (!selectedIds.includes(4)) setHospitalPoints([]);
+    if (!selectedIds.includes(5)) setParkingPoints([]);
+
+    if (selectedOrganizations.length > 0) {
+      void loadData();
+    }
+  }, [selectedOrganizations]);
+
+  const pointArray = useMemo(() => {
+    const combinedPoints = [
+      ...shopPoints,
+      ...schoolPoints,
+      ...kindergartenPoints,
+      ...hospitalPoints,
+      ...parkingPoints,
+    ];
+    return combinedPoints;
+  }, [shopPoints, schoolPoints, kindergartenPoints, hospitalPoints, parkingPoints]);
+
+  const markersRef = useRef<L.MarkerClusterGroup | null>(null);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+
+    if (markersRef.current) {
+      mapInstance.current.removeLayer(markersRef.current);
+    }
+
+    const getColorByType = (type: number) => {
+      switch (type) {
+        case 1:
+          return '#0468FF';
+        case 2:
+          return '#28a745';
+        case 3:
+          return '#ffc107';
+        case 4:
+          return '#dc3545';
+        case 5:
+          return '#6c757d';
+        default:
+          return '#999';
+      }
+    };
+
+    const markers = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 35,
+      iconCreateFunction: function (cluster) {
+        const children = cluster.getAllChildMarkers();
+        const firstMarker = children[0];
+        const icon = firstMarker?.options.icon as Icon & {
+          options: IconOptions & { type?: string };
+        };
+        const firstMarkerType = Number(icon?.options.type ?? 0);
+        const color = getColorByType(firstMarkerType);
+        const count = cluster.getChildCount();
+
+        return L.divIcon({
+          html: `<div style="background-color: ${color}; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">${count}</div>`,
+          className: 'custom-cluster-icon',
+          iconSize: [28, 28],
+        });
+      },
+    });
+
+    pointArray.forEach((item: Poin2t) => {
+      if (!item.lat || !item.lon) {
+        console.log('Пропущена точка, у которой нет координат:', item);
+        return;
+      }
+
+      const color = getColorByType(item.type);
+      const marker = L.marker([item.lat, item.lon], {
+        icon: L.divIcon({
+          className: 'custom-circle-icon',
+          html: `<div style="width: 12px; height: 12px; background-color: ${color}; border-radius: 50%;"></div>`,
+          iconSize: [12, 12],
+          iconAnchor: [6, 6],
+          type: item.type,
+        } as CustomDivIconOptions),
+      });
+      markers.addLayer(marker);
+    });
+
+    mapInstance.current.addLayer(markers);
+    markersRef.current = markers;
+  }, [pointArray]);
+  interface ApiResponse {
+    items: Poin2t[];
+  }
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      try {
+        const response = await axios.get<ApiResponse>(`${API_BASE_URL}/adverts/adverts_list/`, {
+          params: {
+            page_size: 30,
+          },
+        });
+
+        const filteredCards: agashka[] = response.data.items.map(item => ({
+          lat: item.lat,
+          lon: item.lon,
+          city: item.city,
+          time_foot: item.time_on_foot_to_subway,
+          time_transport: item.time_on_transport_to_subway,
+        }));
+
+        console.log(filteredCards);
+        setPoints(filteredCards);
+      } catch (error) {
+        console.error('Ошибка при получении данных:', error);
+      }
+    };
+
+    void fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (points.length > 0 && mapInstance.current) {
+      markersRef.current = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 35,
+        iconCreateFunction: function (cluster) {
+          const count = cluster.getChildCount();
+          return L.divIcon({
+            html: `<div style="background-color: #0468FF; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">${count}</div>`,
+            className: 'custom-cluster-icon',
+            iconSize: [28, 28],
+          });
+        },
+      });
+      mapInstance.current.addLayer(markersRef.current);
+
+      const currentPoints = selectedCities.length === 0 ? points : filteredPoints;
+
+      currentPoints.forEach((item: agashka) => {
+        if (item.lat && item.lon) {
+          const marker = L.marker([item.lat, item.lon], {
+            icon: L.divIcon({
+              className: 'custom-circle-icon',
+              html: '<div style="width: 12px; height: 12px; background-color: #0468FF; border-radius: 50%;"></div>',
+              iconSize: [12, 12],
+              iconAnchor: [6, 6],
+            }),
+          });
+
+          marker.on('click', () => {
+            setSelectedPoint(item);
+            console.log(item);
+          });
+
+          markersRef.current?.addLayer(marker);
+        }
+      });
+    }
+  }, [selectedCities, points, filteredPoints]);
+
+  const handleSelect = (selectedItems: { id: number; name: string }[]) => {
+    setSelectedOrganizations(selectedItems);
+    console.log('Выбранные элементы:', selectedItems);
+  };
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+
+    const customControlContainer = new L.Control({ position: 'topright' });
+
+    customControlContainer.onAdd = function () {
+      const div = L.DomUtil.create('div', 'custom-map-container');
+
+      const wrapper = document.createElement('div');
+      wrapper.className =
+        'flex flex-wrap lg:flex-nowrap justify-center items-center gap-[10px] absolute top-[10px] right-[1px] top-[-101px]';
+
+      const box1 = document.createElement('div');
+      box1.className =
+        'w-[192px] h-[57px] bg-[#fff] rounded-[15px] flex justify-center items-center ml-[20px] lg:ml-0 ';
+
+      const box2 = document.createElement('div');
+      box2.className =
+        'w-[215px] h-[57px] bg-[#fff] rounded-[15px] flex justify-center items-center';
+
+      const contentContainer = document.createElement('div');
+      contentContainer.className = 'flex items-center gap-2';
+
+      const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svgIcon.setAttribute('width', '24');
+      svgIcon.setAttribute('height', '24');
+      svgIcon.setAttribute('viewBox', '0 0 24 24');
+      svgIcon.setAttribute('fill', 'none');
+      svgIcon.setAttribute('stroke', '#0468FF');
+      svgIcon.setAttribute('stroke-width', '2');
+      svgIcon.setAttribute('stroke-linecap', 'round');
+      svgIcon.setAttribute('stroke-linejoin', 'round');
+      svgIcon.classList.add('lucide', 'lucide-list-icon', 'lucide-list');
+
+      ['M3 12h.01', 'M3 18h.01', 'M3 6h.01', 'M8 12h13', 'M8 18h13', 'M8 6h13'].forEach(d => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        svgIcon.appendChild(path);
+      });
+
+      const text = document.createElement('span');
+      textRef.current = text;
+
+      text.textContent = `${points.length} объектов`;
+      text.classList.add('font-semibold', 'text-[15px]');
+
+      const currentCount = selectedCities.length === 0 ? points.length : filteredPoints.length;
+
+      if (textRef.current) {
+        textRef.current.textContent = `${currentCount} объектов`;
+      }
+      text.classList.add('font-semibold', 'text-[15px]');
+
+      contentContainer.appendChild(svgIcon);
+      contentContainer.appendChild(text);
+
+      box2.appendChild(contentContainer);
+
+      const reactContainer = document.createElement('div');
+      reactContainer.id = 'modal-organizations-container';
+      reactContainer.style.width = '100%';
+      reactContainer.style.display = 'flex';
+      reactContainer.style.alignItems = 'center';
+      reactContainer.style.justifyContent = 'center';
+
+      box1.appendChild(reactContainer);
+      wrapper.appendChild(box1);
+      wrapper.appendChild(box2);
+      div.appendChild(wrapper);
+
+      setTimeout(() => {
+        createRoot(reactContainer).render(<ModalOrganizations onSelect={handleSelect} />);
+      }, 0);
+
+      return div;
+    };
+
+    customControlContainer.addTo(mapInstance.current);
+
+    return () => {
+      mapInstance.current?.removeControl(customControlContainer);
+    };
+  }, [points.length, filteredPoints.length, selectedCities]);
+
+  const resetMarkersAndLine = () => {
+    if (!mapInstance.current) return;
+
+    markers.forEach(marker => mapInstance.current!.removeLayer(marker));
+    setMarkers([]);
+
+    if (line) {
+      mapInstance.current.removeLayer(line);
+      setLine(null);
+    }
+
+    if (distanceLabel) {
+      mapInstance.current.removeLayer(distanceLabel);
+      setDistanceLabel(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!isMarkerModeActive) {
+      resetMarkersAndLine();
+      return;
+    }
+  }, [isMarkerModeActive]);
+
+  const blueDotIcon = L.divIcon({
+    className: 'custom-blue-dot',
+    html: '<div class="w-[15px] h-[15px] bg-[#23ffab] rounded-full"></div>',
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
+  });
+
+  const drawLineAndDistance = (latlngs: L.LatLng[]) => {
+    if (line) mapInstance.current!.removeLayer(line);
+    if (distanceLabel) mapInstance.current!.removeLayer(distanceLabel);
+
+    const newLine = L.polyline(latlngs, {
+      color: '#0468FF',
+      weight: 2,
+      dashArray: '4',
+    }).addTo(mapInstance.current!);
+    setLine(newLine);
+
+    let totalDistance = 0;
+    for (let i = 0; i < latlngs.length - 1; i++) {
+      totalDistance += latlngs[i].distanceTo(latlngs[i + 1]);
+    }
+
+    const formatted =
+      totalDistance > 1000
+        ? `${(totalDistance / 1000).toFixed(2)} км`
+        : `${Math.round(totalDistance)} м`;
+
+    const last = latlngs.length - 1;
+    const labelLat = (latlngs[0].lat + latlngs[last].lat) / 2;
+    const labelLng = (latlngs[0].lng + latlngs[last].lng) / 2;
+
+    const label = L.marker([labelLat, labelLng], {
+      icon: L.divIcon({
+        className: '',
+        html: `<div class="bg-white px-[6px] py-[2px] rounded-md shadow text-xs font-semibold text-[#0468FF]">${formatted}</div>`,
+        iconSize: [100, 24],
+        iconAnchor: [50, 12],
+      }),
+    }).addTo(mapInstance.current!);
+
+    setDistanceLabel(label);
+  };
+
+  const handleMapClick = useCallback(
+    (e: L.LeafletMouseEvent) => {
+      if (!isMarkerModeActive || !mapInstance.current) return;
+
+      const clickedLatLng = e.latlng;
+
+      if (markers.length >= 2) {
+        resetMarkersAndLine();
+        return;
+      }
+
+      const newMarker = L.marker(clickedLatLng, { icon: blueDotIcon }).addTo(mapInstance.current);
+      const updatedMarkers = [...markers, newMarker];
+      setMarkers(updatedMarkers);
+
+      const latlngs = updatedMarkers.map(m => m.getLatLng());
+      if (latlngs.length >= 2) {
+        drawLineAndDistance(latlngs);
+      }
+    },
+    [isMarkerModeActive, markers],
+  );
+  // const handleMapClick = useCallback((e: L.LeafletEvent) => {
+  //   if (!isMarkerModeActive || !mapInstance.current) return;
+
+  //   const clickedLatLng = e.latlng;
+
+  //   setMarkers(prevMarkers => {
+  //     if (prevMarkers.length >= 2) {
+  //       resetMarkersAndLine();
+  //       return [];
+  //     }
+
+  //     const newMarker = L.marker(clickedLatLng, { icon: blueDotIcon }).addTo(mapInstance.current!);
+  //     const updatedMarkers = [...prevMarkers, newMarker];
+
+  //     if (updatedMarkers.length >= 2) {
+  //       const latlngs = updatedMarkers.map(m => m.getLatLng());
+  //       drawLineAndDistance(latlngs);
+  //     }
+
+  //     return updatedMarkers;
+  //   });
+  // }, [isMarkerModeActive]);
+  useEffect(() => {
+    if (!mapInstance.current) return;
+
+    const map = mapInstance.current;
+    if (isMarkerModeActive) {
+      map.on('click', handleMapClick);
+    } else {
+      map.off('click', handleMapClick);
+    }
+    return () => {
+      map.off('click', handleMapClick);
+    };
+  }, [isMarkerModeActive, handleMapClick]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+
+    const bottomRightButtons = new L.Control({ position: 'bottomright' });
+    bottomRightButtons.onAdd = function () {
+      const div = L.DomUtil.create('div', 'custom-map-buttons');
+      div.innerHTML = `
+      <div class="flex flex-col gap-[5px] p-[11px]">
+        <button class="w-[38px] h-[38px] bg-[#ffffff] rounded-[38px] flex items-center justify-center" id="firstButton"></button>
+        <button id="pinButton" class="w-[38px] h-[38px] bg-[#ffffff] rounded-[38px] flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#0468FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </button>
+
+        <button id="rulerButton" class="w-[38px] h-[38px] bg-[#ffffff] rounded-[38px] flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#0468FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/>
+            <path d="m14.5 12.5 2-2"/>
+            <path d="m11.5 9.5 2-2"/>
+            <path d="m8.5 6.5 2-2"/>
+            <path d="m17.5 15.5 2-2"/>
+          </svg>
+        </button>
+      </div>
+    `;
+      const pinButton = div.querySelector('#pinButton');
+      if (pinButton) {
+        pinButton.addEventListener('click', () => {
+          const center: LatLngTuple = [47.3769, 8.5417];
+          mapInstance.current?.setView(center, 13);
+        });
+      }
+      const rulerButton = div.querySelector('#rulerButton');
+      if (rulerButton) {
+        rulerButton.addEventListener('click', () => {
+          setIsMarkerModeActive(prevState => {
+            const newState = !prevState;
+            if (!newState) {
+              rulerButton.classList.remove('bg-blue-100');
+              rulerButton.classList.add('bg-white');
+            } else {
+              rulerButton.classList.remove('bg-white');
+              rulerButton.classList.add('bg-blue-100');
+            }
+            return newState;
+          });
+        });
+      }
+      return div;
+    };
+    bottomRightButtons.addTo(mapInstance.current);
+    bottomRightButtonsRef.current = bottomRightButtons;
+  }, []);
+  useEffect(() => {
+    const firstButtonContainer = bottomRightButtonsRef.current
+      ?.getContainer()
+      ?.querySelector('#firstButton');
+    if (firstButtonContainer) {
+      firstButtonContainer.innerHTML = '';
+      createRoot(firstButtonContainer).render(<ModalTimer data={selectedPoint!} />);
+    }
+  }, [selectedPoint]);
+
+  useEffect(() => {
+    console.log(points.length);
     if (mapRef.current && !mapInstance.current) {
       mapInstance.current = L.map(mapRef.current, { zoomControl: false }).setView(
         [47.3769, 8.5417],
@@ -126,96 +673,6 @@ export default function Map() {
 
       customBlockLeft.addTo(mapInstance.current);
 
-      const customControlContainer = new L.Control({ position: 'topright' });
-      customControlContainer.onAdd = function () {
-        const div = L.DomUtil.create('div', 'custom-map-container');
-
-        const wrapper = document.createElement('div');
-        wrapper.className =
-          'flex flex-wrap lg:flex-nowrap justify-center items-center gap-[10px] absolute top-[10px] right-[1px]';
-
-        const box1 = document.createElement('div');
-        box1.className =
-          'w-[192px] h-[57px] bg-[#fff] rounded-[15px] flex justify-center items-center ml-[20px] lg:ml-0 ';
-
-        const box2 = document.createElement('div');
-        box2.className =
-          'w-[215px] h-[57px] bg-[#fff] rounded-[15px] flex justify-center items-center';
-
-        const contentContainer = document.createElement('div');
-        contentContainer.className = 'flex items-center gap-2';
-
-        // Создаём SVG (иконку)
-        const svgIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svgIcon.setAttribute('width', '24');
-        svgIcon.setAttribute('height', '24');
-        svgIcon.setAttribute('viewBox', '0 0 24 24');
-        svgIcon.setAttribute('fill', 'none');
-        svgIcon.setAttribute('stroke', '#0468FF');
-        svgIcon.setAttribute('stroke-width', '2');
-        svgIcon.setAttribute('stroke-linecap', 'round');
-        svgIcon.setAttribute('stroke-linejoin', 'round');
-        svgIcon.classList.add('lucide', 'lucide-list-icon', 'lucide-list');
-
-        // Вставляем пути (path) в SVG
-        const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path1.setAttribute('d', 'M3 12h.01');
-        const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path2.setAttribute('d', 'M3 18h.01');
-        const path3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path3.setAttribute('d', 'M3 6h.01');
-        const path4 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path4.setAttribute('d', 'M8 12h13');
-        const path5 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path5.setAttribute('d', 'M8 18h13');
-        const path6 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path6.setAttribute('d', 'M8 6h13');
-
-        // Добавляем пути в SVG
-        svgIcon.appendChild(path1);
-        svgIcon.appendChild(path2);
-        svgIcon.appendChild(path3);
-        svgIcon.appendChild(path4);
-        svgIcon.appendChild(path5);
-        svgIcon.appendChild(path6);
-
-        // Создаём текст
-        const text = document.createElement('span');
-        text.textContent = '999 объекта списком'; // Текст
-        text.classList.add('font-semibold', 'text-[15px]'); // Применяем шрифт и цвет для текста
-
-        // Добавляем иконку и текст в контейнер
-        contentContainer.appendChild(svgIcon);
-        contentContainer.appendChild(text);
-
-        // Вставляем в box2
-        box2.appendChild(contentContainer);
-
-        // ✅ Контейнер ДЛЯ РЕАКТА внутри box1
-        const reactContainer = document.createElement('div');
-        reactContainer.id = 'modal-organizations-container';
-        reactContainer.style.width = '100%';
-        reactContainer.style.display = 'flex'; // ✅ Flex-контейнер
-        reactContainer.style.alignItems = 'center'; // ✅ Центр по вертикали
-        reactContainer.style.justifyContent = 'center'; // ✅ Центр по горизонтали
-
-        box1.appendChild(reactContainer); // ✅ Теперь внутри box1
-
-        wrapper.appendChild(box1);
-        wrapper.appendChild(box2);
-        div.appendChild(wrapper);
-
-        setTimeout(() => {
-          createRoot(reactContainer).render(
-            <ModalOrganizations onSelect={setSelectedOrganizations} />,
-          );
-        }, 0);
-        console.log(selectedOrganizations);
-        return div;
-      };
-
-      customControlContainer.addTo(mapInstance.current);
-
       const zoomInButton = new L.Control({ position: 'topright' });
 
       zoomInButton.onAdd = function () {
@@ -253,68 +710,8 @@ export default function Map() {
       };
 
       zoomOutButton.addTo(mapInstance.current);
-
-      // Три кнопки в правом нижнем углу
-      const bottomRightButtons = new L.Control({ position: 'bottomright' });
-      bottomRightButtons.onAdd = function () {
-        const div = L.DomUtil.create('div', 'custom-map-buttons');
-        div.innerHTML = `
-          <div class="flex flex-col gap-[5px] p-[11px] ">
-            <button class="w-[38px] h-[38px] bg-[#ffffff] rounded-[38px] flex items-center justify-center" id="firstButton">
-              <!-- Этот элемент будет заменен на React компонент -->
-            </button>
-            <button id="pinButton" class="w-[38px] h-[38px] bg-[#ffffff] rounded-[38px] flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#0468FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-            </button>
-      
-            <button id="rulerButton" class="w-[38px] h-[38px] bg-[#ffffff] rounded-[38px] flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#0468FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/>
-                <path d="m14.5 12.5 2-2"/>
-                <path d="m11.5 9.5 2-2"/>
-                <path d="m8.5 6.5 2-2"/>
-                <path d="m17.5 15.5 2-2"/>
-              </svg>
-            </button>
-          </div>
-        `;
-
-        // Интеграция React компонента в первую кнопку
-        const firstButtonContainer = div.querySelector('#firstButton');
-        if (firstButtonContainer) {
-          setTimeout(() => {
-            createRoot(firstButtonContainer).render(<ModalTimer />);
-          }, 0);
-        }
-
-        // Слушаем события кнопок
-        setTimeout(() => {
-          const pinButton = div.querySelector('#pinButton');
-          const rulerButton = div.querySelector('#rulerButton');
-
-          if (pinButton) {
-            pinButton.addEventListener('click', () => {
-              const center: LatLngTuple = [47.3769, 8.5417];
-              mapInstance.current?.setView(center, 13);
-            });
-          }
-
-          if (rulerButton) {
-            rulerButton.addEventListener('click', () => {
-              alert('Скоро...');
-            });
-          }
-        }, 100);
-
-        return div;
-      };
-
-      bottomRightButtons.addTo(mapInstance.current);
     }
-  }, []);
+  }, [points, selectedPoint]);
 
   return (
     <>

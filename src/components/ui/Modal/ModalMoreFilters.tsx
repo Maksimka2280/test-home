@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/shared/Button/Button';
 import { ButtonFilters } from '@/components/shared/Button/ButtonFilters.tsx/ButtonFilters';
 import { MiniGreyLine } from '@/components/shared/Filters/mini-grey-line';
 import { ChevronRight, X } from 'lucide-react';
@@ -8,11 +7,14 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilter, removeFilter } from '../../../store/FilterSlice/FilterSlices';
 import { RootState } from '../../../store/store';
+import { useFilter } from '@/components/Context/FromandToYersContext/FromandToYersContext';
+import { usePublicationDate } from '@/components/Context/PublicationDateContext/PublicationDateContext';
+import { useFloor } from '@/components/Context/FloorsContext/FloorsContext';
 type FilterButton = {
   label: string;
   width?: string;
-  type?: string; // Тип необязателен
-  id?: string; // id тоже необязателен
+  type?: string;
+  id?: string;
 };
 
 type FilterGroup = {
@@ -57,7 +59,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 5,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-5-1' },
       { label: 'Без ремонта', width: '140px', id: 'button-5-2' },
       { label: 'Косметический', width: '160px', id: 'button-5-3' },
       { label: 'Евроремонт', width: '140px', id: 'button-5-4' },
@@ -67,7 +68,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 6,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-6-1' },
       { label: 'Кирпич', width: '105px', id: 'button-6-2' },
       { label: 'Панельный', width: '130px', id: 'button-6-3' },
       { label: 'Деревянный', width: '140px', id: 'button-6-4' },
@@ -79,7 +79,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 7,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-7-1' },
       { label: 'Балкон', width: '115px', id: 'button-7-2' },
       { label: 'Лоджия', width: '115px', id: 'button-7-3' },
     ],
@@ -87,7 +86,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 8,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-8-1' },
       { label: 'Есть любой', width: '135px', id: 'button-8-2' },
       { label: 'Есть грузовой', width: '150px', id: 'button-8-3' },
     ],
@@ -95,7 +93,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 9,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-9-1' },
       { label: 'Газовая', width: '105px', id: 'button-9-2' },
       { label: 'Электрическая', width: '160px', id: 'button-9-3' },
     ],
@@ -103,7 +100,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 10,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-10-1' },
       { label: 'Смежная', width: '115px', id: 'button-10-2' },
       { label: 'Изолированная', width: '160px', id: 'button-10-3' },
     ],
@@ -111,7 +107,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 11,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-11-1' },
       { label: 'от 2 м', width: '100px', id: 'button-11-2' },
       { label: 'от 2,5 м', width: '100px', id: 'button-11-3' },
       { label: 'от 2,7 м', width: '100px', id: 'button-11-4' },
@@ -122,7 +117,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 12,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-12-1' },
       { label: 'Совмещенный', width: '155px', id: 'button-12-2' },
       { label: 'Раздельный', width: '140px', id: 'button-12-3' },
       { label: '2 и более', width: '120px', id: 'button-12-4' },
@@ -131,7 +125,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 13,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-13-1' },
       { label: 'Во двор', width: '110px', id: 'button-13-2' },
       { label: 'На улицу', width: '120px', id: 'button-13-3' },
     ],
@@ -139,7 +132,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 14,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-14-1' },
       { label: 'Без апартаментов', width: '180px', id: 'button-14-2' },
       { label: 'Только апартаменты', width: '200px', id: 'button-14-3' },
     ],
@@ -147,7 +139,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 15,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-15-1' },
       { label: 'Наземная', width: '120px', id: 'button-15-2' },
       { label: 'Многоуровневая', width: '170px', id: 'button-15-3' },
       { label: 'Подземная', width: '130px', id: 'button-15-4' },
@@ -156,7 +147,6 @@ const filterGroups: FilterGroup[] = [
   {
     id: 16,
     buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-16-1' },
       { label: 'Собственник', width: '145px', id: 'button-16-2' },
       { label: 'Агент', width: '90px', id: 'button-16-3' },
       { label: 'Застройщик', width: '140px', id: 'button-16-4' },
@@ -168,10 +158,7 @@ const filterGroups: FilterGroup[] = [
   },
   {
     id: 18,
-    buttons: [
-      { label: 'Неважно', width: '115px', id: 'button-18-1' },
-      { label: 'Введите дату', width: '150px', id: 'button-18-2' },
-    ],
+    buttons: [{ label: 'Введите дату', width: '150px', id: 'button-18-2' }],
   },
   {
     id: 19,
@@ -206,6 +193,9 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
     { title: 'Содержит слова в объявлении', group: filterGroups[18] },
   ].filter(section => section.group);
   const [isOpen, setIsOpen] = useState(false);
+  const { yearFrom, yearTo, updateYearFrom, updateYearTo } = useFilter();
+  const { setPublicationDate } = usePublicationDate();
+  const { floorFrom, floorTo, updateFloorFrom, updateFloorTo } = useFloor();
   const [activeButtonsByGroup, setActiveButtonsByGroup] = useState<Record<number, number[]>>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('activeButtonsByGroup');
@@ -226,32 +216,16 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
     } else {
       dispatch(addFilter(id));
     }
+    console.log(`Группа ${id}: активные кнопки ->`, [id]);
   };
 
   const toggleModal = () => setIsOpen(!isOpen);
-  const handleButtonClick = (
-    groupId: number,
-    buttonIndex: number,
-    label: string,
-    buttons: { label: string }[],
-  ) => {
+  const handleButtonClick = (groupId: number, buttonIndex: number) => {
     setActiveButtonsByGroup(prev => {
       const current = prev[groupId] || [];
 
-      // Если нажали "Неважно"
-      if (label === 'Неважно') {
-        const newState = { ...prev, [groupId]: [buttonIndex] };
-        console.log(`Группа ${groupId}: выбрана "Неважно"`);
-        return newState;
-      }
-
-      const notImportantIndex = buttons.findIndex(btn => btn.label === 'Неважно');
-      const filtered = current.filter(i => i !== notImportantIndex);
-
       const isActive = current.includes(buttonIndex);
-      const updated = isActive
-        ? filtered.filter(i => i !== buttonIndex)
-        : [...filtered, buttonIndex];
+      const updated = isActive ? current.filter(i => i !== buttonIndex) : [...current, buttonIndex];
 
       const newState = {
         ...prev,
@@ -287,7 +261,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
       )}
 
       <div
-        className={`fixed top-0 left-0 z-50 bg-white pt-[0px] pl-[20px] rounded-r-[25px] shadow-lg transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} w-full sm:w-[80%] md:w-[70%] lg:w-[1125px] h-full max-h-screen overflow-hidden`}
+        className={`fixed top-0 left-0 z-50 bg-white pt-[30px] pl-[30px] pb-[10px]  rounded-r-[25px] shadow-lg transition-transform duration-500 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} w-full sm:w-[80%] md:w-[70%] lg:w-[1125px] h-full max-h-screen overflow-hidden`}
       >
         <div className="h-full overflow-y-auto rounded-r-[25px]">
           {/* Кнопка закрытия */}
@@ -377,37 +351,35 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       <div className="flex sm:flex-wrap items-center gap-[10px]">
                         {group.buttons.map((button, buttonIndex) => {
                           if (button.type === 'checkbox') {
-                            const buttonId = button.id;
+                            const inputId = `CheckBox-${groupIndex}-${buttonIndex}`;
 
                             return (
                               <div
                                 key={`${groupIndex}-${buttonIndex}`}
                                 className="flex items-center gap-[10px] justify-end"
                               >
-                                <label htmlFor={buttonId} className="text-sm ml-4">
+                                <label htmlFor={inputId} className="text-sm ml-4 cursor-pointer">
                                   {button.label}
                                 </label>
-
                                 <input
                                   type="checkbox"
-                                  id={buttonId}
+                                  id={inputId}
                                   className="hidden"
-                                  checked={buttonId ? selectedFilters.includes(buttonId) : false}
-                                  onChange={() => buttonId && handleCheckboxChange(buttonId)}
+                                  checked={selectedFilters.includes(inputId)}
+                                  onChange={() => handleCheckboxChange(inputId)}
                                 />
 
                                 <label
-                                  htmlFor={buttonId}
+                                  htmlFor={inputId}
                                   className="w-[17px] h-[17px] flex items-center justify-center rounded-[5px] bg-[#F3F3F3] cursor-pointer transition-all duration-300"
                                 >
-                                  {buttonId && selectedFilters.includes(buttonId) && (
+                                  {selectedFilters.includes(inputId) && (
                                     <div className="w-[10px] h-[10px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
                                   )}
                                 </label>
                               </div>
                             );
                           }
-
                           return (
                             <ButtonFilters
                               key={`${groupIndex}-${buttonIndex}`}
@@ -429,6 +401,10 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                         <div className="flex gap-[20px]">
                           <div>
                             <input
+                              onChange={e => {
+                                updateFloorFrom(e.target.value);
+                              }}
+                              value={floorFrom}
                               id={`input-to-${groupIndex}`}
                               type="number"
                               placeholder="От"
@@ -437,6 +413,10 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                           </div>
                           <div>
                             <input
+                              onChange={e => {
+                                updateFloorTo(e.target.value);
+                              }}
+                              value={floorTo}
                               id={`input-to-${groupIndex}`}
                               type="number"
                               placeholder="До"
@@ -449,21 +429,31 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                     {groupIndex === 5 && (
                       <div className="flex sm:flex-wrap items-center mr-4 gap-[20px] mb-[20px]">
                         <div className="flex gap-[20px]">
-                          <div>
+                          <div className="relative">
                             <input
-                              id={`input-to-${groupIndex}`}
+                              id="input-from"
                               type="number"
                               placeholder="От"
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px]  items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              value={yearFrom}
+                              onChange={e => updateYearFrom(e.target.value)}
+                              className="w-[120px] h-[40px] border-none rounded-[15px] pl-[25px] pr-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder-transparent focus:outline-none"
                             />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#152242]">
+                              От
+                            </span>
                           </div>
-                          <div>
+                          <div className="relative">
                             <input
-                              id={`input-to-${groupIndex}`}
+                              id="input-to"
                               type="number"
                               placeholder="До"
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px]  items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              value={yearTo}
+                              onChange={e => updateYearTo(e.target.value)}
+                              className="w-[120px] h-[40px] border-none rounded-[15px] pl-[25px] pr-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder-transparent focus:outline-none"
                             />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#152242]">
+                              До
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -506,7 +496,28 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                           ) {
                             return null;
                           }
+                          if (button.label === 'Введите дату') {
+                            return (
+                              <input
+                                key={`${groupIndex}-${buttonIndex}`}
+                                type="date"
+                                className="h-[40px] w-[150px] pl-3 pr-2 bg-[#F3F3F3] text-[#152242] rounded-[15px] focus:outline-none"
+                                onChange={e => setPublicationDate(e.target.value)}
+                              />
+                            );
+                          }
 
+                          if (button.label === 'Введите слова') {
+                            return (
+                              <input
+                                key={`${groupIndex}-${buttonIndex}`}
+                                id=""
+                                type="text"
+                                placeholder="Введите слова"
+                                className="h-[40px] w-[280px] pl-3 pr-2 bg-[#F3F3F3] text-[#152242] rounded-[15px] focus:outline-none"
+                              />
+                            );
+                          }
                           return (
                             <>
                               {buttonIndex === 0 && groupIndex === 1 && <p>Общая </p>}
@@ -523,12 +534,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                                   console.log(
                                     `Clicked button ID: button-${groupIndex}-${buttonIndex}`,
                                   );
-                                  handleButtonClick(
-                                    groupId,
-                                    buttonIndex,
-                                    button.label,
-                                    group.buttons,
-                                  );
+                                  handleButtonClick(groupId, buttonIndex);
                                 }}
                               >
                                 {button.label}
@@ -554,6 +560,61 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                 <p className="min-w-[200px] text-[18px] text-left font-semibold text-gray-800">
                   {section.title}
                 </p>
+                {sectionIndex === 2 && (
+                  <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8">
+                    {section.group.buttons.map((button, buttonIndex) => {
+                      if (button.type === 'checkbox') {
+                        const inputId = `CheckBox-${sectionIndex}-${buttonIndex}`;
+                        return (
+                          <div
+                            key={`${sectionIndex}-${buttonIndex}`}
+                            className="flex items-center gap-2 sm:gap-4 justify-start sm:justify-between w-full sm:w-auto"
+                          >
+                            <label
+                              htmlFor={inputId}
+                              className="text-sm sm:text-base ml-2 sm:ml-4 cursor-pointer"
+                            >
+                              {button.label}
+                            </label>
+                            <input
+                              type="checkbox"
+                              id={inputId}
+                              className="hidden"
+                              checked={selectedFilters.includes(inputId)}
+                              onChange={() => handleCheckboxChange(inputId)}
+                            />
+                            <label
+                              htmlFor={inputId}
+                              className="w-[17px] h-[17px] flex items-center justify-center rounded-[5px] bg-[#F3F3F3] cursor-pointer transition-all duration-300"
+                            >
+                              {selectedFilters.includes(inputId) && (
+                                <div className="w-[10px] h-[10px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
+                              )}
+                            </label>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <ButtonFilters
+                          key={`${sectionIndex}-${buttonIndex}`}
+                          color="blue"
+                          id={`button-${sectionIndex}-${buttonIndex}`}
+                          height="40px"
+                          rounded="15px"
+                          width={button.width}
+                          className="w-full sm:w-auto"
+                          onClick={() => {
+                            console.log(`Clicked button ID: button-${sectionIndex}-${buttonIndex}`);
+                            handleButtonClick(section.group.id, buttonIndex);
+                          }}
+                        >
+                          {button.label}
+                        </ButtonFilters>
+                      );
+                    })}
+                  </div>
+                )}
 
                 <div className="flex flex-wrap sm:flex-row sm:items-center gap-4">
                   {sectionIndex === 1 && (
@@ -579,20 +640,65 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       </div>
                     </div>
                   )}
-                  {sectionIndex === 2 || sectionIndex === 3 || sectionIndex === 5 ? (
+                  {sectionIndex === 5 ? (
+                    <div className="flex sm:flex-wrap items-center mr-4 gap-[20px] mb-[20px]">
+                      <div className="flex sm:flex-wrap items-center mr-4 gap-[20px] mb-[20px]">
+                        <div className="flex gap-[20px]">
+                          <div className="relative">
+                            <input
+                              id="input-from"
+                              type="number"
+                              placeholder="От"
+                              value={yearFrom}
+                              onChange={e => updateYearFrom(e.target.value)}
+                              className="w-[120px] h-[40px] border-none rounded-[15px] pl-[25px] pr-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder-transparent focus:outline-none"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#152242]">
+                              От
+                            </span>
+                          </div>
+                          <div className="relative">
+                            <input
+                              id="input-to"
+                              type="number"
+                              placeholder="До"
+                              value={yearTo}
+                              onChange={e => updateYearTo(e.target.value)}
+                              className="w-[120px] h-[40px] border-none rounded-[15px] pl-[25px] pr-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder-transparent focus:outline-none"
+                            />
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#152242]">
+                              До
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : sectionIndex === 2 || sectionIndex === 3 ? (
                     <div className="flex gap-[20px]">
-                      <input
-                        id={`input-from-${sectionIndex}`}
-                        type="number"
-                        placeholder="От"
-                        className="w-[45px] h-[40px] border-none rounded-[15px] flex pl-[10px] items-center bg-[#F3F3F3] text-[#152242] text-left placeholder:text-[#152242] focus:outline-none"
-                      />
-                      <input
-                        id={`input-to-${sectionIndex}`}
-                        type="number"
-                        placeholder="До"
-                        className="w-[45px] h-[40px] border-none rounded-[15px] flex pl-[10px] items-center bg-[#F3F3F3] text-[#152242] text-left placeholder:text-[#152242] focus:outline-none"
-                      />
+                      <div>
+                        <input
+                          onChange={e => {
+                            updateFloorFrom(e.target.value);
+                          }}
+                          value={floorFrom}
+                          id={`input-to-${sectionIndex}`}
+                          type="number"
+                          placeholder="От"
+                          className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px]   items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          onChange={e => {
+                            updateFloorTo(e.target.value);
+                          }}
+                          value={floorTo}
+                          id={`input-to-${sectionIndex}`}
+                          type="number"
+                          placeholder="До"
+                          className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px]   items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                        />
+                      </div>
                     </div>
                   ) : section.group.buttons.some(btn => btn.type === 'checkbox') ? (
                     section.group.buttons.map((button, buttonIndex) => {
@@ -643,6 +749,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                             key={`${sectionIndex}-${buttonIndex}`}
                             type="date"
                             className="h-[40px] w-[150px] pl-3 pr-2 bg-[#F3F3F3] text-[#152242] rounded-[15px] focus:outline-none"
+                            onChange={e => setPublicationDate(e.target.value)}
                           />
                         );
                       }
@@ -652,7 +759,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                           <input
                             key={`${sectionIndex}-${buttonIndex}`}
                             type="text"
-                            placeholder="Введите слова"
                             className="h-[40px] w-[150px] pl-3 pr-2 bg-[#F3F3F3] text-[#152242] rounded-[15px] focus:outline-none"
                           />
                         );
@@ -660,32 +766,29 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
 
                       return (
                         <>
-                          {buttonIndex === 0 && sectionIndex === 1 && <p>Общая </p>}
-                          {buttonIndex === 0 && sectionIndex === 0 && <p>Не более </p>}
-                          <ButtonFilters
-                            key={`${sectionIndex}-${buttonIndex}`}
-                            color="blue"
-                            id={`button-${sectionIndex}-${buttonIndex}`}
-                            height="40px"
-                            rounded="15px"
-                            width={button.width}
-                            className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${activeButtons.includes(buttonIndex) ? 'bg-blue-700 text-white' : ''}`}
-                            onClick={() => {
-                              console.log(
-                                `Clicked button ID: button-${sectionIndex}-${buttonIndex}`,
-                              );
-                              handleButtonClick(
-                                groupId,
-                                buttonIndex,
-                                button.label,
-                                section.group.buttons,
-                              );
-                            }}
-                          >
-                            {button.label}
-                          </ButtonFilters>
+                          <div className="flex sm:flex-wrap items-center  gap-[20px] ">
+                            {buttonIndex === 0 && sectionIndex === 1 && <p>Общая </p>}
+                            {buttonIndex === 0 && sectionIndex === 0 && <p>Не более </p>}
+                            <ButtonFilters
+                              key={`${sectionIndex}-${buttonIndex}`}
+                              color="blue"
+                              id={`button-${sectionIndex}-${buttonIndex}`}
+                              height="40px"
+                              rounded="15px"
+                              width={button.width}
+                              className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${activeButtons.includes(buttonIndex) ? 'bg-blue-700 text-white' : ''}`}
+                              onClick={() => {
+                                console.log(
+                                  `Clicked button ID: button-${sectionIndex}-${buttonIndex}`,
+                                );
+                                handleButtonClick(groupId, buttonIndex);
+                              }}
+                            >
+                              {button.label}
+                            </ButtonFilters>
 
-                          {buttonIndex === 1 && sectionIndex === 1 && <p>Жилая </p>}
+                            {buttonIndex === 1 && sectionIndex === 1 && <p>Жилая </p>}
+                          </div>
                         </>
                       );
                     })
@@ -693,15 +796,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                 </div>
               </div>
             ))}
-          </div>
-
-          <div className="flex gap-[20px] justify-center items-center mt-[50px] flex-wrap">
-            <Button width="273px" height="60px" rounded="20px" color="blue">
-              Искать варианты
-            </Button>
-            <button className="bg-[#fff] border-[3px] border-[#152242] w-[270px] h-[60px] rounded-[20px] font-bold">
-              Сохранить фильтр
-            </button>
           </div>
         </div>
       </div>

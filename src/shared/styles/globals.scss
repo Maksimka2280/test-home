@@ -49,3 +49,8 @@ body {
 .leaflet-control{
   z-index: auto !important;
 }
+
+input:focus {
+  outline: none; 
+  border: none; 
+}

@@ -1,17 +1,39 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ChoiceLanguage from '@/components/ui/Modal/ModalChoiceLanguage';
 import Link from 'next/link';
 import { MiniGreyLine } from '../Filters/mini-grey-line';
 import { Bell, Heart, Menu, X } from 'lucide-react';
 
 import LoginModal from '@/components/ui/Modal/LoginandReg/Login';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config';
 
 export default function MainHeader() {
   const [isOpen2, setIsOpen2] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const handleMouseLeave = () => {
     setIsOpen2(false);
   };
+
+  useEffect(() => {
+    const checkAuth = async (): Promise<void> => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/me/`, { withCredentials: true });
+        console.log(response.data);
+
+        if (response.status === 200) {
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+        console.log(error);
+      }
+    };
+
+    void checkAuth();
+  }, []);
 
   return (
     <>
@@ -46,20 +68,25 @@ export default function MainHeader() {
             <ChoiceLanguage />
             <MiniGreyLine height="30px" />
             <Link href={'/favorites'}>
-              {' '}
               <Heart size={20} color={'#dbdbdb'} />
             </Link>
 
             <Bell size={20} color={'#dbdbdb'} />
 
             <div className="hidden xl:block">
+              {isAuthenticated ? (
+                <Link href={'/profile/Highlight'}>
+                  <div className="w-8 h-8 rounded-full bg-orange-500 flex justify-center items-center cursor-pointer">
+                    <span className="text-white">P</span>
+                  </div>
+                </Link>
+              ) : (
+                <LoginModal />
+              )}
               <LoginModal />
             </div>
-
             <button
-              className={`xl:hidden transition-transform duration-300 ${
-                isOpen2 ? 'rotate-90' : 'rotate-0'
-              }`}
+              className={`xl:hidden transition-transform duration-300 ${isOpen2 ? 'rotate-90' : 'rotate-0'}`}
               onClick={() => setIsOpen2(!isOpen2)}
             >
               {isOpen2 ? (
@@ -77,8 +104,16 @@ export default function MainHeader() {
             isOpen2 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className="absolute top-4 right-4">
-            <LoginModal />
+          <div className="block xl:hidden">
+            {isAuthenticated ? (
+              <Link href={'/profile/Highlight'}>
+                <div className="w-8 h-8 rounded-full bg-orange-500 flex justify-center items-center cursor-pointer">
+                  <span className="text-white">P</span>
+                </div>
+              </Link>
+            ) : (
+              <LoginModal />
+            )}
           </div>
 
           <Link href={'#'} className="text-[14px]">

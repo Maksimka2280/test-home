@@ -10,7 +10,7 @@ import { API_BASE_URL } from '@/config';
 import axios from 'axios';
 
 interface LoginResponse {
-  access_token: string;
+  detail?: string;
 }
 
 export default function LoginModal() {
@@ -18,16 +18,12 @@ export default function LoginModal() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginErrors, setLoginErrors] = useState<{ email?: string; password?: string }>({});
-
   const toggleModal = () => setIsOpen(prev => !prev);
   const toggleRegisterModal = () => {
     setIsOpen(false);
     setIsRegisterOpen(true);
   };
-
-  const closeRegisterModal = () => {
-    setIsRegisterOpen(false);
-  };
+  const closeRegisterModal = () => setIsRegisterOpen(false);
 
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -57,14 +53,24 @@ export default function LoginModal() {
     setLoginErrors(errors);
     return isValid;
   };
-
-  const LoginApi = async (params: { email: string; password: string }): Promise<LoginResponse> => {
+  const loginApi = async (params: { email: string; password: string }): Promise<LoginResponse> => {
     try {
-      const response = await axios.post<LoginResponse>(`${API_BASE_URL}/login/`, {
+      console.log('Отправляемые данные:', {
         email: params.email,
         password: params.password,
       });
 
+      const response = await axios.post<LoginResponse>(
+        `${API_BASE_URL}/login/`,
+        {
+          email: params.email,
+          password: params.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+      console.log('Логин успешен:', response.data);
       return response.data;
     } catch (error) {
       console.error('Ошибка при входе в аккаунт:', error);
@@ -77,14 +83,12 @@ export default function LoginModal() {
 
     if (validateLogin()) {
       try {
-        const response = await LoginApi({
+        await loginApi({
           email: loginData.email,
           password: loginData.password,
         });
 
-        console.log('Авторизация успешна:', response.access_token);
         setIsOpen(false);
-        localStorage.setItem('access_token', response.access_token);
       } catch (error) {
         console.error('Ошибка авторизации:', error);
       }

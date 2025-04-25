@@ -1,6 +1,33 @@
+'use client';
 import MiniCardProfile from '@/components/shared/Card/MiniCardPeofile';
-
+import { API_BASE_URL } from '@/config';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+interface UserAccount {
+  subscription_until: string;
+  promocode: string;
+  email: string;
+}
 export default function Highlight() {
+  const [infoAcc, setIngoAcc] = useState<UserAccount | null>(null);
+  useEffect(() => {
+    const fetchCurrentUser = async (): Promise<void> => {
+      console.log('Запрашиваем /me/ с withCredentials...');
+
+      try {
+        const response = await axios.get<UserAccount>(`${API_BASE_URL}/get_profile/`, {
+          withCredentials: true,
+        });
+
+        setIngoAcc(response.data);
+        console.log('Ответ /что/:', response.data);
+      } catch (error) {
+        console.error('Ошибка запроса /что/:', error);
+      }
+    };
+
+    void fetchCurrentUser();
+  }, []);
   return (
     <>
       <div className="flex flex-wrap md:flex-col lg:flex-row gap-[20px]">
@@ -8,7 +35,7 @@ export default function Highlight() {
           <div className="w-full h-[100px] rounded-[20px] bg-[#0468FF] text-white flex justify-center items-center gap-[60px] px-[10px]">
             <div>
               <p className="font-extralight text-[10px] md:text-[15px]">Подписка активна:</p>
-              <p className="font-bold md:text-[20px]">до 31.11.2025</p>
+              <p className="font-bold md:text-[20px]">до {infoAcc?.subscription_until}</p>
             </div>
             <button className="w-[230px] h-[70px] rounded-[20px] bg-white text-black font-bold">
               Оплатить
@@ -17,7 +44,7 @@ export default function Highlight() {
           <div className="w-full h-[100px] rounded-[20px] bg-[#ffffff] flex justify-center items-center gap-[40px] px-[10px]">
             <div>
               <p className="font-extralight text-[10px] md:text-[15px]">Активируйте промокод:</p>
-              <p className="font-bold text-[14px] md:text-[20px]">Нет активных</p>
+              <p className="font-bold text-[14px] md:text-[20px]">{infoAcc?.promocode}</p>
             </div>
             <button className="max-w-[230px] w-full h-[70px] rounded-[20px] bg-[#F3F3F3] text-black font-bold">
               Промокод

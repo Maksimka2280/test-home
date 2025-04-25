@@ -13,9 +13,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
 import citiesReducer from './citiesSlice/citiesSlices';
 import filtersReducer from './FilterSlice/FilterSlices';
+import cardSlice from './cardSlice/Cardslice';
+
 const rootReducer = combineReducers({
   cities: citiesReducer,
   filters: filtersReducer,
+  cards: cardSlice,
 });
 
 const persistConfig = {

@@ -5,19 +5,19 @@ import {
   ChevronLeft,
   ChevronRight,
   CreditCard,
-  Heart,
   Home,
   MessageSquare,
   Star,
   User,
 } from 'lucide-react';
 import { useState } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config';
 
 const menuItems = [
   { key: 'important', label: 'Важное', icon: <Star size={18} />, disabled: false },
   { key: 'profile', label: 'Профиль', icon: <User size={18} />, disabled: false },
   { key: 'subscription', label: 'Подписка', icon: <CreditCard size={18} />, disabled: false },
-  { key: 'favorites', label: 'Избранное', icon: <Heart size={18} />, disabled: false },
   { key: 'notifications', label: 'Уведомления', icon: <Bell size={18} />, disabled: false },
   {
     key: 'savedSearches',
@@ -42,6 +42,27 @@ interface SideMenuProps {
 export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/logout`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+      console.log('Ответ от сервера:', response);
+
+      if (response.status === 200) {
+        console.log('Выход выполнен успешно');
+      } else {
+        console.error('Ошибка при выходе', response);
+      }
+    } catch (error) {
+      console.error('Ошибка при запросе на выход:', error);
+    }
+  };
+
   return (
     <aside
       className={`relative transition-[width] duration-300 ease-in-out mr-[30px] ${isCollapsed ? 'w-[76px]' : 'w-[260px]'} 
@@ -65,7 +86,7 @@ export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
             onClick={() => !item.disabled && setActiveTab(item.key)}
             className={`
               flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition
-              ${item.disabled ? 'text-gray-400 cursor-not-allowed' : ''}
+              ${item.disabled ? 'text-gray-400 cursor-not-allowed' : ''} 
               ${
                 activeTab === item.key
                   ? 'bg-blue-600 text-white font-semibold'
@@ -81,7 +102,9 @@ export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
         ))}
 
         <div className={`${isCollapsed ? 'ml-0' : 'ml-11'} pt-[30px]`}>
-          <button className="font-semibold text-sm text-black mb-4">Выйти</button>
+          <button onClick={handleLogout} className="font-semibold text-sm text-black mb-4">
+            Выйти
+          </button>
           <div
             className={`text-blue-600 cursor-pointer hover:underline transition-all duration-300 ${
               isCollapsed ? 'text-[12px]' : 'text-sm'
