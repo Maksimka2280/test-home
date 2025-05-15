@@ -1,70 +1,111 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Heart } from 'lucide-react';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config';
 
 type Notification = {
   id: number;
-  date: string;
-  time: string;
+  user_id: number;
   text: string;
+  marked: boolean;
   read: boolean;
-  favorite: boolean;
+  created_at: string;
 };
 
-const initialNotifications: Notification[] = [
-  {
-    id: 1,
-    date: '26.12.24',
-    time: '22:46',
-    text: 'Текст уведомления Текст уведомления Текст уведомления',
-    read: false,
-    favorite: false,
-  },
-  {
-    id: 2,
-    date: '26.12.24',
-    time: '22:46',
-    text: 'Текст уведомления Текст уведомления Текст уведомления',
-    read: false,
-    favorite: false,
-  },
-  {
-    id: 3,
-    date: '26.12.24',
-    time: '22:46',
-    text: 'Текст уведомления Текст уведомления Текст уведомления',
-    read: true,
-    favorite: true,
-  },
-];
-
 export default function Notifications() {
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
 
-  const handleToggleFavorite = (id: number) => {
-    setNotifications(prev =>
-      prev.map(notif =>
-        notif.id === id
-          ? {
-              ...notif,
-              favorite: !notif.favorite,
-              read: true,
-            }
-          : notif,
-      ),
-    );
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/notifications/get_all`, {
+          withCredentials: true,
+        });
+        if (response.status === 200 && Array.isArray(response.data)) {
+          setNotifications(response.data);
+        } else {
+          console.error('Некорректный формат данных уведомлений');
+        }
+      } catch (error) {
+        console.error('Ошибка при получении уведомлений:', error);
+      }
+    };
+
+    void fetchNotifications();
+  }, []);
+
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/notifications/mark_as_read/${id}`, null, {
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setNotifications(prev =>
+          prev.map(notif => (notif.id === id ? { ...notif, read: true } : notif)),
+        );
+      }
+    } catch (error) {
+      console.error('Ошибка при пометке уведомления как прочитанного:', error);
+    }
   };
 
-  const handleMarkAsRead = (id: number) => {
-    setNotifications(prev =>
-      prev.map(notif => (notif.id === id ? { ...notif, read: true } : notif)),
-    );
+  const handleToggleFavorite = async (id: number, currentMarked: boolean) => {
+    try {
+      if (!currentMarked) {
+        const response = await axios.post(
+          `${API_BASE_URL}/notifications/mark_as_liked/${id}`,
+          { marked: true },
+          {
+            withCredentials: true,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+
+        if (response.status === 200) {
+          setNotifications(prev =>
+            prev.map(notif => (notif.id === id ? { ...notif, marked: true, read: true } : notif)),
+          );
+        }
+      } else {
+        const response = await axios.post(
+          `${API_BASE_URL}/notifications/unlike_notification/${id}`,
+          {},
+          {
+            withCredentials: true,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+
+        if (response.status === 200) {
+          setNotifications(prev =>
+            prev.map(notif => (notif.id === id ? { ...notif, marked: false } : notif)),
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка при переключении избранного:', error);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
+  const markAllAsRead = async () => {
+    try {
+      await axios.post(
+        `${API_BASE_URL}/notifications/read_all_notifications`,
+        {},
+        { withCredentials: true },
+      );
+      setNotifications(prev =>
+        prev.map(notif => ({
+          ...notif,
+          read: true,
+        })),
+      );
+    } catch (error) {
+      console.error('Ошибка при пометке всех уведомлений как прочитанных:', error);
+    }
   };
 
   const clearArray = () => {
@@ -74,6 +115,7 @@ export default function Notifications() {
   const toggleShowFavorites = () => {
     setShowFavorites(prev => !prev);
   };
+
   const getNotificationWord = (count: number) => {
     const mod10 = count % 10;
     const mod100 = count % 100;
@@ -84,19 +126,56 @@ export default function Notifications() {
   };
 
   const displayedNotifications = showFavorites
-    ? notifications.filter(notif => notif.favorite)
+    ? notifications.filter(notif => notif.marked)
     : notifications;
+
+  const addNotification = async (newNotif: {
+    user_id: number;
+    text: string;
+    marked: boolean;
+    read: boolean;
+  }) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/notifications/add_notification`,
+        newNotif,
+        { withCredentials: true },
+      );
+
+      if (response.status === 200) {
+        setNotifications(prev => [...prev, response.data]);
+      } else {
+        console.error('Не удалось добавить уведомление на сервер');
+      }
+    } catch (error) {
+      console.error('Ошибка при добавлении уведомления на сервер:', error);
+    }
+  };
+
+  const addSampleNotification = async () => {
+    const newNotif = {
+      user_id: 1,
+      text: 'Треп хата готова',
+      marked: false,
+      read: false,
+    };
+
+    await addNotification(newNotif);
+  };
 
   return (
     <div className="p-4 space-y-6">
-      {/* Header */}
       <div className="flex flex-wrap items-center justify-between">
+        <button onClick={addSampleNotification} className="text-[#0468FF]">
+          ➕ Добавить вручную
+        </button>
+
         <h1 className="text-[28px] sm:text-[33px] font-bold">Уведомления</h1>
+
         <div className="flex flex-wrap items-center mt-[20px] md:mt-0 gap-4 sm:gap-[45px] text-xs sm:text-sm">
           <p>
             {displayedNotifications.length} {getNotificationWord(displayedNotifications.length)}
           </p>
-
           <button onClick={markAllAsRead} className="text-[#0468FF]">
             Прочитать все
           </button>
@@ -117,39 +196,56 @@ export default function Notifications() {
             </p>
           </div>
         )}
-        {displayedNotifications.map(notif => (
-          <div
-            key={notif.id}
-            className={`flex flex-wrap items-center py-2 cursor-pointer ${
-              notif.read ? 'text-gray-400' : 'font-semibold text-[#0D1F3A]'
-            }`}
-            onClick={() => handleMarkAsRead(notif.id)}
-          >
-            <div className="flex flex-col w-20 sm:hidden text-xs">
-              <span>{notif.date}</span>
-              <span className="text-gray-400">{notif.time}</span>
+        {displayedNotifications.map(notif => {
+          const createdAt = new Date(notif.created_at);
+          const date = createdAt.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          });
+
+          const time = createdAt.toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+          return (
+            <div
+              key={notif.id}
+              className={`flex flex-wrap items-center py-2 cursor-pointer ${notif.read ? 'text-gray-400' : 'font-semibold text-[#0D1F3A]'}
+                }`}
+              onClick={() => handleMarkAsRead(notif.id)}
+            >
+              <div className="flex flex-col w-20 sm:hidden text-xs">
+                <span>{date}</span>
+                <span className="text-gray-400">{time}</span>
+              </div>
+
+              <div className="hidden sm:block w-24">{date}</div>
+              <div className="hidden sm:block w-16">{time}</div>
+
+              <div className="w-6 flex justify-center items-center mr-[5px] md:hidden">
+                {notif.read && <Check size={18} className="text-[#0468FF]" />}
+              </div>
+
+              <div className="flex-1 text-[10px] sm:text-sm">{notif.text}</div>
+
+              <div className="ml-auto w-10 flex justify-center">
+                <Heart
+                  className={notif.marked ? 'text-[#0468FF] fill-[#0468FF]' : 'text-gray-400'}
+                  size={18}
+                  onClick={e => {
+                    e.stopPropagation();
+                    void handleToggleFavorite(notif.id, notif.marked);
+                  }}
+                />
+              </div>
+
+              <div className="hidden md:block w-24 text-right">
+                {notif.read ? 'Прочитано' : <span className="text-[#0468FF]">Не прочитано</span>}
+              </div>
             </div>
-            <div className="hidden sm:block w-24">{notif.date}</div>
-            <div className="hidden sm:block w-16">{notif.time}</div>
-            <div className="w-6 flex justify-center items-center mr-[5px] md:hidden">
-              {notif.read && <Check size={18} className="text-[#0468FF]" />}
-            </div>
-            <div className="flex-1 text-[10px] sm:text-sm">{notif.text}</div>
-            <div className="w-10 flex justify-center">
-              <Heart
-                className={notif.favorite ? 'text-[#0468FF] fill-[#0468FF]' : 'text-gray-400'}
-                size={18}
-                onClick={e => {
-                  e.stopPropagation();
-                  handleToggleFavorite(notif.id);
-                }}
-              />
-            </div>
-            <div className="hidden md:block w-24 text-right">
-              {notif.read ? 'Прочитано' : <span className="text-[#0468FF]">Не прочитано</span>}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

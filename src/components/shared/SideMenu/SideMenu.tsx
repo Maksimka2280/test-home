@@ -13,6 +13,8 @@ import {
 import { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
+import { useRouter } from 'next/navigation';
+import { useLogout } from '@/components/Context/QuitContext/QuitContext';
 
 const menuItems = [
   { key: 'important', label: 'Важное', icon: <Star size={18} />, disabled: false },
@@ -40,9 +42,13 @@ interface SideMenuProps {
 }
 
 export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
+  const router = useRouter();
+  const { isLoggingOut, setIsLoggingOut, setIsLoggedOut } = useLogout(); // Используем контекст для состояния выхода
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
+
     try {
       const response = await axios.post(
         `${API_BASE_URL}/logout`,
@@ -52,15 +58,20 @@ export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
         },
       );
       console.log('Ответ от сервера:', response);
-
       if (response.status === 200) {
         console.log('Выход выполнен успешно');
+        setIsLoggedOut(true);
       } else {
         console.error('Ошибка при выходе', response);
       }
     } catch (error) {
       console.error('Ошибка при запросе на выход:', error);
+    } finally {
+      setIsLoggingOut(false);
     }
+  };
+  const handleLeft = () => {
+    router.push('/');
   };
 
   return (
@@ -84,17 +95,9 @@ export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
           <li
             key={item.key}
             onClick={() => !item.disabled && setActiveTab(item.key)}
-            className={`
-              flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition
-              ${item.disabled ? 'text-gray-400 cursor-not-allowed' : ''} 
-              ${
-                activeTab === item.key
-                  ? 'bg-blue-600 text-white font-semibold'
-                  : !item.disabled
-                    ? 'text-gray-800 hover:bg-gray-100'
-                    : ''
-              }
-            `}
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition
+              ${item.disabled ? 'text-gray-400 cursor-not-allowed' : ''}
+              ${activeTab === item.key ? 'bg-blue-600 text-white font-semibold' : !item.disabled ? 'text-gray-800 hover:bg-gray-100' : ''}`}
           >
             <span className="w-4">{item.icon}</span>
             {!isCollapsed && item.label}
@@ -102,13 +105,23 @@ export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
         ))}
 
         <div className={`${isCollapsed ? 'ml-0' : 'ml-11'} pt-[30px]`}>
-          <button onClick={handleLogout} className="font-semibold text-sm text-black mb-4">
-            Выйти
-          </button>
+          {isLoggingOut ? (
+            <button className="font-semibold text-sm text-black mb-4 bg-gray-200 p-2 rounded-lg cursor-not-allowed">
+              Выход...
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                handleLeft();
+                void handleLogout();
+              }}
+              className="font-semibold text-sm text-black mb-4"
+            >
+              Выйти
+            </button>
+          )}
           <div
-            className={`text-blue-600 cursor-pointer hover:underline transition-all duration-300 ${
-              isCollapsed ? 'text-[12px]' : 'text-sm'
-            }`}
+            className={`text-blue-600 cursor-pointer hover:underline transition-all duration-300 ${isCollapsed ? 'text-[12px]' : 'text-sm'}`}
           >
             Нужна помощь
           </div>

@@ -8,6 +8,22 @@ import NewGroup from '@/components/ui/Modal/ModalNewGroup';
 import { API_BASE_URL } from '@/config';
 import { FilteredFavCards } from '@/components/shared/Filters/FilterFavoritesConditions';
 import { List, Plus } from 'lucide-react';
+import { CardType } from '@/types/Card';
+interface ResponseData {
+  quick_favorites: CardType[];
+  favorite_groups: CardType[];
+}
+interface Group {
+  name: string;
+  user_id: number;
+  id: number;
+  adverts: { id: number; title: string; price: number }[];
+}
+interface BasicCard {
+  id: number;
+  title: string;
+  price: number;
+}
 
 export default function Favorites() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,20 +31,31 @@ export default function Favorites() {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isCustomOrderOpen, setIsCustomOrderOpen] = useState(false);
   const [advertData, setAdvertData] = useState<any[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Состояние для проверки авторизации
+  const [favoriteGroups, setFavoriteGroups] = useState<any[]>([]);
+  const [favoriteGroupsCustom, setFavoriteGroupCustoms] = useState<any[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const checkAuth = async (): Promise<void> => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/me/`, { withCredentials: true });
-        console.log(response.data);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedCardIds, setSelectedCardIds] = useState<number[]>([]);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get<ResponseData>(`${API_BASE_URL}/get_user_info/`, {
+          withCredentials: true,
+        });
+        const favGroup = response.data.quick_favorites;
+        const Groupe = response.data.favorite_groups;
         if (response.status === 200) {
           setIsAuthenticated(true);
+          setFavoriteGroups(favGroup ?? []);
+          setFavoriteGroupCustoms(Groupe ?? []);
+        } else {
+          setIsAuthenticated(false);
         }
       } catch (error) {
+        console.error('Auth check error:', error);
         setIsAuthenticated(false);
-        console.log(error);
       }
     };
 
@@ -52,7 +79,6 @@ export default function Favorites() {
             const data = responses.map(response => response.data);
             if (Array.isArray(data)) {
               setAdvertData(data);
-              console.log(data);
             } else {
               console.error('Ошибка: данные не в формате массива');
             }
@@ -68,22 +94,53 @@ export default function Favorites() {
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
+
+    if (!isChecked && selectedGroup) {
+      const groupCardIds = selectedGroup.adverts.map((ad: BasicCard) => ad.id);
+
+      setSelectedCardIds(groupCardIds);
+    } else {
+      setSelectedCardIds([]);
+    }
   };
 
   const clearAllLikedCards = () => {
     const keysToRemove: string[] = [];
 
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.endsWith('-liked')) {
-        keysToRemove.push(key);
+    if (selectedCardIds.length > 0) {
+      selectedCardIds.forEach(id => {
+        const key = `${id}-liked`;
+        if (localStorage.getItem(key)) {
+          keysToRemove.push(key);
+          localStorage.removeItem(key);
+        }
+      });
+    } else {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.endsWith('-liked')) {
+          keysToRemove.push(key);
+          localStorage.removeItem(key);
+        }
       }
     }
 
-    keysToRemove.forEach(key => localStorage.removeItem(key));
+    const remaining: Group[] = advertData.filter((ad: Group) => !selectedCardIds.includes(ad.id));
 
-    console.log('Удалено:', keysToRemove);
+    setAdvertData(remaining);
+    if (selectedGroup) {
+      const updatedGroup = {
+        ...selectedGroup,
+        adverts: selectedGroup.adverts.filter(
+          (ad: { id: number }) => !selectedCardIds.includes(ad.id),
+        ),
+      };
+      setSelectedGroup(updatedGroup);
+    }
+    setSelectedCardIds([]);
+    setIsChecked(false);
   };
+
   useEffect(() => {
     if (isAuthenticated === null) return;
     const timeout = setTimeout(() => {
@@ -92,9 +149,49 @@ export default function Favorites() {
     return () => clearTimeout(timeout);
   }, [isAuthenticated]);
 
+  const colors = [
+    '#818FB8',
+    '#435FAD',
+    '#D11D04',
+    '#5C9EAD',
+    '#F2B134',
+    '#AB3E5B',
+    '#3A405A',
+    '#E26D5C',
+  ];
+
   if (isLoading) {
     return <div></div>;
   }
+  const handleDeleteFromGroup = async (advertId: number) => {
+    if (!selectedGroup) return;
+
+    try {
+      await axios.post(
+        `${API_BASE_URL}/favorite_groupsremove_from_favorite_group/${selectedGroup.id}`,
+        { id: advertId },
+        {
+          withCredentials: true,
+        },
+      );
+    } catch (error) {
+      console.error('Ошибка при удалении из группы:', error);
+    }
+  };
+
+  const handleDeleteFromFavorites = async (advertId: number) => {
+    try {
+      await axios.post(
+        `${API_BASE_URL}/favorite_groups/delete_from_favorites_list/${advertId}`,
+        null,
+        {
+          withCredentials: true,
+        },
+      );
+    } catch (error) {
+      console.error('Ошибка при удалении из избранного:', error);
+    }
+  };
 
   return (
     <div className="mt-[50px]">
@@ -118,7 +215,7 @@ export default function Favorites() {
               </div>
               <div>
                 <p className="font-bold text-[14px] md:text-[16px]">Все объявления</p>
-                <p className="text-[12px] md:text-[14px]">{advertData.length} объявлений</p>
+                <p className="text-[12px] md:text-[14px]">{favoriteGroups.length} объявлений</p>
               </div>
             </div>
 
@@ -156,7 +253,9 @@ export default function Favorites() {
                 <div className="w-[8px] md:w-[10px] h-[8px] md:h-[10px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
               )}
             </label>
-            <p className="text-[14px] md:text-[16px]">{advertData.length} объявлений</p>
+            <p className="text-[14px] md:text-[16px]">
+              {selectedGroup ? selectedGroup.adverts.length : favoriteGroups.length} объявлений
+            </p>
             <button
               className="border-none text-[#0468FF] lg:ml-[20px] md:ml-[40px] text-[14px] md:text-[16px]"
               onClick={clearAllLikedCards}
@@ -183,12 +282,48 @@ export default function Favorites() {
                   </div>
                 </div>
               </li>
+              {favoriteGroupsCustom.length > 0 ? (
+                favoriteGroupsCustom.map((group: Group, index) => {
+                  const color = colors[index % colors.length];
+                  return (
+                    <li
+                      key={group.id}
+                      onClick={() => setSelectedGroup(group)}
+                      className="cursor-pointer"
+                    >
+                      <div className="w-[245px] h-[80px] pl-[15px] pr-[10px] rounded-[10px] bg-[#ffffff] mt-[20px] flex gap-[20px] justify-center items-center">
+                        <div
+                          className="w-[55px] h-[55px] rounded-[10px] flex justify-center items-center cursor-pointer"
+                          style={{ backgroundColor: color }}
+                        />
+                        <div className="flex flex-col flex-grow max-w-[calc(100%-75px)]">
+                          <p className="font-bold text-[16px] text-[#152242] truncate">
+                            {group.name}
+                          </p>
+                          <p className="text-[16px] text-[#152242]">
+                            {group.adverts.length} объявлений
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })
+              ) : (
+                <p></p>
+              )}
 
               <NewGroup isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </ul>
           </div>
           <div className="flex flex-col gap-[50px]">
-            <FilteredFavCards cards={advertData} />
+            <FilteredFavCards
+              cards={selectedGroup ? selectedGroup.adverts : favoriteGroups}
+              onDelete={
+                selectedGroup
+                  ? id => handleDeleteFromGroup(Number(id))
+                  : id => handleDeleteFromFavorites(Number(id))
+              }
+            />
           </div>
         </div>
       </div>

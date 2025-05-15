@@ -5,14 +5,37 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toggleDelCard } from '../../../store/cardSlice/Cardslice';
+import axios from 'axios';
+import { CardType } from '@/types/Card';
+import { API_BASE_URL } from '@/config';
+
 export default function ModalLayers() {
   const [isOpen, setIsOpen] = useState(true);
   const [layeredIds, setLayeredIds] = useState<number[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchComparisons = async () => {
+      try {
+        const response = await axios.get<CardType[]>(`${API_BASE_URL}/comparisons/get_all`, {
+          withCredentials: true,
+        });
+        const ids = response.data.map(item => Number(item.id));
+        setLayeredIds(ids);
+      } catch (error) {
+        console.error('Ошибка при получении сравнений:', error);
+      }
+    };
+
+    void fetchComparisons();
+  }, []);
+
   const clearStorage = () => {
     dispatch(toggleDelCard());
   };
+
+  // Закрытие модалки при клике вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -29,19 +52,16 @@ export default function ModalLayers() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  useEffect(() => {
-    const likedIds = Object.keys(localStorage)
-      .filter(key => key.endsWith('-layers') && localStorage.getItem(key) === 'true')
-      .map(key => parseInt(key.split('-')[0]));
-
-    setLayeredIds(likedIds);
-  }, []);
-
-  const handleClearLayers = () => {
-    setLayeredIds([]);
-    Object.keys(localStorage)
-      .filter(key => key.endsWith('-layers'))
-      .forEach(key => localStorage.removeItem(key));
+  const handleClearLayers = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/comparisons/delete_all`, {
+        withCredentials: true,
+      });
+      setLayeredIds([]);
+      clearStorage();
+    } catch (error) {
+      console.error('Ошибка при удалении сравнений:', error);
+    }
   };
 
   return (
@@ -52,14 +72,11 @@ export default function ModalLayers() {
             ref={modalRef}
             className="max-w-[530px] w-full bg-white rounded-[20px] shadow-lg p-5 transition-all duration-300"
           >
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-1">
               <h1 className="font-bold text-[20px]">Варианты в сравнении</h1>
               <button
                 className="bg-[#fff] border-none text-[#0468FF] text-[15px] ml-auto"
-                onClick={() => {
-                  handleClearLayers();
-                  clearStorage();
-                }}
+                onClick={handleClearLayers}
               >
                 Удалить
               </button>

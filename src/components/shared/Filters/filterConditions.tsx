@@ -5,76 +5,30 @@ import { RootState } from '@/store/store';
 import { useFilter } from '@/components/Context/FromandToYersContext/FromandToYersContext';
 import { usePublicationDate } from '@/components/Context/PublicationDateContext/PublicationDateContext';
 import { useFloor } from '@/components/Context/FloorsContext/FloorsContext';
-
-export interface CardType {
-  id: string;
-  title: string;
-  city: string;
-  street: string;
-  address: string;
-  description: string;
-  total_area: number;
-  living_area: number;
-  kitchen_area: number;
-  floor: number;
-  ceiling_height: number;
-  bathroom: string;
-  balcony: string;
-  renovation: string;
-  layout: string;
-  rooms: number;
-  is_apartment: boolean;
-  window_view: string;
-  total_floors: number;
-  build_year: number;
-  construction_series: string;
-  chute: string;
-  lifts: number;
-  freight_lifts: boolean;
-  passenger_lifts: boolean;
-  house_type: string;
-  type_of_floors: string;
-  parking: string;
-  entrances: number;
-  heating: string;
-  accidence: string;
-  gas_supply: string;
-  fridge: boolean;
-  washer: boolean;
-  shower_cabin: boolean;
-  room_furniture: boolean;
-  dishwasher: boolean;
-  conditioner: boolean;
-  kitchen_furniture: boolean;
-  kitchen_furniture_type: string;
-  internet: boolean;
-  tv: boolean;
-  price: number;
-  utility_payments: string;
-  deposit: string;
-  fee: string;
-  prepayment: string;
-  tenancy: string;
-  rent_type: string;
-  lat: number;
-  lon: number;
-  time_on_foot_to_subway: number;
-  time_on_transport_to_subway: number;
-  seller: string;
-  sell_conditions: string;
-  favorite_groups: any[];
-  comments: any[];
-  created_at: Date;
-}
+import { CardType } from '@/types/Card';
+import { useKitchenAreaFilter } from '@/components/Context/ChickenContext/ChickenContext';
+import { useTotalAreaFilter } from '@/components/Context/TotakContext/TotakContext';
+import { useLivingArea } from '@/components/Context/LiveAreaContext/LiveAreaContext';
 
 interface FilteredCardsProps {
   cards: CardType[];
+  favoriteGroups: number[];
+  comparisonGroups: number[];
+  isAuthenticated: boolean;
 }
 
-const FilteredCards: FC<FilteredCardsProps> = ({ cards }) => {
+const FilteredCards: FC<FilteredCardsProps> = ({
+  cards,
+  favoriteGroups,
+  comparisonGroups,
+  isAuthenticated,
+}) => {
   const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
   const { yearFrom, yearTo } = useFilter();
   const { publicationDate } = usePublicationDate();
+  const { minTotalArea, maxTotalArea } = useTotalAreaFilter();
+  const { minKitchenArea, maxKitchenArea } = useKitchenAreaFilter();
+  const { minLivingArea, maxLivingArea } = useLivingArea();
   const { floorFrom, floorTo } = useFloor();
   const CardProduct = memo(Card);
   const from = yearFrom ? parseInt(yearFrom, 10) : 0;
@@ -88,7 +42,6 @@ const FilteredCards: FC<FilteredCardsProps> = ({ cards }) => {
     const totalFloors = card.total_floors;
     const minFloor = floorFrom ? parseInt(floorFrom, 10) : 0;
     const maxFloor = floorTo ? parseInt(floorTo, 10) : Infinity;
-
     if (totalFloors < minFloor || totalFloors > maxFloor) {
       return false;
     }
@@ -111,7 +64,26 @@ const FilteredCards: FC<FilteredCardsProps> = ({ cards }) => {
       'CheckBox-2-3': 'не последний',
       'CheckBox-2-4': 'только последний',
     };
+    const kitchenArea = card.kitchen_area;
+    const minKitchen = minKitchenArea ? parseInt(minKitchenArea, 10) : 0;
+    const maxKitchen = maxKitchenArea ? parseInt(maxKitchenArea, 10) : Infinity;
+    const cardTotalArea = card.total_area;
+    const minTotal = minTotalArea ? parseInt(minTotalArea, 10) : 0;
+    const maxTotal = maxTotalArea ? parseInt(maxTotalArea, 10) : Infinity;
+    const livingArea = card.living_area ?? 0;
+    if (minLivingArea !== null && livingArea < minLivingArea) {
+      return false;
+    }
+    if (maxLivingArea !== null && livingArea > maxLivingArea) {
+      return false;
+    }
 
+    if (kitchenArea < minKitchen || kitchenArea > maxKitchen) {
+      return false;
+    }
+    if (cardTotalArea < minTotal || cardTotalArea > maxTotal) {
+      return false;
+    }
     const activeFloors = Object.entries(floorTip)
       .filter(([id]) => selectedFilters.includes(id))
       .map(([, value]) => value);
@@ -327,7 +299,16 @@ const FilteredCards: FC<FilteredCardsProps> = ({ cards }) => {
   return (
     <div className="flex flex-wrap gap-[20px] max-w-[1400px] 2xl:max-w-[1870px] justify-center">
       {filteredCards.length > 0 ? (
-        filteredCards.map(card => <CardProduct key={card.id} {...card} cardId={card.id} />)
+        filteredCards.map(card => (
+          <CardProduct
+            key={card.id}
+            {...card}
+            cardId={card.id}
+            isFavorite={favoriteGroups.includes(Number(card.id))}
+            isCompared={comparisonGroups.includes(Number(card.id))}
+            isAuthenticated={isAuthenticated}
+          />
+        ))
       ) : (
         <div className="flex justify-center items-center w-full h-[200px] text-center my-[50px]">
           <div className="flex flex-col items-center">
@@ -340,10 +321,10 @@ const FilteredCards: FC<FilteredCardsProps> = ({ cards }) => {
             >
               <path fill="none" stroke="#0164EB" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-            <span className="ml-4 text-[#0164EB] text-lg font-semibold">
+            <span className="sm:ml-4 text-[#0164EB] text-sm sm:text-lg font-semibold">
               Упс, ничего не найдено!
             </span>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-black sm:text-sm text-xs mt-2">
               Попробуйте изменить фильтры или ищите что-то другое.
             </p>
           </div>

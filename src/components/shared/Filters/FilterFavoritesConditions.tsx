@@ -5,71 +5,14 @@ import { useFilter } from '@/components/Context/FromandToYersContext/FromandToYe
 import { usePublicationDate } from '@/components/Context/PublicationDateContext/PublicationDateContext';
 import { useFloor } from '@/components/Context/FloorsContext/FloorsContext';
 import FavoritesCard from '../Card/FavoritesCard';
-export interface CardType {
-  id: string;
-  title: string;
-  city: string;
-  street: string;
-  address: string;
-  description: string;
-  total_area: number;
-  living_area: number;
-  kitchen_area: number;
-  floor: number;
-  ceiling_height: number;
-  bathroom: string;
-  balcony: string;
-  renovation: string;
-  layout: string;
-  rooms: number;
-  is_apartment: boolean;
-  window_view: string;
-  total_floors: number;
-  build_year: number;
-  construction_series: string;
-  chute: string;
-  lifts: number;
-  freight_lifts: boolean;
-  passenger_lifts: boolean;
-  house_type: string;
-  type_of_floors: string;
-  parking: string;
-  entrances: number;
-  heating: string;
-  accidence: string;
-  gas_supply: string;
-  fridge: boolean;
-  washer: boolean;
-  shower_cabin: boolean;
-  room_furniture: boolean;
-  dishwasher: boolean;
-  conditioner: boolean;
-  kitchen_furniture: boolean;
-  kitchen_furniture_type: string;
-  internet: boolean;
-  tv: boolean;
-  price: number;
-  utility_payments: string;
-  deposit: string;
-  fee: string;
-  prepayment: string;
-  tenancy: string;
-  rent_type: string;
-  lat: number;
-  lon: number;
-  time_on_foot_to_subway: number;
-  time_on_transport_to_subway: number;
-  seller: string;
-  sell_conditions: string;
-  favorite_groups: any[];
-  comments: any[];
-  created_at: Date;
-}
+import { CardType } from '@/types/Card';
+
 interface FilteredCardsProps {
   cards: CardType[];
+  onDelete: (id: number) => void;
 }
 
-const FilteredFavCards: FC<FilteredCardsProps> = ({ cards }) => {
+const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
   const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
   const { yearFrom, yearTo } = useFilter();
   const { publicationDate } = usePublicationDate();
@@ -132,7 +75,6 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards }) => {
       return true;
     });
     console.log(filteredCards);
-
     const sellerTip: Record<string, string> = {
       'button-15-0': 'собственник',
       'button-15-1': 'агент',
@@ -325,7 +267,9 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards }) => {
   return (
     <div className="flex flex-col gap-[50px]">
       {filteredCards.length > 0 ? (
-        filteredCards.map(card => <FavoritesCard key={card.id} adverts={card} />)
+        filteredCards.map(card => (
+          <FavoritesCard key={card.id} adverts={card} onDelete={() => onDelete(Number(card.id))} />
+        ))
       ) : (
         <div className="flex justify-center items-center w-full h-[200px] my-[50px]">
           <div className="flex flex-col items-center text-center">
@@ -338,10 +282,10 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards }) => {
             >
               <path fill="none" stroke="#0164EB" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-            <span className="text-[#0164EB] text-lg font-semibold mt-2">
+            <span className="text-[#0164EB] text-sm sm:text-lg font-semibold mt-2">
               Вы ещё не добавили ничего в избранное
             </span>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-black text-xs sm:text-sm mt-2">
               Добавьте понравившиеся объекты, чтобы видеть их здесь.
             </p>
           </div>

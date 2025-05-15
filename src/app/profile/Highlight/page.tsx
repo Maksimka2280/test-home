@@ -12,7 +12,7 @@ export default function Highlight() {
   const [infoAcc, setIngoAcc] = useState<UserAccount | null>(null);
   useEffect(() => {
     const fetchCurrentUser = async (): Promise<void> => {
-      console.log('Запрашиваем /me/ с withCredentials...');
+      console.log('Запрашиваем /get_profile/ с withCredentials...');
 
       try {
         const response = await axios.get<UserAccount>(`${API_BASE_URL}/get_profile/`, {
@@ -20,9 +20,9 @@ export default function Highlight() {
         });
 
         setIngoAcc(response.data);
-        console.log('Ответ /что/:', response.data);
+        console.log('Ответ /get_profile/:', response.data);
       } catch (error) {
-        console.error('Ошибка запроса /что/:', error);
+        console.error('Ошибка запроса /get_profile/:', error);
       }
     };
 
@@ -113,8 +113,6 @@ export default function Highlight() {
           <p className="font-bold text-[18px]">Избранные объявления</p>
           <div className="flex flex-col gap-[12px] overflow-y-auto max-h-[330px] pr-2">
             <MiniCardProfile />
-            <MiniCardProfile />
-            <MiniCardProfile />
           </div>
         </div>
         <div className="w-full md:w-[510px] h-[410px] bg-white rounded-[20px] px-[28px] py-[20px] relative overflow-hidden">
@@ -122,11 +120,8 @@ export default function Highlight() {
 
           <div className="flex flex-col gap-[12px] overflow-y-auto max-h-[330px] pr-2 relative z-10">
             <MiniCardProfile />
-            <MiniCardProfile />
-            <MiniCardProfile />
           </div>
 
-          {/* Полупрозрачный туман по всему блоку */}
           <div className="absolute inset-0 z-20 pointer-events-none bg-white/70 rounded-[20px]" />
         </div>
       </div>

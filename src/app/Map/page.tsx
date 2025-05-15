@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Button } from '@/components/shared/Button/Button';
 
 import { createRoot } from 'react-dom/client';
 import L, { DivIconOptions, Icon, IconOptions, LatLngTuple } from 'leaflet';
@@ -14,7 +13,6 @@ import 'leaflet.markercluster';
 import ModalOrganizations from '@/components/ui/Modal/ModalOrganisation';
 
 import ModalTimer from '@/components/ui/Modal/ModalTimer';
-import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import ModalChoiceCity from '@/components/ui/Modal/ModalChoiceCity';
 import { Provider, useSelector } from 'react-redux';
 import { RootState, store } from '@/store/store';
@@ -57,6 +55,9 @@ interface Typetimer {
   time_on_foot_to_subway?: number;
   time_on_transport_to_subway?: number;
 }
+interface ApiResponse {
+  items: Poin2t[];
+}
 export default function Map() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
@@ -68,6 +69,7 @@ export default function Map() {
   const [isMarkerModeActive, setIsMarkerModeActive] = useState(false);
   const [line, setLine] = useState<L.Polyline | null>(null);
   const [distanceLabel, setDistanceLabel] = useState<L.Marker | null>(null);
+  const organizationMarkersRef = useRef<L.MarkerClusterGroup | null>(null);
   const [selectedOrganizations, setSelectedOrganizations] = useState<
     { name: string; id: number }[]
   >([]);
@@ -148,8 +150,6 @@ export default function Map() {
               return;
             }
 
-            console.log(`Координаты для ${item.name}:`, coords);
-
             const formattedCoords = coords.map(coord => ({
               ...coord,
               type: item.id,
@@ -202,8 +202,8 @@ export default function Map() {
   useEffect(() => {
     if (!mapInstance.current) return;
 
-    if (markersRef.current) {
-      mapInstance.current.removeLayer(markersRef.current);
+    if (organizationMarkersRef.current) {
+      mapInstance.current.removeLayer(organizationMarkersRef.current);
     }
 
     const getColorByType = (type: number) => {
@@ -245,11 +245,7 @@ export default function Map() {
     });
 
     pointArray.forEach((item: Poin2t) => {
-      if (!item.lat || !item.lon) {
-        console.log('Пропущена точка, у которой нет координат:', item);
-        return;
-      }
-
+      if (!item.lat || !item.lon) return;
       const color = getColorByType(item.type);
       const marker = L.marker([item.lat, item.lon], {
         icon: L.divIcon({
@@ -264,11 +260,8 @@ export default function Map() {
     });
 
     mapInstance.current.addLayer(markers);
-    markersRef.current = markers;
+    organizationMarkersRef.current = markers;
   }, [pointArray]);
-  interface ApiResponse {
-    items: Poin2t[];
-  }
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -287,7 +280,6 @@ export default function Map() {
           time_transport: item.time_on_transport_to_subway,
         }));
 
-        console.log(filteredCards);
         setPoints(filteredCards);
       } catch (error) {
         console.error('Ошибка при получении данных:', error);
@@ -298,48 +290,51 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    if (points.length > 0 && mapInstance.current) {
-      markersRef.current = L.markerClusterGroup({
-        showCoverageOnHover: false,
-        maxClusterRadius: 35,
-        iconCreateFunction: function (cluster) {
-          const count = cluster.getChildCount();
-          return L.divIcon({
-            html: `<div style="background-color: #0468FF; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">${count}</div>`,
-            className: 'custom-cluster-icon',
-            iconSize: [28, 28],
-          });
-        },
-      });
-      mapInstance.current.addLayer(markersRef.current);
+    if (!mapInstance.current) return;
 
-      const currentPoints = selectedCities.length === 0 ? points : filteredPoints;
-
-      currentPoints.forEach((item: agashka) => {
-        if (item.lat && item.lon) {
-          const marker = L.marker([item.lat, item.lon], {
-            icon: L.divIcon({
-              className: 'custom-circle-icon',
-              html: '<div style="width: 12px; height: 12px; background-color: #0468FF; border-radius: 50%;"></div>',
-              iconSize: [12, 12],
-              iconAnchor: [6, 6],
-            }),
-          });
-
-          marker.on('click', () => {
-            setSelectedPoint(item);
-            console.log(item);
-          });
-
-          markersRef.current?.addLayer(marker);
-        }
-      });
+    if (markersRef.current) {
+      mapInstance.current.removeLayer(markersRef.current);
     }
+
+    markersRef.current = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 35,
+      iconCreateFunction: function (cluster) {
+        const count = cluster.getChildCount();
+        return L.divIcon({
+          html: `<div style="background-color: #0468FF; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">${count}</div>`,
+          className: 'custom-cluster-icon',
+          iconSize: [28, 28],
+        });
+      },
+    });
+
+    mapInstance.current.addLayer(markersRef.current);
+
+    const currentPoints = selectedCities.length === 0 ? points : filteredPoints;
+
+    currentPoints.forEach((item: agashka) => {
+      if (item.lat && item.lon) {
+        const marker = L.marker([item.lat, item.lon], {
+          icon: L.divIcon({
+            className: 'custom-circle-icon',
+            html: '<div style="width: 12px; height: 12px; background-color: #0468FF; border-radius: 50%;"></div>',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6],
+          }),
+        });
+
+        marker.on('click', () => {
+          setSelectedPoint(item);
+        });
+
+        markersRef.current?.addLayer(marker);
+      }
+    });
   }, [selectedCities, points, filteredPoints]);
 
   const handleSelect = (selectedItems: { id: number; name: string }[]) => {
     setSelectedOrganizations(selectedItems);
-    console.log('Выбранные элементы:', selectedItems);
   };
 
   useEffect(() => {
@@ -352,7 +347,7 @@ export default function Map() {
 
       const wrapper = document.createElement('div');
       wrapper.className =
-        'flex flex-wrap lg:flex-nowrap justify-center items-center gap-[10px] absolute top-[10px] right-[1px] top-[-101px]';
+        'flex flex-wrap lg:flex-nowrap justify-center items-center gap-[10px] absolute top-[10px] right-[1px] top-[-102px]';
 
       const box1 = document.createElement('div');
       box1.className =
@@ -618,7 +613,6 @@ export default function Map() {
   }, [selectedPoint]);
 
   useEffect(() => {
-    console.log(points.length);
     if (mapRef.current && !mapInstance.current) {
       mapInstance.current = L.map(mapRef.current, { zoomControl: false }).setView(
         [47.3769, 8.5417],
@@ -739,9 +733,6 @@ export default function Map() {
               </p>
             </li>
             <li className="w-full sm:w-auto text-center sm:text-left">
-              <ModalMoreFilter />
-            </li>
-            <li className="w-full sm:w-auto text-center sm:text-left">
               <input
                 type="text"
                 className="w-full sm:w-[300px] md:w-[400px] lg:w-[455px] h-[40px] bg-[#fff] sm:h-[45px] md:h-[48px] rounded-[15px] pl-4 sm:pl-5 focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-105"
@@ -749,11 +740,11 @@ export default function Map() {
                 onKeyUp={e => handleKeyUp(e)}
               />
             </li>
-            <li className="w-full sm:w-auto flex justify-center sm:justify-start hover:scale-105 duration-300 ease-in-out transform">
+            {/* <li className="w-full sm:w-auto flex justify-center sm:justify-start hover:scale-105 duration-300 ease-in-out transform">
               <Button color="blue" height="48px" width="210px" rounded="15px">
                 Сохранить фильтр
               </Button>
-            </li>
+            </li> */}
           </ul>
 
           <div className="flex justify-center items-center mt-4 sm:mt-12">

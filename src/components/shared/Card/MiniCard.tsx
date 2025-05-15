@@ -17,11 +17,12 @@ interface MiniCardProps {
 }
 
 export default function MiniCard({ id }: MiniCardProps) {
-  const [isChecked, setIsChecked] = useState(false);
-  const [data, setData] = useState<AdvertData | null>(null);
   const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
   const dispatch = useDispatch();
+
   const selectedIds = useSelector((state: RootState) => state.cards?.selectedIds ?? []);
+
+  const [data, setData] = useState<AdvertData | null>(null);
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -36,16 +37,12 @@ export default function MiniCard({ id }: MiniCardProps) {
     void fetchData();
   }, [id]);
 
-  useEffect(() => {
-    setIsChecked(selectedIds.includes(id));
-  }, [selectedIds, id]);
+  const isChecked = selectedIds.includes(id);
 
   const handleCheckboxChange = () => {
-    const newChecked = !isChecked;
-    setIsChecked(newChecked);
     dispatch(toggleCardId(id));
   };
-  console.log(selectedIds);
+
   if (!data) return <div>Загрузка...</div>;
   if (isLoading) return <div>Загрузка валюты...</div>;
   if (error) return <div>{error}</div>;

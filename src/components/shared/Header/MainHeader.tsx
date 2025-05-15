@@ -4,36 +4,118 @@ import ChoiceLanguage from '@/components/ui/Modal/ModalChoiceLanguage';
 import Link from 'next/link';
 import { MiniGreyLine } from '../Filters/mini-grey-line';
 import { Bell, Heart, Menu, X } from 'lucide-react';
-
 import LoginModal from '@/components/ui/Modal/LoginandReg/Login';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
+import { useLogout } from '@/components/Context/QuitContext/QuitContext';
+import { useNotifications } from '@/components/Context/NotContext/NotContext';
+interface UserProfile {
+  first_name: string;
+  last_name: string;
+  username: string;
+  birthdate: string;
+  city: string;
+}
+
+interface UserResponse {
+  email: string;
+  phone_number: string;
+  profile: UserProfile;
+  favorite_groups: any[];
+  quick_favorites: any[];
+  comments: any[];
+  comparisons: any[];
+  notifications: any[];
+  saved_searches: any[];
+}
+interface Notification {
+  user_id: number;
+  text: string;
+  marked: boolean;
+  read: boolean;
+}
 
 export default function MainHeader() {
   const [isOpen2, setIsOpen2] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isLoggingOut } = useLogout();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userEmail, setUserEmail] = useState<string>('');
+  const { setNotifications } = useNotifications();
+  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   const handleMouseLeave = () => {
     setIsOpen2(false);
   };
 
-  useEffect(() => {
-    const checkAuth = async (): Promise<void> => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/me/`, { withCredentials: true });
-        console.log(response.data);
+  const checkAuth = async () => {
+    try {
+      const response = await axios.get<UserResponse>(`${API_BASE_URL}/me/`, {
+        withCredentials: true,
+      });
 
-        if (response.status === 200) {
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
+      if (response.status === 200) {
+        setIsAuthenticated(true);
+        setUserEmail(response.data.email);
+      } else {
         setIsAuthenticated(false);
-        console.log(error);
       }
-    };
+    } catch (error) {
+      console.error('Auth check error:', error);
+      setIsAuthenticated(false);
+    }
+  };
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get<Notification>(`${API_BASE_URL}/notifications/get_all`, {
+        withCredentials: true,
+      });
+      if (response.status === 200 && Array.isArray(response.data)) {
+        setNotifications(response.data);
+        const unread = response.data.filter((notif: { read: boolean }) => !notif.read).length;
+        setUnreadCount(unread);
+      } else {
+        console.error('Некорректный формат данных уведомлений');
+      }
+    } catch (error) {
+      console.error('Ошибка при получении уведомлений:', error);
+    }
+  };
+
+  useEffect(() => {
     void checkAuth();
-  }, []);
+    void fetchNotifications(); // вызываем fetchNotifications для получения уведомлений
+  }, [setNotifications]);
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    void checkAuth();
+  };
+
+  const getFirstLetter = (email: string) => {
+    return email ? email[0].toUpperCase() : 'U';
+  };
+
+  const stringToColor = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = '#';
+    for (let i = 0; i < 3; i++) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += ('00' + value.toString(16)).slice(-2);
+    }
+    return color;
+  };
+
+  const userBackgroundColor = userEmail ? stringToColor(userEmail) : '#FFA500';
+  useEffect(() => {
+    if (isLoggingOut) {
+      setIsAuthenticated(false);
+      setUserEmail('');
+    }
+  }, [isLoggingOut]);
 
   return (
     <>
@@ -64,27 +146,39 @@ export default function MainHeader() {
               </Link>
             </li>
           </ul>
+
           <div className="flex items-center gap-6">
             <ChoiceLanguage />
             <MiniGreyLine height="30px" />
             <Link href={'/favorites'}>
               <Heart size={20} color={'#dbdbdb'} />
             </Link>
-
-            <Bell size={20} color={'#dbdbdb'} />
+            <div className="relative">
+              <Bell size={20} color="#dbdbdb" />
+              {isAuthenticated && unreadCount > 0 && (
+                <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                  {unreadCount}
+                </div>
+              )}
+            </div>
 
             <div className="hidden xl:block">
-              {isAuthenticated ? (
+              {isAuthenticated === null ? (
+                <div>Загрузка...</div>
+              ) : isAuthenticated && !isLoggingOut ? (
                 <Link href={'/profile/Highlight'}>
-                  <div className="w-8 h-8 rounded-full bg-orange-500 flex justify-center items-center cursor-pointer">
-                    <span className="text-white">P</span>
+                  <div
+                    className="w-8 h-8 rounded-full flex justify-center items-center cursor-pointer"
+                    style={{ backgroundColor: userBackgroundColor }}
+                  >
+                    <span className="text-white">{getFirstLetter(userEmail)}</span>
                   </div>
                 </Link>
               ) : (
-                <LoginModal />
+                <LoginModal onLoginSuccess={handleLoginSuccess} />
               )}
-              <LoginModal />
             </div>
+
             <button
               className={`xl:hidden transition-transform duration-300 ${isOpen2 ? 'rotate-90' : 'rotate-0'}`}
               onClick={() => setIsOpen2(!isOpen2)}
@@ -105,14 +199,19 @@ export default function MainHeader() {
           }`}
         >
           <div className="block xl:hidden">
-            {isAuthenticated ? (
+            {isAuthenticated === null ? (
+              <div>Загрузка...</div>
+            ) : isAuthenticated ? (
               <Link href={'/profile/Highlight'}>
-                <div className="w-8 h-8 rounded-full bg-orange-500 flex justify-center items-center cursor-pointer">
-                  <span className="text-white">P</span>
+                <div
+                  className="w-8 h-8 rounded-full flex justify-center items-center cursor-pointer"
+                  style={{ backgroundColor: userBackgroundColor }}
+                >
+                  <span className="text-white">{getFirstLetter(userEmail)}</span>
                 </div>
               </Link>
             ) : (
-              <LoginModal />
+              <LoginModal onLoginSuccess={handleLoginSuccess} />
             )}
           </div>
 

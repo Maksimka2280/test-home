@@ -6,6 +6,8 @@ import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
+import { useDispatch } from 'react-redux';
+import { toggleCardId } from '@/store/cardSlice/Cardslice';
 
 interface CardProps {
   cardId: string;
@@ -17,6 +19,9 @@ interface CardProps {
   address: string;
   time_on_foot_to_subway: number;
   description: string;
+  isFavorite: boolean;
+  isCompared: boolean;
+  isAuthenticated: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -27,61 +32,87 @@ export const Card: React.FC<CardProps> = ({
   city,
   address,
   time_on_foot_to_subway,
+  isFavorite,
+  isCompared,
+  isAuthenticated,
 }) => {
   const getStoredState = (key: string) => {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : false;
   };
 
-  const [liked, setLiked] = useState(getStoredState(`${cardId}-liked`));
+  const [liked, setLiked] = useState(getStoredState(`${cardId}-liked`) || isFavorite);
   const [viewed, setViewed] = useState(getStoredState(`${cardId}-viewed`));
-  const [Layers, setLayers] = useState(getStoredState(`${cardId}-layers`));
+  const [Layers, setLayers] = useState(getStoredState(`${cardId}-layers`) || isCompared);
+  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
-  const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
-
+  const { currencySymbol, convertPrice, isLoading } = useCurrency();
+  const dispatch = useDispatch();
   const images = ['/img/image123.png', '/img/room-test.png'];
   const pageCount = Math.ceil(images.length);
-
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected);
   };
 
+  useEffect(() => {
+    setLiked(isFavorite);
+  }, [isFavorite]);
+
+  useEffect(() => {
+    setLayers(isCompared);
+  }, [isCompared]);
+
   const toggleLike = async () => {
     if (!isAuthenticated) return;
-
     const newLiked = !liked;
     setLiked(newLiked);
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/favorite_groups/add_favorite_group`,
-        {
-          card_id: cardId,
-        },
-        {
-          withCredentials: true,
-        },
-      );
-
-      if (response.status === 200) {
-        console.log('Добавлено в избранное');
+      if (newLiked) {
+        await axios.post(
+          `${API_BASE_URL}/favorite_groups/add_to_favorites_list/${cardId}`,
+          { id: cardId },
+          { withCredentials: true },
+        );
+      } else {
+        await axios.post(
+          `${API_BASE_URL}/favorite_groups/delete_from_favorites_list/${cardId}`,
+          { id: cardId },
+          { withCredentials: true },
+        );
       }
     } catch (err) {
-      console.error('Ошибка при добавлении в избранное:', err);
+      console.error('Ошибка при изменении избранного:', err);
     }
 
-    markAsViewed();
+    localStorage.setItem(`${cardId}-liked`, JSON.stringify(newLiked));
   };
 
-  const toggleLayers = () => {
+  const toggleLayers = async () => {
     if (!isAuthenticated) return;
     const newLayers = !Layers;
     setLayers(newLayers);
-    localStorage.setItem(`${cardId}-layers`, JSON.stringify(newLayers));
-    markAsViewed();
+    try {
+      if (newLayers) {
+        await axios.post(
+          `${API_BASE_URL}/comparisons/add_to_comparison_list/${cardId}`,
+          { id: cardId },
+          { withCredentials: true },
+        );
+      } else {
+        await axios.post(
+          `${API_BASE_URL}/comparisons/delete_from_comparison_list/${cardId}`,
+          { id: cardId },
+          { withCredentials: true },
+        );
+        dispatch(toggleCardId(Number(cardId)));
+      }
+
+      markAsViewed();
+    } catch (error) {
+      console.error('Ошибка при обновлении сравнения:', error);
+    }
   };
 
   const markAsViewed = () => {
@@ -89,33 +120,7 @@ export const Card: React.FC<CardProps> = ({
     localStorage.setItem(`${cardId}-viewed`, JSON.stringify(true));
   };
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/me/`, { withCredentials: true });
-        if (response.status === 200) {
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        setIsAuthenticated(false);
-        console.log(error);
-      }
-    };
-
-    void checkAuth();
-
-    setLiked(getStoredState(`${cardId}-liked`));
-    setViewed(getStoredState(`${cardId}-viewed`));
-    setLayers(getStoredState(`${cardId}-layers`));
-  }, [cardId]);
-
-  useEffect(() => {
-    localStorage.setItem(`${cardId}-liked`, JSON.stringify(liked));
-    localStorage.setItem(`${cardId}-layers`, JSON.stringify(Layers));
-  }, [liked, Layers, cardId]);
-
   if (isLoading) return <div>Загрузка...</div>;
-  if (error) return <div>{error}</div>;
 
   return (
     <div
@@ -177,7 +182,7 @@ export const Card: React.FC<CardProps> = ({
         <button
           onClick={e => {
             e.stopPropagation();
-            toggleLayers();
+            void toggleLayers();
           }}
           className="absolute top-2 right-12 w-[30px] h-[30px] rounded-full flex items-center justify-center bg-[#ffffff] transition-all"
         >
@@ -226,7 +231,6 @@ export const Card: React.FC<CardProps> = ({
             </p>
           </div>
         </div>
-
         <p className="text-[#BCBCBC]">{address}</p>
       </div>
     </div>

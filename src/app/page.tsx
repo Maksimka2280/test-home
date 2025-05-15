@@ -13,22 +13,33 @@ import ModalMoreFilter from '@/components/ui/Modal/ModalMoreFilters';
 import { Layers } from '@/components/shared/Layers/Layers';
 import { API_BASE_URL } from '@/config';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactPaginate from 'react-paginate';
 import { usePriceFilter } from '@/components/Context/ContextPrice/ContextPrice';
 import { useCurrency } from '@/components/Context/Contextcurrency/Contextcurrency';
 import { FilteredCards } from '@/components/shared/Filters/filterConditions';
 import { CardType } from '@/types/Card';
-
+interface ResponseData {
+  quick_favorites: CardType[];
+  favorite_groups: CardType[];
+}
 export default function Home() {
   const { convertPrice } = useCurrency();
   const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
   const { minPrice, maxPrice } = usePriceFilter();
+  const [layersCount, setLayersCount] = useState(0);
   const [cards, setCards] = useState<CardType[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sortOption] = useState<string>('asc');
+  const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
+  const hasActiveFilters = selectedFilters && selectedFilters.length > 0;
+  const [favoriteGroups, setFavoriteGroups] = useState<number[]>([]);
+  const [comparisonGroups, setComparisonGroups] = useState<number[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const hasFetched = useRef(false);
 
+  // Получение карточек
   const fetchData = async (page: number): Promise<void> => {
     try {
       const response = await axios.get<{ items: CardType[]; total_pages: number }>(
@@ -40,8 +51,6 @@ export default function Home() {
           },
         },
       );
-      console.log(response);
-
       setCards(response.data.items);
       setTotalPages(response.data.total_pages);
     } catch (error) {
@@ -53,36 +62,59 @@ export default function Home() {
     void fetchData(page);
   }, [page]);
 
-  const sortedCards = [...cards].sort((a, b) => {
-    if (sortOption === 'asc') {
-      return a.price - b.price;
-    } else {
-      return b.price - a.price;
-    }
-  });
+  useEffect(() => {
+    if (hasFetched.current) return;
 
+    const fetchUserData = async () => {
+      try {
+        const [userResponse, comparisonsResponse] = await Promise.all([
+          axios.get<ResponseData>(`${API_BASE_URL}/get_user_info/`, { withCredentials: true }),
+          axios.get(`${API_BASE_URL}/comparisons/get_all`, { withCredentials: true }),
+        ]);
+
+        if (userResponse.status === 200) {
+          setIsAuthenticated(true);
+          const favGroup = userResponse.data.quick_favorites ?? [];
+          setFavoriteGroups(favGroup.map((item: CardType) => Number(item.id)));
+        } else {
+          setIsAuthenticated(false);
+        }
+
+        if (comparisonsResponse.status === 200 && Array.isArray(comparisonsResponse.data)) {
+          setComparisonGroups(comparisonsResponse.data.map((item: CardType) => +item.id));
+          setLayersCount(comparisonsResponse.data.length);
+        }
+      } catch (error) {
+        console.error('Ошибка при получении данных:', error);
+        setIsAuthenticated(false);
+      }
+    };
+
+    void fetchUserData();
+    hasFetched.current = true;
+  }, []);
+
+  // Сортировка
+  const sortedCards = [...cards].sort((a, b) =>
+    sortOption === 'asc' ? a.price - b.price : b.price - a.price,
+  );
+
+  // Фильтрация
   const filteredCards = sortedCards.filter(card => {
     const cardPrice = convertPrice(card.price);
 
     const min = minPrice ? Number(minPrice) : null;
     const max = maxPrice ? Number(maxPrice) : null;
 
-    const hasMin = min !== null && !isNaN(min);
-    const hasMax = max !== null && !isNaN(max);
-
-    if (hasMin && hasMax) {
-      return cardPrice >= min && cardPrice <= max;
-    }
-    if (hasMin) return cardPrice >= min;
-    if (hasMax) return cardPrice <= max;
-
+    if (min !== null && max !== null) return cardPrice >= min && cardPrice <= max;
+    if (min !== null) return cardPrice >= min;
+    if (max !== null) return cardPrice <= max;
     return true;
   });
 
   const handlePageChange = (selectedPage: { selected: number }) => {
     setPage(selectedPage.selected + 1);
   };
-
   return (
     <>
       <div>
@@ -153,11 +185,16 @@ export default function Home() {
 
         <div className="flex flex-col items-center mt-[90px]">
           <h1 className="text-[28px] font-bold max-w-[1380px] 2xl:max-w-[1800px] w-full mb-[40px] text-center xl:text-left">
-            Могут подойти
+            {hasActiveFilters ? 'За фильтрами' : 'Могут подойти'}
           </h1>
 
           <div className="flex flex-wrap gap-[20px] max-w-[1400px] 2xl:max-w-[1870px] justify-center">
-            <FilteredCards cards={filteredCards} />
+            <FilteredCards
+              cards={filteredCards}
+              favoriteGroups={favoriteGroups}
+              comparisonGroups={comparisonGroups}
+              isAuthenticated={isAuthenticated}
+            />
           </div>
           <div className="mt-6 flex justify-center">
             <ReactPaginate
@@ -180,7 +217,7 @@ export default function Home() {
         </div>
       </div>
       <div className="fixed bottom-0 right-0 p-4">
-        <Layers />
+        <Layers comparisonCount={layersCount} />
       </div>
     </>
   );

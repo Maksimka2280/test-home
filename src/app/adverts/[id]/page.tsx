@@ -7,7 +7,6 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/config';
 import { MiniGreyButton } from '@/components/shared/Button/MinigreyButton/MinigreyButton';
 import CityList from '@/components/ui/CityRender/CityRender';
-import ModalAddToComparison from '@/components/ui/Modal/ModalAddtocomparison';
 import { RootState } from '@/store/store';
 import {
   AirVent,
@@ -40,6 +39,7 @@ import { Button } from '@/components/shared/Button/Button';
 import { ButtonBlackWhite } from '@/components/shared/Button/ButtonBlackWhite';
 import { Input } from '@/components/shared/Input/Input';
 import { useCurrency } from '@/components/Context/Contextcurrency/Contextcurrency';
+import { ModalAddToComparison } from '@/components/ui/Modal/ModalAddtocomparison';
 const features = [
   { key: 'fridge', icon: <Refrigerator size={16} />, label: 'Холодильник' },
   { key: 'washer', icon: <WashingMachine size={16} />, label: 'Стиральная машина' },
@@ -75,7 +75,7 @@ export default function ProductDetail() {
     return typeof stored === 'string' ? JSON.parse(stored) : false;
   });
 
-  const [viewed, setViewed] = useState(() => {
+  const [setViewed] = useState(() => {
     const stored = localStorage.getItem(`${String(advertId)}-viewed`);
     return stored != null ? JSON.parse(stored) : false;
   });
@@ -84,13 +84,12 @@ export default function ProductDetail() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/me/`, { withCredentials: true });
+        const response = await axios.get(`${API_BASE_URL}/get_profile/`, { withCredentials: true });
         if (response.status === 200) {
           setIsAuthenticated(true);
         }
-      } catch (error) {
+      } catch {
         setIsAuthenticated(false);
-        console.log(error);
       }
     };
 
@@ -104,25 +103,34 @@ export default function ProductDetail() {
     }
   }, [advertId]);
 
-  const toggleLike = () => {
+  const toggleLike = async () => {
     if (!isAuthenticated) return;
 
     const newLiked = !liked;
     setLiked(newLiked);
 
-    if (typeof advertId === 'string') {
-      if (newLiked) {
-        localStorage.setItem(`${advertId}-liked`, JSON.stringify(true));
-        localStorage.setItem(`${advertId}`, JSON.stringify(advertId));
-      } else {
-        localStorage.setItem(`${advertId}-liked`, JSON.stringify(false));
-        localStorage.removeItem(`${advertId}`);
-      }
-    }
+    const id = Number(advertId);
 
-    if (!viewed) {
-      setViewed(true);
-      localStorage.setItem(`${String(advertId)}-viewed`, JSON.stringify(true));
+    try {
+      if (!isNaN(id)) {
+        if (newLiked) {
+          await axios.post(
+            `${API_BASE_URL}/favorite_groups/add_to_favorites_list/${id}`,
+            { id },
+            { withCredentials: true },
+          );
+        } else {
+          await axios.post(
+            `${API_BASE_URL}/favorite_groups/delete_from_favorites_list/${id}`,
+            { id },
+            { withCredentials: true },
+          );
+        }
+      } else {
+        console.error('Некорректный advertId:', advertId);
+      }
+    } catch (error) {
+      console.error('Ошибка при обновлении избранного:', error);
     }
   };
 
@@ -315,7 +323,11 @@ export default function ProductDetail() {
               ))}
 
               <div className="flex justify-center mt-2 sm:mt-0 xl:justify-end w-full sm:w-auto  xl:ml-auto">
-                {!isAuthenticated ? <></> : <ModalAddToComparison />}
+                {!isAuthenticated || advertId === undefined ? (
+                  <></>
+                ) : (
+                  <ModalAddToComparison advertId={advertId} />
+                )}
               </div>
             </div>
             <div className="mt-[30px]">

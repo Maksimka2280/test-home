@@ -1,9 +1,10 @@
 'use client';
 
-import { Edit, Plus, X } from 'lucide-react';
+import { Edit, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-
+import axios from 'axios';
 import { Button } from '@/components/shared/Button/Button';
+import { API_BASE_URL } from '@/config';
 
 interface ModalEditingEquastionsProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface ModalEditingEquastionsProps {
 
 export default function NewGroup({ isOpen, onClose }: ModalEditingEquastionsProps) {
   const [groupName, setGroupName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -30,7 +32,30 @@ export default function NewGroup({ isOpen, onClose }: ModalEditingEquastionsProp
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null; // Скрываем модалку, если она закрыта
+  const handleAddGroup = async () => {
+    if (!groupName.trim()) return;
+    try {
+      setIsLoading(true);
+
+      await axios.post(`${API_BASE_URL}/favorite_groups/add_favorite_group`, null, {
+        params: { name: groupName },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      });
+
+      setGroupName('');
+      onClose();
+    } catch (error) {
+      console.error('Ошибка при добавлении группы:', error);
+      alert('Не удалось добавить группу. Проверьте имя.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[50]">
@@ -46,12 +71,12 @@ export default function NewGroup({ isOpen, onClose }: ModalEditingEquastionsProp
         </button>
         <div className="rounded-t-[20px] flex justify-center items-center relative group">
           <div className="flex flex-col h-full relative">
-            <div className="flex gap-[20px] justify-start items-center mb-[15px]">
+            {/* <div className="flex gap-[20px] justify-start items-center mb-[15px]">
               <button className="w-[55px] h-[55px] bg-[#e9e8e8] border-[#D5D5D5] rounded-[15px] border-[1px] flex justify-center items-center">
                 <Plus size={30} color="#0468FF" />
               </button>
               <h1>Выберите иконку</h1>
-            </div>
+            </div> */}
             <div className="relative w-[225px] max-w-md flex items-center">
               <input
                 type="text"
@@ -66,8 +91,16 @@ export default function NewGroup({ isOpen, onClose }: ModalEditingEquastionsProp
             </div>
 
             <p className="text-[#0468FF] text-[14px] mt-[5px]">Добавить объявления</p>
-            <Button color="blue" width="230px" height="60px" rounded="15px" className="mt-[15px]">
-              Добавить группу
+            <Button
+              color="blue"
+              width="230px"
+              height="60px"
+              rounded="15px"
+              className="mt-[15px]"
+              onClick={handleAddGroup}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Добавление...' : 'Добавить группу'}
             </Button>
           </div>
         </div>

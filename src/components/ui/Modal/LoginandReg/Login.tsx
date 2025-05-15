@@ -7,17 +7,20 @@ import Link from 'next/link';
 import { useState } from 'react';
 import RegModal from '../LoginandReg/Reg';
 import { API_BASE_URL } from '@/config';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface LoginResponse {
   detail?: string;
 }
-
-export default function LoginModal() {
+interface LoginModalProps {
+  onLoginSuccess: () => void;
+}
+export default function LoginModal({ onLoginSuccess }: LoginModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [loginErrors, setLoginErrors] = useState<{ email?: string; password?: string }>({});
+
   const toggleModal = () => setIsOpen(prev => !prev);
   const toggleRegisterModal = () => {
     setIsOpen(false);
@@ -53,6 +56,7 @@ export default function LoginModal() {
     setLoginErrors(errors);
     return isValid;
   };
+
   const loginApi = async (params: { email: string; password: string }): Promise<LoginResponse> => {
     try {
       console.log('Отправляемые данные:', {
@@ -81,16 +85,31 @@ export default function LoginModal() {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (validateLogin()) {
-      try {
-        await loginApi({
-          email: loginData.email,
-          password: loginData.password,
-        });
+    if (!validateLogin()) return;
 
-        setIsOpen(false);
-      } catch (error) {
-        console.error('Ошибка авторизации:', error);
+    try {
+      await loginApi({
+        email: loginData.email,
+        password: loginData.password,
+      });
+
+      onLoginSuccess();
+      setIsOpen(false);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        const err = error as AxiosError<LoginResponse>;
+        const detail = err.response?.data?.detail;
+
+        if (detail === 'Неверная почта или пароль') {
+          setLoginErrors({
+            email: detail,
+            password: detail,
+          });
+        } else {
+          console.error('Неизвестная ошибка авторизации:', detail);
+        }
+      } else {
+        console.error('Ошибка не от Axios:', error);
       }
     }
   };

@@ -31,9 +31,10 @@ interface AdvertData {
 
 interface FavoritesCardProps {
   adverts: AdvertData;
+  onDelete: () => void;
 }
 
-export default function FavoritesCard({ adverts }: FavoritesCardProps) {
+export default function FavoritesCard({ adverts, onDelete }: FavoritesCardProps) {
   const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
 
   const {
@@ -88,7 +89,10 @@ export default function FavoritesCard({ adverts }: FavoritesCardProps) {
           <MiniGreyButton>
             <EyeOff size={17} />
           </MiniGreyButton>
-          <button className="w-[88px] h-[28px] rounded-[10px] bg-[#E12B2B] text-white text-[12px]">
+          <button
+            className="w-[88px] h-[28px] rounded-[10px] bg-[#E12B2B] text-white text-[12px]"
+            onClick={onDelete}
+          >
             Удалить
           </button>
         </div>
@@ -97,7 +101,7 @@ export default function FavoritesCard({ adverts }: FavoritesCardProps) {
       <div className="px-[20px] text-center md:text-left max-w-[500px]">
         <div>
           <h1 className="text-[22px] font-bold pb-[5px]">
-            {convertPrice(price).toFixed(2)} {currencySymbol}
+            {convertPrice(price ?? 0).toFixed(2)} {currencySymbol}
           </h1>
           <p>
             {rooms}-комн. кв. · {total_area}м² · {floor}/{total_floors} этаж

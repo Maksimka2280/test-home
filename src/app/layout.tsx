@@ -10,6 +10,11 @@ import { PriceFilterProvider } from '@/components/Context/ContextPrice/ContextPr
 import { FilterProvider } from '@/components/Context/FromandToYersContext/FromandToYersContext';
 import { PublicationDateProvider } from '@/components/Context/PublicationDateContext/PublicationDateContext';
 import { FloorsProvider } from '@/components/Context/FloorsContext/FloorsContext';
+import { LogoutProvider } from '@/components/Context/QuitContext/QuitContext';
+import { NotificationsProvider } from '@/components/Context/NotContext/NotContext';
+import { KitchenAreaFilterProvider } from '@/components/Context/ChickenContext/ChickenContext';
+import { TotalAreaFilterProvider } from '@/components/Context/TotakContext/TotakContext';
+import { LivingAreaProvider } from '@/components/Context/LiveAreaContext/LiveAreaContext';
 
 export const metadata: Metadata = {
   title: 'Penguin Dev - Home', // TODO: replace with your own title
@@ -25,18 +30,28 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${fonts} flex flex-col min-h-screen`}>
         <main className="bg-[#F3F3F3] flex-grow">
-          <MainHeader />
-          <FloorsProvider>
-            <PublicationDateProvider>
-              <FilterProvider>
-                <PriceFilterProvider>
-                  <CurrencyProvider>
-                    <Providers>{children}</Providers>
-                  </CurrencyProvider>
-                </PriceFilterProvider>
-              </FilterProvider>
-            </PublicationDateProvider>
-          </FloorsProvider>
+          <NotificationsProvider>
+            <LogoutProvider>
+              <MainHeader />
+              <LivingAreaProvider>
+                <KitchenAreaFilterProvider>
+                  <TotalAreaFilterProvider>
+                    <FloorsProvider>
+                      <PublicationDateProvider>
+                        <FilterProvider>
+                          <PriceFilterProvider>
+                            <CurrencyProvider>
+                              <Providers>{children}</Providers>
+                            </CurrencyProvider>
+                          </PriceFilterProvider>
+                        </FilterProvider>
+                      </PublicationDateProvider>
+                    </FloorsProvider>
+                  </TotalAreaFilterProvider>
+                </KitchenAreaFilterProvider>
+              </LivingAreaProvider>
+            </LogoutProvider>
+          </NotificationsProvider>
         </main>
         <MainFooter />
       </body>
