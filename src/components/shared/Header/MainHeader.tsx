@@ -9,6 +9,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/config';
 import { useLogout } from '@/components/Context/QuitContext/QuitContext';
 import { useNotifications } from '@/components/Context/NotContext/NotContext';
+import { useRouter } from 'next/navigation';
 interface UserProfile {
   first_name: string;
   last_name: string;
@@ -42,7 +43,7 @@ export default function MainHeader() {
   const [userEmail, setUserEmail] = useState<string>('');
   const { setNotifications } = useNotifications();
   const [unreadCount, setUnreadCount] = useState<number>(0);
-
+  const router = useRouter();
   const handleMouseLeave = () => {
     setIsOpen2(false);
   };
@@ -116,6 +117,12 @@ export default function MainHeader() {
       setUserEmail('');
     }
   }, [isLoggingOut]);
+  const handleClick = () => {
+    router.push('/profile?tab=notifications');
+  };
+  const handleClickProfile = () => {
+    router.push('/profile?tab=profile');
+  };
 
   return (
     <>
@@ -154,9 +161,13 @@ export default function MainHeader() {
               <Heart size={20} color={'#dbdbdb'} />
             </Link>
             <div className="relative">
-              <Bell size={20} color="#dbdbdb" />
+              <button onClick={handleClick} className='mt-[8px]'>
+                <Bell size={20} color="#dbdbdb" />
+              </button>
+
+
               {isAuthenticated && unreadCount > 0 && (
-                <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                <div className="absolute -top-[1px] -right-1.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
                   {unreadCount}
                 </div>
               )}
@@ -166,14 +177,14 @@ export default function MainHeader() {
               {isAuthenticated === null ? (
                 <div>Загрузка...</div>
               ) : isAuthenticated && !isLoggingOut ? (
-                <Link href={'/profile/Highlight'}>
+                <button onClick={handleClickProfile}>
                   <div
                     className="w-8 h-8 rounded-full flex justify-center items-center cursor-pointer"
                     style={{ backgroundColor: userBackgroundColor }}
                   >
                     <span className="text-white">{getFirstLetter(userEmail)}</span>
                   </div>
-                </Link>
+                </button>
               ) : (
                 <LoginModal onLoginSuccess={handleLoginSuccess} />
               )}
@@ -194,9 +205,8 @@ export default function MainHeader() {
 
         <div
           onMouseLeave={handleMouseLeave}
-          className={`absolute top-28 right-0 w-full bg-[#F3F3F3] shadow-md p-4 flex flex-col gap-4 xl:hidden transition-[max-height,opacity] duration-700 ease-in-out z-[3] ${
-            isOpen2 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
-          }`}
+          className={`absolute top-28 right-0 w-full bg-[#F3F3F3] shadow-md p-4 flex flex-col gap-4 xl:hidden transition-[max-height,opacity] duration-700 ease-in-out z-[3] ${isOpen2 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+            }`}
         >
           <div className="block xl:hidden">
             {isAuthenticated === null ? (

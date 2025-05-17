@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/shared/Button/Button';
 import { Input } from '@/components/shared/Input/Input';
 import ChangeNumber from '@/components/ui/Modal/ChangeNumber/ChangeNumber';
@@ -48,10 +48,12 @@ export default function SettingsProfile() {
     return color;
   };
 
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
     const fetchCurrentUser = async (): Promise<void> => {
-      console.log('Запрашиваем /me/ с withCredentials...');
-
+      if (hasFetchedRef.current) return;
+      hasFetchedRef.current = true;
       try {
         const response = await axios.get<UserAccount>(`${API_BASE_URL}/get_user_info/`, {
           withCredentials: true,
@@ -59,7 +61,6 @@ export default function SettingsProfile() {
 
         setInfoAcc(response.data);
         setUserEmail(response.data.email);
-        console.log('Ответ /me/:', response.data);
       } catch (error) {
         console.error('Ошибка запроса /me/:', error);
       }

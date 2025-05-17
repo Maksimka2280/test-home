@@ -57,9 +57,7 @@ export default function SideMenu({ activeTab, setActiveTab }: SideMenuProps) {
           withCredentials: true,
         },
       );
-      console.log('Ответ от сервера:', response);
       if (response.status === 200) {
-        console.log('Выход выполнен успешно');
         setIsLoggedOut(true);
       } else {
         console.error('Ошибка при выходе', response);

@@ -1,16 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+
 import SideMenu from '@/components/shared/SideMenu/SideMenu';
 import Highlight from './Highlight/page';
 import SettingsProfile from './settingsProfile/page';
 import SubscribePage from './SubscribePage/page';
 import Notifications from './Notifications/page';
 import SaveSearch from './SaveSearch/page';
-import Comments from './Comments/page';
+import Comments from './page';
 
 export default function ProfilePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [activeTab, setActiveTab] = useState('important');
+
+  // следим за изменением параметра tab в URL
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
+
+  // обновляем URL при смене вкладки вручную
+  useEffect(() => {
+    router.replace(`?tab=${activeTab}`);
+  }, [activeTab]);
 
   return (
     <div className="flex w-full max-w-[1380px] 2xl:max-w-[1800px] mx-auto min-h-screen">

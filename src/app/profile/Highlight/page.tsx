@@ -2,7 +2,7 @@
 import MiniCardProfile from '@/components/shared/Card/MiniCardPeofile';
 import { API_BASE_URL } from '@/config';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 interface UserAccount {
   subscription_until: string;
   promocode: string;
@@ -10,6 +10,8 @@ interface UserAccount {
 }
 export default function Highlight() {
   const [infoAcc, setIngoAcc] = useState<UserAccount | null>(null);
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
     const fetchCurrentUser = async (): Promise<void> => {
       console.log('Запрашиваем /get_profile/ с withCredentials...');
@@ -26,7 +28,10 @@ export default function Highlight() {
       }
     };
 
-    void fetchCurrentUser();
+    if (!hasFetchedRef.current) {
+      hasFetchedRef.current = true;
+      void fetchCurrentUser();
+    }
   }, []);
   return (
     <>
@@ -119,7 +124,7 @@ export default function Highlight() {
           <p className="font-bold text-[18px]">Мои объявления</p>
 
           <div className="flex flex-col gap-[12px] overflow-y-auto max-h-[330px] pr-2 relative z-10">
-            <MiniCardProfile />
+
           </div>
 
           <div className="absolute inset-0 z-20 pointer-events-none bg-white/70 rounded-[20px]" />

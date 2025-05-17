@@ -1,6 +1,6 @@
 'use client';
 import { useCurrency } from '../../Context/Contextcurrency/Contextcurrency';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
 import { CardType } from '@/types/Card';
@@ -13,8 +13,13 @@ export default function MiniCardProfile() {
 
   const [favorites, setFavorites] = useState<CardType[]>([]);
 
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
     const checkAuth = async () => {
+      if (hasFetchedRef.current) return;
+      hasFetchedRef.current = true;
+
       try {
         const response = await axios.get<ResponseData>(`${API_BASE_URL}/get_user_info/`, {
           withCredentials: true,
