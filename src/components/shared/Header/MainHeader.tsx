@@ -161,10 +161,9 @@ export default function MainHeader() {
               <Heart size={20} color={'#dbdbdb'} />
             </Link>
             <div className="relative">
-              <button onClick={handleClick} className='mt-[8px]'>
+              <button onClick={handleClick} className="mt-[8px]">
                 <Bell size={20} color="#dbdbdb" />
               </button>
-
 
               {isAuthenticated && unreadCount > 0 && (
                 <div className="absolute -top-[1px] -right-1.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
@@ -205,8 +204,9 @@ export default function MainHeader() {
 
         <div
           onMouseLeave={handleMouseLeave}
-          className={`absolute top-28 right-0 w-full bg-[#F3F3F3] shadow-md p-4 flex flex-col gap-4 xl:hidden transition-[max-height,opacity] duration-700 ease-in-out z-[3] ${isOpen2 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
-            }`}
+          className={`absolute top-28 right-0 w-full bg-[#F3F3F3] shadow-md p-4 flex flex-col gap-4 xl:hidden transition-[max-height,opacity] duration-700 ease-in-out z-[3] ${
+            isOpen2 ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
         >
           <div className="block xl:hidden">
             {isAuthenticated === null ? (

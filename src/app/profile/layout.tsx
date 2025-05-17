@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import SideMenu from '@/components/shared/SideMenu/SideMenu';
 import Highlight from './Highlight/page';

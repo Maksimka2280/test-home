@@ -123,9 +123,7 @@ export default function Highlight() {
         <div className="w-full md:w-[510px] h-[410px] bg-white rounded-[20px] px-[28px] py-[20px] relative overflow-hidden">
           <p className="font-bold text-[18px]">Мои объявления</p>
 
-          <div className="flex flex-col gap-[12px] overflow-y-auto max-h-[330px] pr-2 relative z-10">
-
-          </div>
+          <div className="flex flex-col gap-[12px] overflow-y-auto max-h-[330px] pr-2 relative z-10"></div>
 
           <div className="absolute inset-0 z-20 pointer-events-none bg-white/70 rounded-[20px]" />
         </div>
