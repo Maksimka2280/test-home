@@ -6,6 +6,9 @@ import { usePublicationDate } from '@/components/Context/PublicationDateContext/
 import { useFloor } from '@/components/Context/FloorsContext/FloorsContext';
 import FavoritesCard from '../Card/FavoritesCard';
 import { CardType } from '@/types/Card';
+import { useTotalAreaFilter } from '@/components/Context/TotakContext/TotakContext';
+import { useKitchenAreaFilter } from '@/components/Context/ChickenContext/ChickenContext';
+import { useLivingArea } from '@/components/Context/LiveAreaContext/LiveAreaContext';
 
 interface FilteredCardsProps {
   cards: CardType[];
@@ -16,8 +19,10 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
   const selectedFilters = useSelector((state: RootState) => state.filters.selectedFilters);
   const { yearFrom, yearTo } = useFilter();
   const { publicationDate } = usePublicationDate();
+  const { minTotalArea, maxTotalArea } = useTotalAreaFilter();
+  const { minKitchenArea, maxKitchenArea } = useKitchenAreaFilter();
+  const { minLivingArea, maxLivingArea } = useLivingArea();
   const { floorFrom, floorTo } = useFloor();
-
   const from = yearFrom ? parseInt(yearFrom, 10) : 0;
   const to = yearTo ? parseInt(yearTo, 10) : Infinity;
   const filteredCards = cards.filter(card => {
@@ -29,12 +34,7 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
     const totalFloors = card.total_floors;
     const minFloor = floorFrom ? parseInt(floorFrom, 10) : 0;
     const maxFloor = floorTo ? parseInt(floorTo, 10) : Infinity;
-
     if (totalFloors < minFloor || totalFloors > maxFloor) {
-      return false;
-    }
-
-    if (selectedFilters.includes('button-0-0') && card.time_on_foot_to_subway >= 10) {
       return false;
     }
 
@@ -52,7 +52,26 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
       'CheckBox-2-3': 'не последний',
       'CheckBox-2-4': 'только последний',
     };
+    const kitchenArea = card.kitchen_area;
+    const minKitchen = minKitchenArea ? parseInt(minKitchenArea, 10) : 0;
+    const maxKitchen = maxKitchenArea ? parseInt(maxKitchenArea, 10) : Infinity;
+    const cardTotalArea = card.total_area;
+    const minTotal = minTotalArea ? parseInt(minTotalArea, 10) : 0;
+    const maxTotal = maxTotalArea ? parseInt(maxTotalArea, 10) : Infinity;
+    const livingArea = card.living_area ?? 0;
+    if (minLivingArea !== null && livingArea < minLivingArea) {
+      return false;
+    }
+    if (maxLivingArea !== null && livingArea > maxLivingArea) {
+      return false;
+    }
 
+    if (kitchenArea < minKitchen || kitchenArea > maxKitchen) {
+      return false;
+    }
+    if (cardTotalArea < minTotal || cardTotalArea > maxTotal) {
+      return false;
+    }
     const activeFloors = Object.entries(floorTip)
       .filter(([id]) => selectedFilters.includes(id))
       .map(([, value]) => value);
@@ -75,10 +94,36 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
       return true;
     });
     console.log(filteredCards);
+    const dateFilterMap: Record<string, number> = {
+      'button-12-0': 7,
+      'button-12-1': 30,
+      'button-12-2': 90,
+      'button-12-3': 180,
+    };
+
+    const activeDateFilters = Object.entries(dateFilterMap)
+      .filter(([id]) => selectedFilters.includes(id))
+      .map(([, days]) => days);
+
+    if (activeDateFilters.length > 0) {
+      const cardDate = new Date(card.created_at);
+      const now = new Date();
+
+      const isWithinAnyRange = activeDateFilters.some(days => {
+        const compareDate = new Date();
+        compareDate.setDate(now.getDate() - days);
+        return cardDate >= compareDate;
+      });
+
+      if (!isWithinAnyRange) {
+        return false;
+      }
+    }
+
     const sellerTip: Record<string, string> = {
-      'button-15-0': 'собственник',
-      'button-15-1': 'агент',
-      'button-15-2': 'застройщик',
+      'button-10-0': 'собственник',
+      'button-10-1': 'агент',
+      'button-10-2': 'застройщик',
     };
     const sellerTopActive = Object.entries(sellerTip)
       .filter(([id]) => selectedFilters.includes(id))
@@ -92,10 +137,8 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
     }
 
     const renovationMap: Record<string, string> = {
-      'button-4-0': 'без ремонта',
-      'button-4-1': 'косметический',
-      'button-4-2': 'евроремонт',
-      'button-4-3': 'дизайн',
+      'button-3-0': 'новый',
+      'button-3-1': 'старый',
     };
     const activeRenovations = Object.entries(renovationMap)
       .filter(([id]) => selectedFilters.includes(id))
@@ -120,23 +163,9 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
       return false;
     }
 
-    const windowViewMap = {
-      'button-12-0': 'во двор',
-      'button-12-1': 'на улицу',
-    };
-    const activeWindowViews = Object.entries(windowViewMap)
-      .filter(([id]) => selectedFilters.includes(id))
-      .map(([, val]) => val);
-
-    if (
-      activeWindowViews.length > 0 &&
-      !activeWindowViews.includes(card.window_view?.toLowerCase?.() || '')
-    )
-      return false;
-
     const balconyTypeMap: Record<string, string> = {
-      'button-6-0': 'балкон',
-      'button-6-1': 'лоджия',
+      'button-5-0': 'балкон',
+      'button-5-1': 'терраса',
     };
     const activeBalconies = Object.entries(balconyTypeMap)
       .filter(([id]) => selectedFilters.includes(id))
@@ -150,12 +179,12 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
     }
 
     const houseTypeMap: Record<string, string> = {
-      'button-5-0': 'кирпичный',
-      'button-5-1': 'панельный',
-      'button-5-2': 'деревянный',
-      'button-5-3': 'монолитный',
-      'button-5-4': 'блочный',
-      'button-5-5': 'кирпично-монолитный',
+      'button-4-0': 'кирпичный',
+      'button-4-1': 'панельный',
+      'button-4-2': 'деревянный',
+      'button-4-3': 'монолитный',
+      'button-4-4': 'блочный',
+      'button-4-5': 'кирпично-монолитный',
     };
     const activeHouseTypes = Object.entries(houseTypeMap)
       .filter(([id]) => selectedFilters.includes(id))
@@ -169,41 +198,26 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
     }
 
     const liftsMap: Record<string, string> = {
-      'button-7-0': 'есть любой',
-      'button-7-1': 'есть грузовой',
+      'button-6-0': 'есть',
+      'button-6-1': 'нету',
     };
     const activeLifts = Object.entries(liftsMap)
       .filter(([id]) => selectedFilters.includes(id))
       .map(([, value]) => value);
 
-    if (activeLifts.includes('есть любой') && card.lifts < 1) {
+    if (activeLifts.includes('есть') && card.lifts < 1) {
       return false;
     }
-    if (activeLifts.includes('есть грузовой') && !card.freight_lifts) {
-      return false;
-    }
-
-    const kitchenFurnitureTypeMap: Record<string, string> = {
-      'button-8-0': 'Газовая',
-      'button-8-1': 'Электрическая',
-    };
-    const activeKitchenFurnitureTypes = Object.entries(kitchenFurnitureTypeMap)
-      .filter(([id]) => selectedFilters.includes(id))
-      .map(([, value]) => value);
-
-    if (
-      activeKitchenFurnitureTypes.length > 0 &&
-      !activeKitchenFurnitureTypes.includes(card.kitchen_furniture_type)
-    ) {
+    if (activeLifts.includes('нету') && !card.freight_lifts) {
       return false;
     }
 
     const ceilingHeightMap: Record<string, number> = {
-      'button-10-0': 2,
-      'button-10-1': 2.5,
-      'button-10-2': 2.7,
-      'button-10-3': 3,
-      'button-10-4': 3.5,
+      'button-7-0': 2,
+      'button-7-1': 2.5,
+      'button-7-2': 2.7,
+      'button-7-3': 3,
+      'button-7-4': 3.5,
     };
     const activeCeilingHeights = Object.entries(ceilingHeightMap)
       .filter(([id]) => selectedFilters.includes(id))
@@ -218,9 +232,11 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
     }
 
     const bathroomTypeMap: Record<string, string> = {
-      'button-11-0': 'совмещенный',
-      'button-11-1': 'раздельный',
+      'button-8-0': '1',
+      'button-8-1': '2',
+      'button-8-2': 'более 2',
     };
+
     const activeBathroomTypes = Object.entries(bathroomTypeMap)
       .filter(([id]) => selectedFilters.includes(id))
       .map(([, value]) => value);
@@ -232,9 +248,9 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
       return false;
     }
     const ParkingPlace: Record<string, string> = {
-      'button-14-0': 'наземная',
-      'button-14-1': 'многоуровневая',
-      'button-14-2': 'подземная',
+      'button-9-0': 'наземная',
+      'button-9-1': 'многоуровневая',
+      'button-9-2': 'подземная',
     };
     const activeParkingPlace = Object.entries(ParkingPlace)
       .filter(([id]) => selectedFilters.includes(id))
@@ -247,7 +263,7 @@ const FilteredFavCards: FC<FilteredCardsProps> = ({ cards, onDelete }) => {
       return false;
     }
     const sellConditionsMap: Record<string, string> = {
-      'button-16-0': 'возможна ипотека',
+      'button-11-0': 'возможна ипотека',
     };
 
     const activeSellConditions = Object.entries(sellConditionsMap)

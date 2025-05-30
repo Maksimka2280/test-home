@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import ChoiceLanguage from '@/components/ui/Modal/ModalChoiceLanguage';
 import Link from 'next/link';
+import '../../../shared/styles/globals.scss';
 import { MiniGreyLine } from '../Filters/mini-grey-line';
 import { Bell, Heart, Menu, X } from 'lucide-react';
 import LoginModal from '@/components/ui/Modal/LoginandReg/Login';
@@ -43,6 +44,7 @@ export default function MainHeader() {
   const [userEmail, setUserEmail] = useState<string>('');
   const { setNotifications } = useNotifications();
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [isShaking, setIsShaking] = useState(false);
   const router = useRouter();
   const handleMouseLeave = () => {
     setIsOpen2(false);
@@ -119,6 +121,8 @@ export default function MainHeader() {
   }, [isLoggingOut]);
   const handleClick = () => {
     router.push('/profile?tab=notifications');
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 400);
   };
   const handleClickProfile = () => {
     router.push('/profile?tab=profile');
@@ -129,7 +133,7 @@ export default function MainHeader() {
       <header className="w-full flex justify-center relative">
         <div className="max-w-[1440px] 2xl:max-w-[1810px] w-full flex justify-between items-center px-6 py-4">
           <Link href={'/'}>
-            <img src="/img/logo.jpg" alt="" className="w-20 h-20 rounded-[40px]" />
+            <img src="/img/penguin-home.svg" alt="" className="w-20 h-20 rounded-[40px]" />
           </Link>
           <ul className="hidden xl:flex gap-[50px]">
             <li>
@@ -158,11 +162,17 @@ export default function MainHeader() {
             <ChoiceLanguage />
             <MiniGreyLine height="30px" />
             <Link href={'/favorites'}>
-              <Heart size={20} color={'#dbdbdb'} />
+              <Heart
+                size={20}
+                className="text-gray-300 hover:text-red-500 transition-colors duration-200"
+              />
             </Link>
             <div className="relative">
               <button onClick={handleClick} className="mt-[8px]">
-                <Bell size={20} color="#dbdbdb" />
+                <Bell
+                  size={20}
+                  className={`text-gray-300 transition ${isShaking ? 'shake' : ''}`}
+                />
               </button>
 
               {isAuthenticated && unreadCount > 0 && (

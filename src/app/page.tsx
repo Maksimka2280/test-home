@@ -19,13 +19,13 @@ import { usePriceFilter } from '@/components/Context/ContextPrice/ContextPrice';
 import { useCurrency } from '@/components/Context/Contextcurrency/Contextcurrency';
 import { FilteredCards } from '@/components/shared/Filters/filterConditions';
 import { CardType } from '@/types/Card';
+import ModalChoiceCity from '@/components/ui/Modal/ModalChoiceCity';
 interface ResponseData {
   quick_favorites: CardType[];
   favorite_groups: CardType[];
 }
 export default function Home() {
   const { convertPrice } = useCurrency();
-  const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
   const { minPrice, maxPrice } = usePriceFilter();
   const [layersCount, setLayersCount] = useState(0);
   const [cards, setCards] = useState<CardType[]>([]);
@@ -115,6 +115,7 @@ export default function Home() {
   const handlePageChange = (selectedPage: { selected: number }) => {
     setPage(selectedPage.selected + 1);
   };
+
   return (
     <>
       <div>
@@ -126,10 +127,7 @@ export default function Home() {
 
             <div className="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#F3F3F3] rounded-[15px] ml-[10px] flex sm:flex-row flex-col gap-3 sm:gap-2 justify-center sm:items-center p-[18px]">
               <p className="text-[#BCBCBC] text-[16px] text-center sm:text-left whitespace-nowrap">
-                Выбрано городов:{' '}
-                <span className="text-[#0468FF] font-semibold text-[16px] pl-[6px]">
-                  {selectedCities.length}
-                </span>
+                <ModalChoiceCity />
               </p>
 
               <div className="w-[17px] h-[17px] flex-shrink-0 mx-auto sm:mx-0">

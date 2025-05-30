@@ -20,7 +20,6 @@ export default function BigCard() {
   const [data, setData] = useState<any[]>([]);
   const [selectedCard, setSelectedCard] = useState<ModalCard | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const selectedIds = useSelector((state: RootState) => state.cards?.selectedIds);
   const { currencySymbol, convertPrice, isLoading, error } = useCurrency();
 
@@ -191,7 +190,7 @@ export default function BigCard() {
                 {!card._hide_renovation && <p>Ремонт: {card.renovation ?? 'Не указан'}</p>}
                 {!card._hide_year && <p>Год постройки: {card.year ?? 'Не указан'}</p>}
                 {!card._hide_buildingType && <p>Тип дома: {card.buildingType ?? 'Не указан'}</p>}
-                {!card._hide_balcony && <p>Балкон/Лоджия: {card.balcony ? 'есть' : 'нет'}</p>}
+                {!card._hide_balcony && <p>Балкон/терраса: {card.balcony ? 'есть' : 'нет'}</p>}
                 {!card._hide_elevator && <p>Лифт: {card.elevator ? 'есть' : 'нет'}</p>}
                 {!card._hide_stove && <p>Кухонная плита: {card.stove ?? 'Не указано'}</p>}
                 {!card._hide_bathroomCount && <p>Санузел: {card.bathroomCount ?? 'Не указан'}</p>}

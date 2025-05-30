@@ -70,7 +70,7 @@ export const Input: FC<InputProps> = ({
         value={searchQuery}
         onChange={handleChange}
         onKeyDown={onKeyDown}
-        className="outline-none flex-1 bg-transparent text-[#9D9D9D] text-[20px] overflow-hidden min-w-20"
+        className="outline-none flex-1 bg-transparent  text-[20px] overflow-hidden min-w-20 pr-4"
       />
 
       {type === 'password' && (

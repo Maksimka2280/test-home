@@ -714,12 +714,7 @@ export default function Map() {
           <ul className="flex flex-wrap justify-center items-center gap-4 md:gap-6 lg:gap-8 xl:gap-[55px] max-w-[1440px] 2xl:max-w-[1810px] w-full">
             <li className="w-full sm:w-auto text-center sm:text-left">
               <p className="text-sm sm:text-base md:text-lg lg:text-xl font-medium text-black transition-all duration-300 ease-in-out transform hover:scale-110 hover:text-[#0468FF] hover:translate-y-[-5px]">
-                Квартира в новостройке
-              </p>
-            </li>
-            <li className="w-full sm:w-auto text-center sm:text-left">
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl font-medium text-black transition-all duration-300 ease-in-out transform hover:scale-110 hover:text-[#0468FF] hover:translate-y-[-5px]">
-                Квартира во вторичке
+                Квартира
               </p>
             </li>
             <li className="w-full sm:w-auto text-center sm:text-left">

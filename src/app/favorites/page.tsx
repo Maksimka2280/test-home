@@ -209,25 +209,29 @@ export default function Favorites() {
         </div>
         <div className="flex flex-wrap items-center justify-center xl:justify-between mt-[35px]">
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 md:gap-10 lg:gap-[50px]">
-            <div className="w-[225px] sm:w-[245px] h-[80px] rounded-[10px] bg-[#fff] flex gap-4 md:gap-[20px] justify-center items-center shadow-md">
-              <div className="w-[45px] md:w-[55px] h-[45px] md:h-[55px] bg-[#F3F3F3] rounded-[10px] flex justify-center items-center">
-                <List size={20} />
+            <button onClick={() => setSelectedGroup(null)}>
+              <div className="w-[225px] sm:w-[245px] h-[80px] rounded-[10px] bg-[#fff] flex gap-4 md:gap-[20px] justify-center items-center shadow-md transition-all duration-200 ease-in-out hover:scale-[1.02] hover:shadow-lg">
+                <div className="w-[45px] md:w-[55px] h-[45px] md:h-[55px] bg-[#F3F3F3] rounded-[10px] flex justify-center items-center transition-colors duration-200 hover:bg-[#E0E0E0]">
+                  <List size={20} />
+                </div>
+                <div className="flex items-start flex-col">
+                  <p className="font-bold text-[14px] md:text-[16px]">Все объявления</p>
+                  <p className="text-[12px] md:text-[14px]">{favoriteGroups.length} объявлений</p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold text-[14px] md:text-[16px]">Все объявления</p>
-                <p className="text-[12px] md:text-[14px]">{favoriteGroups.length} объявлений</p>
-              </div>
-            </div>
+            </button>
 
             <div className="text-center sm:text-left">
               <h1 className="text-[24px] md:text-[30px] lg:text-[33px] font-bold mb-[10px]">
                 Все объявления
               </h1>
-              <div className="flex flex-wrap gap-4 md:gap-6 lg:gap-[40px] justify-center lg:justify-start">
-                <p>По дате добавления</p>
-                <ModalMoreFilter trigger={<button>Фильтры</button>} />
+              <div className="flex flex-wrap gap-4 md:gap-6 lg:gap-[40px] justify-center lg:justify-start ">
+                <p className="hover:text-[#0164EB]">По дате добавления</p>
+                <ModalMoreFilter
+                  trigger={<button className="hover:text-[#0164EB]">Фильтры</button>}
+                />
 
-                <button onClick={() => setIsCustomOrderOpen(true)}>
+                <button className="hover:text-[#0164EB]" onClick={() => setIsCustomOrderOpen(true)}>
                   Кастомизировать объявление
                 </button>
                 <CustomOrder
@@ -289,11 +293,11 @@ export default function Favorites() {
                     <li
                       key={group.id}
                       onClick={() => setSelectedGroup(group)}
-                      className="cursor-pointer"
+                      className="cursor-pointer "
                     >
-                      <div className="w-[245px] h-[80px] pl-[15px] pr-[10px] rounded-[10px] bg-[#ffffff] mt-[20px] flex gap-[20px] justify-center items-center">
+                      <div className="w-[245px] h-[80px] pl-[15px] pr-[10px] rounded-[10px] bg-[#ffffff] mt-[20px] flex gap-[20px] justify-center items-center shadow-md transition-all duration-200 ease-in-out hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                         <div
-                          className="w-[55px] h-[55px] rounded-[10px] flex justify-center items-center cursor-pointer"
+                          className="w-[55px] h-[55px] rounded-[10px] flex justify-center items-center transition-transform duration-200"
                           style={{ backgroundColor: color }}
                         />
                         <div className="flex flex-col flex-grow max-w-[calc(100%-75px)]">

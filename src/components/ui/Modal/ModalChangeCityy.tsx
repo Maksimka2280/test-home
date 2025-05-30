@@ -5,6 +5,7 @@ import { Button } from '@/components/shared/Button/Button';
 import { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
+import { X } from 'lucide-react';
 
 interface ChangePhoneModalProps {
   onClose: () => void;
@@ -37,8 +38,11 @@ export default function ChangePhoneModal({ onClose }: ChangePhoneModalProps) {
       <div className="fixed inset-0 bg-black opacity-50 z-40" onClick={onClose} />
 
       <div className="fixed z-50 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-[20px] max-w-[480px] w-full">
-        <button className="absolute top-4 right-4 text-2xl" onClick={onClose}>
-          ×
+        <button
+          className="absolute top-2 right-4 text-2xl hover:bg-gray-100 rounded-full px-[8px] py-[8px] transition duration-300"
+          onClick={onClose}
+        >
+          <X size={18} />
         </button>
         <h2 className="text-xl font-bold text-center mb-6">Сменить город</h2>
 

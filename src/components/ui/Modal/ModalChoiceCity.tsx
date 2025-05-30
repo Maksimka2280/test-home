@@ -4,13 +4,12 @@ import { Input } from '@/components/shared/Input/Input';
 import { useState } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../store/store'; // Импортируем корневой стейт
+import { RootState } from '../../../store/store';
 import { addCity, removeCity } from '../../../store/citiesSlice/citiesSlices';
 
 const GEO_NAMES_API_URL = 'http://api.geonames.org/searchJSON';
 const GEO_NAMES_USER = 'penguincity778';
 
-// Дефолтный список городов
 const allSwissCities = [
   'Цюрих',
   'Женева',
@@ -38,6 +37,32 @@ const allSwissCities = [
   'Веве',
 ];
 
+const citySynonyms: Record<string, string[]> = {
+  Цюрих: ['Zurich', 'Zürich'],
+  Женева: ['Geneva', 'Genève'],
+  Базель: ['Basel'],
+  Лозанна: ['Lausanne'],
+  Берн: ['Bern'],
+  Винтертур: ['Winterthur'],
+  Люцерн: ['Lucerne', 'Luzern'],
+  'Санкт-Галлен': ['St. Gallen', 'Sankt Gallen'],
+  Лугано: ['Lugano'],
+  'Биль/Бьенн': ['Biel', 'Bienne'],
+  Тун: ['Thun'],
+  Кёниц: ['Köniz'],
+  'Ла-Шо-де-Фон': ['La Chaux-de-Fonds'],
+  Фрибург: ['Fribourg'],
+  Шаффхаузен: ['Schaffhausen'],
+  Кьяссо: ['Chiasso'],
+  Глан: ['Gland'],
+  Мартиньи: ['Martigny'],
+  Шпиц: ['Spiez'],
+  Дельмон: ['Delémont'],
+  Лангененталь: ['Langenthal'],
+  Баден: ['Baden'],
+  Беллинцона: ['Bellinzona'],
+  Веве: ['Vevey'],
+};
 export default function ModalChoiceCity() {
   const dispatch = useDispatch();
   const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
@@ -86,6 +111,17 @@ export default function ModalChoiceCity() {
       console.error('Error fetching cities:', error);
     }
   };
+  const normalizeCity = (input: string): string[] => {
+    const lower = input.toLowerCase();
+
+    return allSwissCities.filter(ruName => {
+      const synonyms = citySynonyms[ruName] || [];
+      return (
+        ruName.toLowerCase().includes(lower) ||
+        synonyms.some(syn => syn.toLowerCase().includes(lower))
+      );
+    });
+  };
 
   const handleAddCity = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && cityInput.trim() !== '') {
@@ -107,11 +143,16 @@ export default function ModalChoiceCity() {
     if (value === '') {
       setCitiesSuggestions(allSwissCities);
     } else {
-      try {
-        await fetchCities(value);
-      } catch (error) {
-        console.error('Error fetching cities:', error);
-        setErrorMessage('There was an error fetching city suggestions.');
+      const matches = normalizeCity(value);
+      if (matches.length > 0) {
+        setCitiesSuggestions(matches);
+      } else {
+        try {
+          await fetchCities(value);
+        } catch (error) {
+          console.error('Error fetching cities:', error);
+          setErrorMessage('Произошла ошибка при загрузке городов.');
+        }
       }
     }
   };
@@ -121,7 +162,7 @@ export default function ModalChoiceCity() {
   return (
     <>
       <button
-        className="flex justify-center items-center font-medium text-[#BCBCBC] lg:text-[16px] transition-all duration-300 ease-in-out transform gap-2"
+        className="flex justify-center items-center font-medium text-[#BCBCBC] lg:text-[16px] transition-all duration-300 ease-in-out transform gap-2 hover:text-[#0164EB]"
         onClick={toggleModal}
       >
         Выбрано городов:{' '}

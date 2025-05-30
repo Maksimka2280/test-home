@@ -54,3 +54,44 @@ input:focus {
   outline: none; 
   border: none; 
 }
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  50% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.shake {
+  animation: shake 0.4s ease;
+}
+
+/* Скрыть иконку Google */
+#google_language_element .goog-logo-link {
+  display: none !important;
+}
+
+/* Убрать рамки и отступы у выпадающего меню */
+#google_language_element .goog-te-combo {
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  font-size: inherit !important;
+  color: inherit !important;
+}
+#google_language_element select.goog-te-combo {
+  display: none !important;
+
+}

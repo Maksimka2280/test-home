@@ -1,13 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config';
 import { MiniGreyButton } from '@/components/shared/Button/MinigreyButton/MinigreyButton';
 import CityList from '@/components/ui/CityRender/CityRender';
-import { RootState } from '@/store/store';
 import {
   AirVent,
   Armchair,
@@ -40,6 +38,7 @@ import { ButtonBlackWhite } from '@/components/shared/Button/ButtonBlackWhite';
 import { Input } from '@/components/shared/Input/Input';
 import { useCurrency } from '@/components/Context/Contextcurrency/Contextcurrency';
 import { ModalAddToComparison } from '@/components/ui/Modal/ModalAddtocomparison';
+import ModalChoiceCity from '@/components/ui/Modal/ModalChoiceCity';
 const features = [
   { key: 'fridge', icon: <Refrigerator size={16} />, label: 'Холодильник' },
   { key: 'washer', icon: <WashingMachine size={16} />, label: 'Стиральная машина' },
@@ -66,7 +65,6 @@ export default function ProductDetail() {
   const advertId = params?.id;
   const { currencySymbol, convertPrice } = useCurrency();
   const [advertData, setAdvertData] = useState<AdvertData | null>(null);
-  const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
   const [isExpanded, setIsExpanded] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
   const [isTextOverflowing, setIsTextOverflowing] = useState(false);
@@ -165,7 +163,7 @@ export default function ProductDetail() {
     { label: 'Площадь кухни', key: 'kitchen_area' },
     { label: 'Высота потолков', key: 'ceiling_height' },
     { label: 'Санузел', key: 'bathroom' },
-    { label: 'Балкон/лоджия', key: 'balcony' },
+    { label: 'Балкон/терраса', key: 'balcony' },
     { label: 'Ремонт', key: 'renovation' },
   ];
   const propertyDetails2 = [
@@ -183,7 +181,7 @@ export default function ProductDetail() {
       {/* Верхняя панель */}
       <div className="flex justify-center mb-[35px] mt-[50px]">
         <div className="flex flex-wrap items-center justify-center lg:justify-between w-full max-w-[1360px] 2xl:max-w-[1760px] ">
-          <div className="pb-[35px] md:pb-0">
+          <div className="pb-[15px] md:pb-0">
             <p className="text-center sm:text-left">Сервис для поиска недвижимости в Швейцарии</p>
             <p className="flex items-center text-[#A0A6B2] mt-3 text-[14px]">
               Недвижимость в Санкт-Галлен
@@ -193,17 +191,20 @@ export default function ProductDetail() {
           </div>
 
           <div className="min-w-[200px] sm:min-w-[300px] lg:min-w-[360px] bg-[#F3F3F3] rounded-[15px] mt-4 sm:mt-0 p-[18px] flex flex-col items-center gap-2">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
+            <div className="min-w-[200px] sm:min-w-[300px] md:min-w-[320px] lg:min-w-[360px] xl:min-w-[380px] max-w-full bg-[#F3F3F3] ml-[70px] rounded-[15px]  flex sm:flex-row flex-col gap-3 sm:gap-2 sm:justify-end sm:items-center  ">
               <p className="text-[#BCBCBC] text-[16px] text-center sm:text-left whitespace-nowrap">
-                Выбрано городов:
-                <span className="text-[#0468FF] font-semibold pl-1">{selectedCities.length}</span>
+                <ModalChoiceCity />
               </p>
-              <MapPin color="#0164EB" size={17} />
+
+              <div className="w-[17px] h-[17px] flex-shrink-0 mx-[70px] sm:mx-0">
+                <MapPin color="#0164EB" size={17} />
+              </div>
+
               <CityList />
             </div>
-            <div className="text-[#A0A6B2] text-[13px] w-full text-right">
+            <div className="text-[#A0A6B2] text-[13px] w-full sm:text-right text-center">
               Обновлено: 5 дек, 15:19 ·{' '}
-              <span className="font-bold text-[#0164EB]">780 просмотров</span>, 178 за сегодня, 519
+              <span className="font-bold text-[#0164EB]">780 просмотров</span>, 18 за сегодня, 59
               уникальных
             </div>
           </div>

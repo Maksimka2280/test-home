@@ -104,9 +104,9 @@ export default function SettingsProfile() {
           </div>
           <div className="font-bold">
             <p>
-              {infoAcc?.profile.last_name} {infoAcc?.profile.first_name}
+              {infoAcc?.profile?.last_name} {infoAcc?.profile?.first_name}
             </p>
-            <p>ID: {infoAcc?.profile.user_id}</p>
+            <p>ID: {infoAcc?.profile?.user_id}</p>
           </div>
         </div>
 
@@ -151,7 +151,12 @@ export default function SettingsProfile() {
         {/* Номер телефона */}
         <div className="mb-[20px]">
           <p className="text-[14px] font-medium text-black flex items-center gap-[6px]">
-            Номер телефона <span className="text-green-600 text-[18px]">✔</span>
+            Номер телефона{' '}
+            {infoAcc?.phone_number ? (
+              <span className="text-green-600 text-[18px]">✔</span>
+            ) : (
+              <span className="text-red-600 text-[18px]">🗙</span>
+            )}
           </p>
           <p className="text-[16px] font-bold mt-[4px]">{infoAcc?.phone_number}</p>
           <ChangeNumber />
@@ -179,9 +184,14 @@ export default function SettingsProfile() {
         {/* Город */}
         <div>
           <p className="text-[14px] font-medium text-black flex items-center gap-[6px]">
-            Город проживания <span className="text-green-600 text-[18px]">✔</span>
+            Город проживания{' '}
+            {infoAcc?.profile?.city ? (
+              <span className="text-green-600 text-[18px]">✔</span>
+            ) : (
+              <span className="text-red-600 text-[18px]">🗙</span>
+            )}
           </p>
-          <p className="text-[16px] font-bold mt-[4px]">{infoAcc?.profile.city}</p>
+          <p className="text-[16px] font-bold mt-[4px]">{infoAcc?.profile?.city}</p>
           <button
             className="text-[#0077FF] text-[14px] mt-[4px] hover:underline"
             onClick={() => setIsPhoneModalOpen(true)}

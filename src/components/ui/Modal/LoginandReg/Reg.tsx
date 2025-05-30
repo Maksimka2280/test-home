@@ -9,6 +9,7 @@ import { API_BASE_URL } from '@/config';
 
 interface RegModalProps {
   closeModal: () => void;
+  onRegisterSuccess: () => void;
 }
 
 type FormData = {
@@ -25,7 +26,7 @@ type FormErrors = {
   confirmPassword?: string;
 };
 
-export default function RegModal({ closeModal }: RegModalProps) {
+export default function RegModal({ closeModal, onRegisterSuccess }: RegModalProps) {
   const regApi = async function (params: {
     email: string;
     phone_number: string;
@@ -47,6 +48,7 @@ export default function RegModal({ closeModal }: RegModalProps) {
       );
 
       console.log('Успешная регистрация:', response.data);
+      onRegisterSuccess();
       return response.data;
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
@@ -92,9 +94,6 @@ export default function RegModal({ closeModal }: RegModalProps) {
       isValid = false;
     } else if (formData.password.length < 6) {
       newErrors.password = 'Пароль должен содержать минимум 6 символов';
-      isValid = false;
-    } else if (!/[0-9]/.test(formData.password) || !/[@#$%*]/.test(formData.password)) {
-      newErrors.password = 'Пароль должен содержать цифры (1,2...9) и символы (@#$%*)';
       isValid = false;
     }
 
@@ -146,7 +145,11 @@ export default function RegModal({ closeModal }: RegModalProps) {
         </button>
 
         <div className="flex flex-col justify-center items-center">
-          <img src="/img/logo.jpg" alt="logo" className="w-[80px] h-[80px] rounded-full mb-4" />
+          <img
+            src="/img/penguin-home.svg"
+            alt="logo"
+            className="w-[80px] h-[80px] rounded-full mb-4"
+          />
           <h1 className="font-bold text-[22px] md:text-[30px] text-center">Зарегистрироваться</h1>
 
           <form onSubmit={handleSubmit} className="mt-6 w-full flex flex-col gap-5">

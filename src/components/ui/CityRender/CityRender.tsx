@@ -5,7 +5,7 @@ const CityList = () => {
   const selectedCities = useSelector((state: RootState) => state.cities.selectedCities);
 
   return (
-    <p className="font-semibold text-center text-[16px] sm:text-left break-words">
+    <p className="font-semibold text-left text-[16px] sm:text-left break-words">
       {selectedCities.length ? selectedCities.join(' / ') : 'Города не выбраны'}
     </p>
   );

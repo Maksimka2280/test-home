@@ -12,7 +12,7 @@ const filterItems = [
   'Скидки и акции от застройщиков',
   'Ремонт',
   'Год постройки',
-  'Балкон/Лоджия',
+  'Балкон/терраса',
   'Лифт',
   'Санузел',
   'Парковка',
@@ -155,10 +155,10 @@ export default function CustomOrder({ isOpen, onClose }: ModalEditingEquastionsP
         </div>
 
         <button
+          className="absolute top-3 right-3 text-2xl hover:bg-gray-100 rounded-full px-[8px] py-[8px] transition duration-300"
           onClick={onClose}
-          className="absolute right-[16px] top-5 text-gray-500 hover:text-red-500 transition"
         >
-          <X size={24} />
+          <X size={20} />
         </button>
       </div>
     </div>

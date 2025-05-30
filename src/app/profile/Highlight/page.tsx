@@ -96,7 +96,7 @@ export default function Highlight() {
                   <span>***</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Балкон/Лоджия</span>
+                  <span>Балкон/терраса</span>
                   <span>***</span>
                 </div>
                 <div className="flex justify-between">

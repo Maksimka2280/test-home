@@ -76,7 +76,7 @@ export default function ModalEditingEquastions({
       },
       {
         id: 'balcony',
-        label: `Балкон/Лоджия: ${card.balcony ? 'есть' : 'нет'}`,
+        label: `Балкон/терраса: ${card.balcony ? 'есть' : 'нет'}`,
         field: 'balcony',
       },
       {

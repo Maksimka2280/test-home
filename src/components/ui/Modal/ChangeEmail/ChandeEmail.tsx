@@ -39,7 +39,11 @@ export default function ChangeEmail() {
             </button>
 
             <div className="flex flex-col justify-center items-center">
-              <img src="/img/logo.jpg" alt="" className="w-[90px] h-[90px] rounded-[40px]" />
+              <img
+                src="/img/penguin-home.svg"
+                alt=""
+                className="w-[90px] h-[90px] rounded-[40px]"
+              />
               <h1 className="font-bold text-[33px] text-center">Смена почты</h1>
               <form className="mt-[40px] max-w-[400px] w-full">
                 <div className="flex flex-col gap-[20px] ">

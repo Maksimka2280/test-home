@@ -15,14 +15,13 @@ type Categories = {
 
 const categories: Categories = {
   Жилая: [
-    { id: 1, name: 'Квартира в новостройке' },
-    { id: 2, name: 'Квартира во вторичке' },
-    { id: 3, name: 'Комната' },
-    { id: 4, name: 'Дом, дача' },
-    { id: 5, name: 'Часть дома' },
-    { id: 6, name: 'Таунхаус' },
-    { id: 7, name: 'Участок' },
-    { id: 8, name: 'Гараж' },
+    { id: 1, name: 'Квартира' },
+    { id: 2, name: 'Комната' },
+    { id: 3, name: 'Дом, дача' },
+    { id: 4, name: 'Часть дома' },
+    { id: 5, name: 'Таунхаус' },
+    { id: 6, name: 'Участок' },
+    { id: 7, name: 'Гараж' },
   ],
   Коммерческая: [
     { id: 1, name: 'Офис' },
@@ -81,7 +80,7 @@ export default function App() {
   };
 
   const toggleModal = () => {
-    setIsOpen(prev => !prev); // Переключаем состояние модалки
+    setIsOpen(prev => !prev);
   };
 
   const handleMouseLeave = () => {
@@ -92,7 +91,7 @@ export default function App() {
     <div className="relative">
       <button
         ref={buttonRef}
-        className="flex items-center gap-2 text-base font-semibold"
+        className="flex items-center gap-2 text-base font-semibold hover:text-[#0164EB]"
         onClick={toggleModal}
       >
         <span>Аренда</span>

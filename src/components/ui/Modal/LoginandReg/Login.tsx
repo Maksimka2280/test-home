@@ -116,7 +116,7 @@ export default function LoginModal({ onLoginSuccess }: LoginModalProps) {
 
   return (
     <>
-      <Button color="blue" height="37px" rounded="10px" width="100px" onClick={toggleModal}>
+      <Button color="blue" height="37px" rounded="10px" width="110px" onClick={toggleModal}>
         Войти
       </Button>
 
@@ -136,7 +136,11 @@ export default function LoginModal({ onLoginSuccess }: LoginModalProps) {
             </button>
 
             <div className="flex flex-col justify-center items-center mt-8 md:mt-4">
-              <img src="/img/logo.jpg" alt="Логотип" className="w-[80px] h-[80px] rounded-full" />
+              <img
+                src="/img/penguin-home.svg"
+                alt="Логотип"
+                className="w-[80px] h-[80px] rounded-full"
+              />
               <div className="w-full max-w-[500px]">
                 <h1 className="font-bold text-[23px] md:text-[30px] text-center mt-4">
                   Войти в личный кабинет
@@ -221,7 +225,9 @@ export default function LoginModal({ onLoginSuccess }: LoginModalProps) {
         </>
       )}
 
-      {isRegisterOpen && <RegModal closeModal={closeRegisterModal} />}
+      {isRegisterOpen && (
+        <RegModal closeModal={closeRegisterModal} onRegisterSuccess={onLoginSuccess} />
+      )}
     </>
   );
 }

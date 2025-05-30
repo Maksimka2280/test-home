@@ -26,14 +26,6 @@ type FilterGroup = {
 };
 const filterGroups: FilterGroup[] = [
   {
-    id: 1,
-    buttons: [
-      { label: '10 минут', width: '115px', id: 'button-1-1' },
-      { label: 'Пешком', width: '115px', id: 'button-1-2' },
-      { label: 'Транспортом', width: '150px', id: 'button-1-3' },
-    ],
-  },
-  {
     id: 2,
     buttons: [{ label: '', width: '', id: '' }],
   },
@@ -49,18 +41,13 @@ const filterGroups: FilterGroup[] = [
   },
   {
     id: 4,
-    buttons: [
-      { label: 'от', width: '44px', id: 'button-4-1' },
-      { label: 'до', width: '44px', id: 'button-4-2' },
-    ],
+    buttons: [{ label: '', width: '', id: '' }],
   },
   {
     id: 5,
     buttons: [
-      { label: 'Без ремонта', width: '140px', id: 'button-5-2' },
-      { label: 'Косметический', width: '160px', id: 'button-5-3' },
-      { label: 'Евроремонт', width: '140px', id: 'button-5-4' },
-      { label: 'Дизайн', width: '105px', id: 'button-5-5' },
+      { label: 'новый', width: '140px', id: 'button-5-2' },
+      { label: 'старый', width: '160px', id: 'button-5-3' },
     ],
   },
   {
@@ -78,28 +65,14 @@ const filterGroups: FilterGroup[] = [
     id: 7,
     buttons: [
       { label: 'Балкон', width: '115px', id: 'button-7-2' },
-      { label: 'Лоджия', width: '115px', id: 'button-7-3' },
+      { label: 'терраса', width: '115px', id: 'button-7-3' },
     ],
   },
   {
     id: 8,
     buttons: [
-      { label: 'Есть любой', width: '135px', id: 'button-8-2' },
-      { label: 'Есть грузовой', width: '150px', id: 'button-8-3' },
-    ],
-  },
-  {
-    id: 9,
-    buttons: [
-      { label: 'Газовая', width: '105px', id: 'button-9-2' },
-      { label: 'Электрическая', width: '160px', id: 'button-9-3' },
-    ],
-  },
-  {
-    id: 10,
-    buttons: [
-      { label: 'Смежная', width: '115px', id: 'button-10-2' },
-      { label: 'Изолированная', width: '160px', id: 'button-10-3' },
+      { label: 'Есть', width: '135px', id: 'button-8-2' },
+      { label: 'Нет', width: '150px', id: 'button-8-3' },
     ],
   },
   {
@@ -115,23 +88,9 @@ const filterGroups: FilterGroup[] = [
   {
     id: 12,
     buttons: [
-      { label: 'Совмещенный', width: '155px', id: 'button-12-2' },
-      { label: 'Раздельный', width: '140px', id: 'button-12-3' },
-      { label: '2 и более', width: '120px', id: 'button-12-4' },
-    ],
-  },
-  {
-    id: 13,
-    buttons: [
-      { label: 'Во двор', width: '110px', id: 'button-13-2' },
-      { label: 'На улицу', width: '120px', id: 'button-13-3' },
-    ],
-  },
-  {
-    id: 14,
-    buttons: [
-      { label: 'Без апартаментов', width: '180px', id: 'button-14-2' },
-      { label: 'Только апартаменты', width: '200px', id: 'button-14-3' },
+      { label: '1 санузел', width: '155px', id: 'button-12-1' },
+      { label: '2 санузла', width: '140px', id: 'button-12-2' },
+      { label: 'Более двух санузлов', width: '200px', id: 'button-12-3' },
     ],
   },
   {
@@ -156,7 +115,13 @@ const filterGroups: FilterGroup[] = [
   },
   {
     id: 18,
-    buttons: [{ label: 'Введите дату', width: '150px', id: 'button-18-2' }],
+    buttons: [
+      { label: 'в течение недели', width: '175px', id: 'button-16-2' },
+      { label: 'в течение месяца', width: '200px', id: 'button-16-3' },
+      { label: 'в течение 3 меясцев', width: '200px', id: 'button-16-4' },
+      { label: 'в течение 6 меясцев', width: '200px', id: 'button-16-4' },
+      { label: 'Введите дату', width: '150px', id: 'button-18-2' },
+    ],
   },
   {
     id: 19,
@@ -169,27 +134,24 @@ type ModalMoreFilterProps = {
 };
 export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
   const filterSections = [
-    { title: 'До метро', group: filterGroups[0] },
-    { title: 'Площадь, м2', group: filterGroups[1] },
-    { title: 'Этаж', group: filterGroups[2] },
-    { title: 'Этажей в доме', group: filterGroups[3] },
-    { title: 'Ремонт', group: filterGroups[4] },
-    { title: 'Год постройки', group: filterGroups[5] },
-    { title: 'Тип дома', group: filterGroups[5] },
-    { title: 'Балкон/Лоджия', group: filterGroups[6] },
-    { title: 'Лифт', group: filterGroups[7] },
-    { title: 'Кухонная плита', group: filterGroups[8] },
-    { title: 'Планировка', group: filterGroups[9] },
-    { title: 'Высота потолков', group: filterGroups[10] },
-    { title: 'Санузел', group: filterGroups[11] },
-    { title: 'Вид из окна', group: filterGroups[12] },
-    { title: 'Апартаменты', group: filterGroups[13] },
-    { title: 'Парковка', group: filterGroups[14] },
-    { title: 'Продавец', group: filterGroups[15] },
-    { title: 'Условия продажи', group: filterGroups[16] },
-    { title: 'Дата публикации', group: filterGroups[17] },
-    { title: 'Содержит слова в объявлении', group: filterGroups[18] },
+    { title: 'Площадь, м2', group: filterGroups[0] },
+    { title: 'Этаж', group: filterGroups[1] },
+    { title: 'Этажей в доме', group: filterGroups[2] },
+    { title: 'Ремонт', group: filterGroups[3] },
+    { title: 'Год постройки', group: filterGroups[4] },
+    { title: 'Тип дома', group: filterGroups[4] },
+    { title: 'Балкон/терраса', group: filterGroups[5] },
+    { title: 'Лифт', group: filterGroups[6] },
+
+    { title: 'Высота потолков', group: filterGroups[7] },
+    { title: 'Санузел', group: filterGroups[8] },
+
+    { title: 'Продавец', group: filterGroups[10] },
+    { title: 'Условия продажи', group: filterGroups[11] },
+    { title: 'Дата публикации', group: filterGroups[12] },
+    { title: 'Содержит слова в объявлении', group: filterGroups[13] },
   ].filter(section => section.group);
+
   const [isOpen, setIsOpen] = useState(false);
   const { yearFrom, yearTo, updateYearFrom, updateYearTo } = useFilter();
   const { setPublicationDate } = usePublicationDate();
@@ -281,19 +243,17 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
         <div className="h-full overflow-y-auto rounded-r-[25px]">
           {/* Кнопка закрытия */}
           <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition duration-300"
             onClick={toggleModal}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-2 transition duration-300"
           >
             <X size={24} />
           </button>
+
           <h1 className="text-[28px] font-bold">Ещё фильтры</h1>
 
           <div className="flex items-start hidden lg:flex">
             <div className="text-left">
               <ul className="mt-[40px] text-[20px] flex flex-col gap-[40px]">
-                <li>
-                  <p>До метро</p>
-                </li>
                 <li>
                   <p>Площадь, м2</p>
                 </li>
@@ -316,28 +276,16 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
 
               <ul className=" pt-[40px] lg:pt-[100px] text-[20px] flex flex-col gap-[40px]">
                 <li>
-                  <p>Балкон/Лоджия</p>
+                  <p>Балкон/терраса</p>
                 </li>
                 <li>
                   <p>Лифт</p>
-                </li>
-                <li>
-                  <p>Кухонная плита</p>
-                </li>
-                <li>
-                  <p>Планировка</p>
                 </li>
                 <li>
                   <p>Высота потолков</p>
                 </li>
                 <li>
                   <p>Санузел</p>
-                </li>
-                <li>
-                  <p>Вид из окна</p>
-                </li>
-                <li>
-                  <p>Апартаменты</p>
                 </li>
                 <li>
                   <p className="w-[200px]">Парковка</p>
@@ -352,7 +300,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                   <p className="w-[200px]">Дата публикации</p>
                 </li>
                 <li>
-                  <p className="w-[160px]">Содержит слова в объявлении</p>
+                  <p className="w-[160px] pt-10">Содержит слова в объявлении</p>
                 </li>
               </ul>
             </div>
@@ -362,7 +310,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
               {filterGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="flex items-center gap-[20px]">
                   <div className="flex sm:flex-wrap items-center gap-[10px]">
-                    {groupIndex === 2 && (
+                    {groupIndex === 1 && (
                       <div className="flex sm:flex-wrap items-center gap-[10px]">
                         {group.buttons.map((button, buttonIndex) => {
                           if (button.type === 'checkbox') {
@@ -411,7 +359,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       </div>
                     )}
 
-                    {groupIndex === 3 && (
+                    {groupIndex === 2 && (
                       <div className="flex sm:flex-wrap items-center mr-4 gap-[20px]">
                         <div className="flex gap-[20px]">
                           <div>
@@ -423,7 +371,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               id={`input-to-${groupIndex}`}
                               type="number"
                               placeholder="От"
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px]   items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex    items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                           <div>
@@ -435,13 +383,13 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               id={`input-to-${groupIndex}`}
                               type="number"
                               placeholder="До"
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px]   items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex    items-center bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                         </div>
                       </div>
                     )}
-                    {groupIndex === 5 && (
+                    {groupIndex === 4 && (
                       <div className="flex sm:flex-wrap items-center mr-4 gap-[20px] mb-[20px]">
                         <div className="flex gap-[20px]">
                           <div className="relative">
@@ -473,7 +421,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                         </div>
                       </div>
                     )}
-                    {groupIndex === 1 && (
+                    {groupIndex === 0 && (
                       <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
                         <p>Кухня </p>
                         <div className="flex gap-[20px]">
@@ -484,7 +432,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               placeholder="От"
                               value={minKitchenArea}
                               onChange={handleMinAreaChange}
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex  bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                           <div>
@@ -494,13 +442,13 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               placeholder="До"
                               value={maxKitchenArea}
                               onChange={handleMaxAreaChange}
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex  bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                         </div>
                       </div>
                     )}
-                    {groupIndex === 1 && (
+                    {groupIndex === 0 && (
                       <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
                         <p>Общая </p>
                         <div className="flex gap-[20px]">
@@ -511,7 +459,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               placeholder="От"
                               value={minTotalArea}
                               onChange={handleMinAreaChange2}
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex  bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                           <div>
@@ -521,13 +469,13 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               placeholder="До"
                               value={maxTotalArea}
                               onChange={handleMaxAreaChange2}
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex  bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                         </div>
                       </div>
                     )}
-                    {groupIndex === 1 && (
+                    {groupIndex === 0 && (
                       <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
                         <p>Жилая </p>
                         <div className="flex gap-[20px]">
@@ -540,7 +488,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               onChange={e =>
                                 setMinLivingArea(e.target.value ? parseFloat(e.target.value) : null)
                               }
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex  bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                           <div>
@@ -552,13 +500,13 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                               onChange={e =>
                                 setMaxLivingArea(e.target.value ? parseFloat(e.target.value) : null)
                               }
-                              className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                              className="w-[45px] h-[40px] border-none rounded-[15px] flex  bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
                             />
                           </div>
                         </div>
                       </div>
                     )}
-                    {groupIndex !== 2 && groupIndex !== 3 && (
+                    {groupIndex !== 1 && groupIndex !== 2 && (
                       <div className="flex lg:flex-wrap items-center gap-[20px]">
                         {group.buttons.map((button, buttonIndex) => {
                           const groupId = group.id || groupIndex;
@@ -596,7 +544,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                           }
                           return (
                             <>
-                              {buttonIndex === 0 && groupIndex === 0 && <p>Не более </p>}
                               <ButtonFilters
                                 key={`${groupIndex}-${buttonIndex}`}
                                 color="blue"
@@ -607,6 +554,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                                 className={`transition-colors duration-300 ease-in-out hover:bg-blue-700 hover:text-white ${activeButtons.includes(buttonIndex) ? 'bg-blue-700 text-white' : ''}`}
                                 onClick={() => {
                                   handleButtonClick(groupId, buttonIndex);
+                                  console.log(selectedFilters);
                                 }}
                               >
                                 {button.label}
@@ -627,66 +575,13 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                 key={sectionIndex}
                 className="flex flex-col sm:items-start gap-6 bg-white p-6 mr-[30px] rounded-xl shadow-lg transition-all hover:shadow-xl"
               >
+                {}
                 <p className="min-w-[200px] text-[18px] text-left font-semibold text-gray-800">
                   {section.title}
                 </p>
-                {sectionIndex === 2 && (
-                  <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8">
-                    {section.group.buttons.map((button, buttonIndex) => {
-                      if (button.type === 'checkbox') {
-                        const inputId = `CheckBox-${sectionIndex}-${buttonIndex}`;
-                        return (
-                          <div
-                            key={`${sectionIndex}-${buttonIndex}`}
-                            className="flex items-center gap-2 sm:gap-4 justify-start sm:justify-between w-full sm:w-auto"
-                          >
-                            <label
-                              htmlFor={inputId}
-                              className="text-sm sm:text-base ml-2 sm:ml-4 cursor-pointer"
-                            >
-                              {button.label}
-                            </label>
-                            <input
-                              type="checkbox"
-                              id={inputId}
-                              className="hidden"
-                              checked={selectedFilters.includes(inputId)}
-                              onChange={() => handleCheckboxChange(inputId)}
-                            />
-                            <label
-                              htmlFor={inputId}
-                              className="w-[17px] h-[17px] flex items-center justify-center rounded-[5px] bg-[#F3F3F3] cursor-pointer transition-all duration-300"
-                            >
-                              {selectedFilters.includes(inputId) && (
-                                <div className="w-[10px] h-[10px] bg-[#0468FF] rounded-[3px] transition-all duration-300"></div>
-                              )}
-                            </label>
-                          </div>
-                        );
-                      }
-
-                      return (
-                        <ButtonFilters
-                          key={`${sectionIndex}-${buttonIndex}`}
-                          color="blue"
-                          id={`button-${sectionIndex}-${buttonIndex}`}
-                          height="40px"
-                          rounded="15px"
-                          width={button.width}
-                          className="w-full sm:w-auto"
-                          onClick={() => {
-                            handleButtonClick(section.group.id, buttonIndex);
-                          }}
-                        >
-                          {button.label}
-                        </ButtonFilters>
-                      );
-                    })}
-                  </div>
-                )}
 
                 <div className="flex flex-wrap sm:flex-row sm:items-center gap-4">
-                  {sectionIndex === 1 && (
+                  {sectionIndex === 0 && (
                     <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
                       <p>Кухня </p>
                       <div className="flex gap-[20px]">
@@ -713,7 +608,38 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       </div>
                     </div>
                   )}
-                  {sectionIndex === 1 && (
+                  {sectionIndex === 0 && (
+                    <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
+                      <p>Жилая </p>
+                      <div className="flex gap-[20px]">
+                        <div>
+                          <input
+                            id={`input-from-${sectionIndex}`}
+                            type="number"
+                            placeholder="От"
+                            value={minLivingArea ?? ''}
+                            onChange={e =>
+                              setMinLivingArea(e.target.value ? parseFloat(e.target.value) : null)
+                            }
+                            className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            id={`input-to-${sectionIndex}`}
+                            type="number"
+                            placeholder="До"
+                            value={maxLivingArea ?? ''}
+                            onChange={e =>
+                              setMaxLivingArea(e.target.value ? parseFloat(e.target.value) : null)
+                            }
+                            className="w-[45px] h-[40px] border-none rounded-[15px] flex xl:pl-[10px] bg-[#F3F3F3] text-[#152242] text-center placeholder:text-[#152242] focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {sectionIndex === 0 && (
                     <div className="flex sm:flex-wrap items-center mr-4  gap-[20px] ">
                       <p>Общая </p>
                       <div className="flex gap-[20px]">
@@ -740,7 +666,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       </div>
                     </div>
                   )}
-                  {sectionIndex === 5 ? (
+                  {sectionIndex === 4 ? (
                     <div className="flex sm:flex-wrap items-center mr-4 gap-[20px] mb-[20px]">
                       <div className="flex sm:flex-wrap items-center mr-4 gap-[20px] mb-[20px]">
                         <div className="flex gap-[20px]">
@@ -773,7 +699,7 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                         </div>
                       </div>
                     </div>
-                  ) : sectionIndex === 2 || sectionIndex === 3 ? (
+                  ) : sectionIndex === 2 ? (
                     <div className="flex gap-[20px]">
                       <div>
                         <input
@@ -867,7 +793,6 @@ export default function ModalMoreFilter({ trigger }: ModalMoreFilterProps) {
                       return (
                         <>
                           <div className="flex sm:flex-wrap items-center  gap-[20px] ">
-                            {buttonIndex === 0 && sectionIndex === 0 && <p>Не более </p>}
                             <ButtonFilters
                               key={`${sectionIndex}-${buttonIndex}`}
                               color="blue"

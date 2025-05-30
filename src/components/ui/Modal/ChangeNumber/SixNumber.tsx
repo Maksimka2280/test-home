@@ -21,7 +21,7 @@ export default function SixNumber({ onClose }: { onClose: () => void }) {
 
         <div className="flex flex-col justify-center items-center">
           <img
-            src="/img/logo.jpg"
+            src="/img/penguin-home.svg"
             alt=""
             className="w-[80px] h-[80px] sm:w-[90px] sm:h-[90px] rounded-[40px]"
           />
