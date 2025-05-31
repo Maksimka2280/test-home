@@ -82,10 +82,10 @@ export default function GoogleTranslateCustom() {
 
       <button
         ref={buttonRef}
-        className="flex items-center gap-2 text-base font-semibold text-[#BCBCBC]"
+        className="flex items-center gap-2 text-base font-semibold text-[#0164EB]"
         onClick={handleToggle}
       >
-        <span className="w-[20px]" translate="no">
+        <span className="w-[20px] " translate="no">
           {selectedButton}
         </span>
         <ChevronDown
